@@ -7,7 +7,7 @@ using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit;
 
 
-public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler, IMixedRealityPointerHandler, IMixedRealityHandJointHandler, IMixedRealityTouchHandler
+public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler /*, IMixedRealityPointerHandler, IMixedRealityHandJointHandler , IMixedRealityTouchHandler*/
 {
 
     //public WorldAnchorManager m_worldAnchorManager;
@@ -29,52 +29,48 @@ public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler,
     }
 
 
-    void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData eventData)
+    /*void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData eventData)
     {
         //Debug.Log("[MouseWorldAnchorLocalManager::OnPointerClicked] Called");
 
-        //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerClicked", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-    }
+        m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerClicked", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+    }*/
 
-    void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData eventData)
+    /*void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData eventData)
     {
         //Debug.Log("[MouseWorldAnchorLocalManager::OnPointerDragged] Called");
 
         //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDragged", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-    }
+    }*/
 
-    void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData eventData)
+    /*void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData eventData)
     {
         //Debug.Log("[MouseWorldAnchorLocalManager::OnPointerDown] Called");
         m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        /*if (m_updateAnchor)
-        {
-            m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Destroying current anchor");
-            m_worldAnchorManager.RemoveAnchor(gameObject);
-        }*/
 
         if (eventData.Pointer is IMixedRealityNearPointer )
         {
-            m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Pointer close to object");
             m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Current material: " + gameObject.GetComponent<Renderer>().material.ToString());
             //Material newMaterial = Resources.Load("Materials/Mouse_Standard_Red", typeof(Material)) as Material;
             gameObject.GetComponent<Renderer>().material = m_matWhenTouched;
             m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "New material: " + gameObject.GetComponent<Renderer>().material.ToString());
 
-        }
-    }
+            IMixedRealityNearPointer tempPointer = (IMixedRealityNearPointer)eventData.Pointer;
+            if (tempPointer.IsNearObject)
+            {
+                float distance = 0.0f;
+                tempPointer.TryGetDistanceToNearestSurface(out distance);
+                m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Pointer close to object. Distance: " + distance.ToString());
+            }
 
-    void IMixedRealityPointerHandler.OnPointerUp(MixedRealityPointerEventData eventData)
+        }
+    }*/
+
+    /*void IMixedRealityPointerHandler.OnPointerUp(MixedRealityPointerEventData eventData)
     {
         //Debug.Log("[MouseWorldAnchorLocalManager::OnPointerUp] Called");
-        m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerUp", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        /*if (m_updateAnchor)
-        {
-            m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerUp", MouseDebugMessagesManager.MessageLevel.Info, "Creating a new anchor and trying to save it");
-            m_worldAnchorManager.AttachAnchor(gameObject);
-        }*/
-        
-    }
+        m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerUp", MouseDebugMessagesManager.MessageLevel.Info, "Called");        
+    }*/
 
     void IMixedRealityGestureHandler.OnGestureCanceled(InputEventData i)
     {
@@ -100,12 +96,12 @@ public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler,
         //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnGestureUpdated", MouseDebugMessagesManager.MessageLevel.Info, "Called");
     }
 
-    void IMixedRealityHandJointHandler.OnHandJointsUpdated(InputEventData<IDictionary<Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint, Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose>> eventData)
+    /*void IMixedRealityHandJointHandler.OnHandJointsUpdated(InputEventData<IDictionary<Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint, Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose>> eventData)
     {
         //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnHandJointsUpdated", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-    }
+    }*/
 
-    void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
+    /*void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
     {
 
     }
@@ -118,17 +114,39 @@ public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler,
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData eventData)
     {
 
-    }
+    }*/
 
-    public void touchHandler()
+    public void  onTouch(/*UnityEngine.Events.UnityEvent ev, string s*/)
     {
-        m_debugMessages.displayMessage("MouseCubeInteractions", "touchHandler", MouseDebugMessagesManager.MessageLevel.Info, "Object touched");
+        m_debugMessages.displayMessage("MouseCubeInteractions", "onTouch", MouseDebugMessagesManager.MessageLevel.Info, "Object touched");
 
-        m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Pointer close to object");
-        m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Current material: " + gameObject.GetComponent<Renderer>().material.ToString());
+        /*m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "touchHandler", MouseDebugMessagesManager.MessageLevel.Info, "Pointer close to object");*/
+        //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "touchHandler", MouseDebugMessagesManager.MessageLevel.Info, "Current material: " + gameObject.GetComponent<Renderer>().material.ToString());
         //Material newMaterial = Resources.Load("Materials/Mouse_Standard_Red", typeof(Material)) as Material;
         gameObject.GetComponent<Renderer>().material = m_matWhenTouched;
-        m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "New material: " + gameObject.GetComponent<Renderer>().material.ToString());
+        //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "touchHandler", MouseDebugMessagesManager.MessageLevel.Info, "New material: " + gameObject.GetComponent<Renderer>().material.ToString());
+
+        /*if (ev is IMixedRealityNearPointer)
+        {
+            m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Current material: " + gameObject.GetComponent<Renderer>().material.ToString());
+            gameObject.GetComponent<Renderer>().material = m_matWhenTouched;
+            m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "New material: " + gameObject.GetComponent<Renderer>().material.ToString());
+
+            IMixedRealityNearPointer tempPointer = (IMixedRealityNearPointer)ev;
+            if (tempPointer.IsNearObject)
+            {
+                float distance = 0.0f;
+                tempPointer.TryGetDistanceToNearestSurface(out distance);
+                m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDown", MouseDebugMessagesManager.MessageLevel.Info, "Pointer close to object. Distance: " + distance.ToString());
+            }
+
+        }*/
+    }
+
+    public void onClick()
+    {
+        m_debugMessages.displayMessage("MouseCubeInteractions", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Object clicked");
+        gameObject.GetComponent<Renderer>().material = m_matWhenTouched;
     }
 
     // Update is called once per frame
