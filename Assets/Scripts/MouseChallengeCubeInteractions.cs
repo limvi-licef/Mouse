@@ -89,13 +89,13 @@ public class MouseChallengeCubeInteractions : MonoBehaviour, IMixedRealityGestur
 
     public void  onTouch(/*UnityEngine.Events.UnityEvent ev, string s*/)
     {
-        m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "touchHandler", MouseDebugMessagesManager.MessageLevel.Info, "Object touched");
+        m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "onTouch", MouseDebugMessagesManager.MessageLevel.Info, "Object touched");
         m_surfaceToPopulate.populateTablePanel();
     }
 
     public void onClick(/*UnityEngine.Events.UnityEvent ev, string s*/)
     {
-        m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "touchHandler", MouseDebugMessagesManager.MessageLevel.Info, "Object clicked");
+        m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Object clicked");
     }
 
     // Update is called once per frame

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 6199193018276087300}
   - component: {fileID: 6199193018276087417}
   m_Layer: 0
-  m_Name: DebugPanel
+  m_Name: Mouse_DebugPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
