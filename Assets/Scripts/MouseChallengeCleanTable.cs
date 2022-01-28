@@ -13,6 +13,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public GameObject m_hologramToUseToPopulateSurface;
     public GameObject m_hologramToDisplayOnFinished;
     public GameObject m_inviteChallengeHologram;
+    public GameObject m_hologramChallengeDetailsToDisplay;
 
     bool m_surfaceTouched; // Bool to detect the touch only once.
 
@@ -46,7 +47,30 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     void inviteChallengeHologramTouched(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
+        m_inviteChallengeHologram.SetActive(false);
+        m_hologramChallengeDetailsToDisplay.SetActive(true);
+        
+        //populateTablePanel();
+    }
+
+    public void callbackForMessageDetailingChallengeOkButton()
+    {
+        m_hologramChallengeDetailsToDisplay.SetActive(false);
         populateTablePanel();
+    }
+
+    public void callbackForMessageDetailingChallengeNotOkButton()
+    {
+        m_hologramChallengeDetailsToDisplay.SetActive(false);
+        
+    }
+
+    public void callbackForMessageDetailingChallengeMaybeLaterButton()
+    {
+        m_hologramChallengeDetailsToDisplay.SetActive(false);
+
+        m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackForMessageDetailingChallengeMaybeLaterButton", MouseDebugMessagesManager.MessageLevel.Warning, "TODO: Needs to be implemented");
+
     }
 
     public void populateTablePanel()
@@ -95,7 +119,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
                     m_cubesTouched.Add(new Tuple<float,float>(posXP, posZP), new Tuple<GameObject, bool>(temp, false));
                 }
             }
-            m_inviteChallengeHologram.SetActive(false);
+            
         }
 
         
