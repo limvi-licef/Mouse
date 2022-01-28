@@ -5,15 +5,18 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Input;
 //using Microsoft.MixedReality.Toolkit.Experimental.Utilities;
 using Microsoft.MixedReality.Toolkit;
+using System;
 
 
-public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler /*, IMixedRealityPointerHandler, IMixedRealityHandJointHandler , IMixedRealityTouchHandler*/
+public class MouseChallengeCleanTableHologramForSurfaceToClean : MonoBehaviour, IMixedRealityTouchHandler  /*IMixedRealityGestureHandler, IMixedRealityPointerHandler, IMixedRealityHandJointHandler , IMixedRealityTouchHandler*/
 {
 
     //public WorldAnchorManager m_worldAnchorManager;
     public MouseDebugMessagesManager m_debugMessages;
     public Material m_matWhenTouched;
     //public bool m_updateAnchor;
+
+    public event EventHandler CubeTouchedEvent;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +30,6 @@ public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler 
 
         //m_worldAnchorManager.AttachAnchor(gameObject);
     }
-
 
     /*void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData eventData)
     {
@@ -72,7 +74,7 @@ public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler 
         m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerUp", MouseDebugMessagesManager.MessageLevel.Info, "Called");        
     }*/
 
-    void IMixedRealityGestureHandler.OnGestureCanceled(InputEventData i)
+    /*void IMixedRealityGestureHandler.OnGestureCanceled(InputEventData i)
     {
         //Debug.Log("[MouseWorldAnchorLocalManager::OnGestureCanceled] Called");
         //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnGestureCanceled", MouseDebugMessagesManager.MessageLevel.Info, "Called");
@@ -94,7 +96,7 @@ public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler 
     {
         //Debug.Log("[MouseWorldAnchorLocalManager::OnGestureUpdated] Called");
         //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnGestureUpdated", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-    }
+    }*/
 
     /*void IMixedRealityHandJointHandler.OnHandJointsUpdated(InputEventData<IDictionary<Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint, Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose>> eventData)
     {
@@ -143,10 +145,28 @@ public class MouseCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler 
         }*/
     }
 
-    public void onClick()
+    /*public void onClick()
     {
         m_debugMessages.displayMessage("MouseCubeInteractions", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Object clicked");
         gameObject.GetComponent<Renderer>().material = m_matWhenTouched;
+    }*/
+
+    void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
+    {
+        gameObject.GetComponent<Renderer>().material = m_matWhenTouched;
+        CubeTouchedEvent?.Invoke(this, EventArgs.Empty);
+        
+        m_debugMessages.displayMessage("MouseCubeInteractions", "IMixedRealityTouchHandler.OnTouchStarted", MouseDebugMessagesManager.MessageLevel.Info, "Touched");
+    }
+
+    void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
+    {
+       
+    }
+
+    void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData eventData)
+    {
+        
     }
 
     // Update is called once per frame

@@ -5,23 +5,24 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Input;
 //using Microsoft.MixedReality.Toolkit.Experimental.Utilities;
 using Microsoft.MixedReality.Toolkit;
+using System;
 
 
-public class MouseChallengeCubeInteractions : MonoBehaviour, IMixedRealityGestureHandler, IMixedRealityPointerHandler, IMixedRealityHandJointHandler //, IMixedRealityTouchHandler
+public class MouseChallengeCleanTableInvite : MonoBehaviour, IMixedRealityGestureHandler, IMixedRealityPointerHandler, IMixedRealityHandJointHandler //, IMixedRealityTouchHandler
 {
 
     //public WorldAnchorManager m_worldAnchorManager;
     public MouseDebugMessagesManager m_debugMessages;
-    public MousePopulateSurfaceTableWithCubes m_surfaceToPopulate;
+    //public MouseChallengeCleanTable m_surfaceToPopulate;
     //public Material m_matWhenTouched;
     //public bool m_updateAnchor;
+    public event EventHandler m_mouseChallengeCleanTableInviteHologramTouched;
 
     // Start is called before the first frame update
     void Start()
     {
         
     }
-
 
     void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData eventData)
     {
@@ -90,7 +91,8 @@ public class MouseChallengeCubeInteractions : MonoBehaviour, IMixedRealityGestur
     public void  onTouch(/*UnityEngine.Events.UnityEvent ev, string s*/)
     {
         m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "onTouch", MouseDebugMessagesManager.MessageLevel.Info, "Object touched");
-        m_surfaceToPopulate.populateTablePanel();
+        //m_surfaceToPopulate.populateTablePanel();
+        m_mouseChallengeCleanTableInviteHologramTouched?.Invoke(this, EventArgs.Empty);
     }
 
     public void onClick(/*UnityEngine.Events.UnityEvent ev, string s*/)
