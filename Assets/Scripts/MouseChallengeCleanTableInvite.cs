@@ -8,14 +8,9 @@ using Microsoft.MixedReality.Toolkit;
 using System;
 
 
-public class MouseChallengeCleanTableInvite : MonoBehaviour, IMixedRealityGestureHandler, IMixedRealityPointerHandler, IMixedRealityHandJointHandler //, IMixedRealityTouchHandler
+public class MouseChallengeCleanTableInvite : MonoBehaviour
 {
-
-    //public WorldAnchorManager m_worldAnchorManager;
     public MouseDebugMessagesManager m_debugMessages;
-    //public MouseChallengeCleanTable m_surfaceToPopulate;
-    //public Material m_matWhenTouched;
-    //public bool m_updateAnchor;
     public event EventHandler m_mouseChallengeCleanTableInviteHologramTouched;
 
     // Start is called before the first frame update
@@ -24,80 +19,10 @@ public class MouseChallengeCleanTableInvite : MonoBehaviour, IMixedRealityGestur
         
     }
 
-    void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData eventData)
-    {
-        //Debug.Log("[MouseWorldAnchorLocalManager::OnPointerClicked] Called");
-
-        //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerClicked", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-    }
-
-    void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData eventData)
-    {
-        //Debug.Log("[MouseWorldAnchorLocalManager::OnPointerDragged] Called");
-
-        //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnPointerDragged", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-    }
-
-    void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData eventData)
-    {
-        
-    }
-
-    void IMixedRealityPointerHandler.OnPointerUp(MixedRealityPointerEventData eventData)
-    {
-        
-    }
-
-    void IMixedRealityGestureHandler.OnGestureCanceled(InputEventData i)
-    {
-        
-    }
-
-    void IMixedRealityGestureHandler.OnGestureCompleted(InputEventData i)
-    {
-       
-    }
-
-    void IMixedRealityGestureHandler.OnGestureStarted(InputEventData i)
-    {
-        
-    }
-
-    void IMixedRealityGestureHandler.OnGestureUpdated(InputEventData i)
-    {
-        
-    }
-
-    void IMixedRealityHandJointHandler.OnHandJointsUpdated(InputEventData<IDictionary<Microsoft.MixedReality.Toolkit.Utilities.TrackedHandJoint, Microsoft.MixedReality.Toolkit.Utilities.MixedRealityPose>> eventData)
-    {
-        //m_debugMessages.displayMessage("MouseWorldAnchorLocalManager", "OnHandJointsUpdated", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-    }
-
-    /*void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
-    {
-
-    }
-
-    void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
-    {
-        m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "OnTouchStarted", MouseDebugMessagesManager.MessageLevel.Info, "Object touched");
-    }
-
-    void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData eventData)
-    {
-
-    }*/
-
-    public void  onTouch(/*UnityEngine.Events.UnityEvent ev, string s*/)
+    public void  onTouch()
     {
         m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "onTouch", MouseDebugMessagesManager.MessageLevel.Info, "Object touched");
-        //m_surfaceToPopulate.populateTablePanel();
         m_mouseChallengeCleanTableInviteHologramTouched?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void onClick(/*UnityEngine.Events.UnityEvent ev, string s*/)
-    {
-        m_debugMessages.displayMessage("MouseChallengeCubeInteractions", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Object clicked");
     }
 
     // Update is called once per frame

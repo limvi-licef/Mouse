@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 
 // Todo: Make this class more generic, i.e. by using the normal of the surface, and rotating the cube to use to populate the surface by the normal.
+// This class relies on the "Interactable MRTK component to catch a touch event. Other classes implement the interface, as they need the details of the event. Interactable does not provide such details, but is easier to implement. Here we do not need those information, so that is why we use this Interactable component.
 public class MouseChallengeCleanTable : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -34,22 +35,11 @@ public class MouseChallengeCleanTable : MonoBehaviour
     {
         MouseChallengeCleanTableHologramForSurfaceToClean tempCube = (MouseChallengeCleanTableHologramForSurfaceToClean)sender;
 
-        //MouseCubeInteractions tempCube = temp.GetComponent<MouseCubeInteractions>();
-
         m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "cubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Cube touched. Position: " + tempCube.transform.localPosition.x.ToString() + " " + tempCube.transform.localPosition.z.ToString());
 
         Tuple<float, float> tempTuple = new Tuple<float, float>(tempCube.transform.localPosition.x, tempCube.transform.localPosition.z);
 
         m_cubesTouched[tempTuple] = new Tuple<GameObject, bool>(m_cubesTouched[tempTuple].Item1, true);
-
-        /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "cubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Dictionary status: ");
-
-        foreach (KeyValuePair< Tuple<float, float>, bool> tempKeyValuePair in m_cubesTouched)
-        {
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "cubeTouched", MouseDebugMessagesManager.MessageLevel.Info, tempKeyValuePair.ToString());
-        }
-
-        m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "cubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Dictionary status: " + m_cubesTouched.ToString());*/
 
         checkIfSurfaceClean();
     }
@@ -85,21 +75,20 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Table panel position x=" + gameObject.transform.position.x.ToString() + " z=" + gameObject.transform.position.z.ToString());
 
-            for (posX = 0.0f; posX < goScaleX; posX += /*0.1f*/ incrementX)
+            for (posX = 0.0f; posX < goScaleX; posX += incrementX)
             {
-                for (posZ = 0.0f; posZ < goScaleZ; posZ += /*0.1f*/ incrementZ)
+                for (posZ = 0.0f; posZ < goScaleZ; posZ += incrementZ)
                 {
                     GameObject temp = Instantiate(m_hologramToUseToPopulateSurface);
                     temp.transform.SetParent(gameObject.transform.parent, false);
                     temp.transform.localPosition = Vector3.zero;
-                    temp.transform.localScale = new Vector3(/*0.1f*/ incrementX, 0.01f, incrementZ);
-                    //temp.transform.SetPositionAndRotation(new Vector3(posX, posY), temp.transform.rotation);
-                    float posXP = posX + incrementX / 2.0f - 0.05f; /*goLocalPosition.x + goLocalPosition.x / 2.0f;*/
-                    float posZP = posZ + incrementZ / 2.0f - 0.05f; /*goLocalPosition.z - goLocalPosition.z / 2.0f;*/
+                    temp.transform.localScale = new Vector3(incrementX, 0.01f, incrementZ);
+                    float posXP = posX + incrementX / 2.0f - 0.05f;
+                    float posZP = posZ + incrementZ / 2.0f - 0.05f;
 
                     m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Position of the cube in x=" + posXP.ToString() + " z=" + posZP.ToString() + " | Size of the cube: x= " + temp.transform.localScale.x.ToString() +" z=" + temp.transform.localScale.z.ToString() );
 
-                    temp.transform.localPosition = new Vector3(/*posXP + */posXP /*+ temp.transform.localScale.x / 2.0f*/, goLocalPosition.y + 0.05f, /*posZP +*/ posZP /*+ temp.transform.localScale.z / 2.0f*/);
+                    temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 0.05f, posZP);
 
                     MouseChallengeCleanTableHologramForSurfaceToClean cubeInteractions = temp.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>();
                     cubeInteractions.CubeTouchedEvent += cubeTouched;
