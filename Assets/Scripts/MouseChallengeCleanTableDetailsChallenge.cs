@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class MouseChallengeCleanTableDetailsChallenge : MonoBehaviour
 {
+    public GameObject m_WindowMenu;
+    //public GameObject m_HandMenu;
+    public MouseDebugMessagesManager m_debugPanel;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,5 +23,27 @@ public class MouseChallengeCleanTableDetailsChallenge : MonoBehaviour
             transform.LookAt(Camera.main.transform);
         }
         
+    }
+
+    public void displayMenus (bool displayWindowMenu, bool displayHandMenu)
+    {
+        m_WindowMenu.SetActive(displayWindowMenu);
+        //m_HandMenu.SetActive(displayHandMenu);
+    }
+
+    private void OnEnable()
+    {
+        for (int i = 0; i < gameObject.transform.childCount; i ++)
+        {
+            gameObject.transform.GetChild(i).gameObject.SetActive(true);
+        }
+    }
+
+    private void OnDisable()
+    {
+        for (int i = 0; i < gameObject.transform.childCount; i++)
+        {
+            gameObject.transform.GetChild(i).gameObject.SetActive(false);
+        }
     }
 }
