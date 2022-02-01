@@ -14,11 +14,13 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public GameObject m_hologramToDisplayOnFinished;
     public GameObject m_inviteChallengeHologram;
     public GameObject m_hologramChallengeDetailsToDisplay;
+    public GameObject m_hologramChallengeDetailsReminder;
 
     bool m_surfaceTouched; // Bool to detect the touch trigerring the challenge only once.
 
     bool m_palmOpened;
     bool m_messageDetailedFocused;
+    bool m_messageReminderFocused;
 
     Dictionary<Tuple<float, float>, Tuple<GameObject, bool>> m_cubesTouched;
 
@@ -29,6 +31,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_palmOpened = false;
         m_messageDetailedFocused = false;
         m_cubesTouched = new Dictionary<Tuple<float, float>, Tuple<GameObject, bool>>();
+        m_messageReminderFocused = false;
 
         // Sanity checks
         if (m_inviteChallengeHologram.GetComponent<MouseChallengeCleanTableInvite>() == null)
@@ -65,6 +68,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     public void callbackForMessageDetailingChallengeOkButton()
     {
+        m_debug.displayMessage("MouseHandInteractions", "callbackForMessageDetailingChallengeOkButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = false)");
         m_hologramChallengeDetailsToDisplay.SetActive(false);
         populateTablePanel();
         m_messageDetailedFocused = false;
@@ -73,6 +77,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     public void callbackForMessageDetailingChallengeNotOkButton()
     {
+        m_debug.displayMessage("MouseHandInteractions", "callbackForMessageDetailingChallengeNotOkButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = false)");
         m_hologramChallengeDetailsToDisplay.SetActive(false);
         m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.
         m_messageDetailedFocused = false;
@@ -81,37 +86,82 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     public void callbackForMessageDetailingChallengeMaybeLaterButton()
     {
+        m_debug.displayMessage("MouseHandInteractions", "callbackForMessageDetailingChallengeMaybeLaterButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = false)");
         m_hologramChallengeDetailsToDisplay.SetActive(false);
 
         //m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackForMessageDetailingChallengeMaybeLaterButton", MouseDebugMessagesManager.MessageLevel.Warning, "TODO: Needs to be implemented");
         m_messageDetailedFocused = false;
         updateMessageDetailedMenu();
+
+        m_hologramChallengeDetailsReminder.SetActive(true);
+        m_messageReminderFocused = true;
+        updateMessageReminderMenu();
     }
 
     public void callbackHandPalmFacingUser()
     {
         m_debug.displayMessage("MouseHandInteractions", "callbackHandPalmFacingUser", MouseDebugMessagesManager.MessageLevel.Info, "Hand palm detected");
         m_palmOpened = true;
-        updateMessageDetailedMenu();
+        if (m_messageDetailedFocused)
+        {
+            updateMessageDetailedMenu();
+        }
+        else if (m_messageReminderFocused)
+        {
+            updateMessageReminderMenu();
+        }
     }
 
     public void callbackHandPalmNotFacinUserAnymore()
     {
         //m_debug.displayMessage("MouseHandInteractions", "callbackHandPalmFacingUser", MouseDebugMessagesManager.MessageLevel.Info, "Hand palm not detected anymore");
         m_palmOpened = false;
-        updateMessageDetailedMenu();
+        if (m_messageDetailedFocused)
+        {
+            updateMessageDetailedMenu();
+        }
+        else if (m_messageReminderFocused)
+        {
+            updateMessageReminderMenu();
+        }
     }
 
     public void callbackMessageDetailingChallengeOnFocus()
     {
-        //m_debug.displayMessage("MouseHandInteractions", "callbackMessageDetailingChallengeOnFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message focused");
+        m_debug.displayMessage("MouseHandInteractions", "callbackMessageDetailingChallengeOnFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message focused (has m_messageDetailedFocused = true)");
         m_messageDetailedFocused = true;
         updateMessageDetailedMenu();
     }
 
     public void callbackMessageDetailingChallengeOnLosingFocus()
     {
-        //m_debug.displayMessage("MouseHandInteractions", "callbackMessageDetailingChallengeOnLosingFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message not focused anymore");
+        m_debug.displayMessage("MouseHandInteractions", "callbackMessageDetailingChallengeOnLosingFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message not focused anymore");
+    }
+
+    public void callbackReminderWindowOnFocus()
+    {
+        m_debug.displayMessage("MouseHandInteractions", "callbackReminderWindowOnFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message focused");
+        m_messageReminderFocused = true;
+        updateMessageReminderMenu();
+    }
+
+    public void callbackReminderWindowOkButton()
+    {
+        m_hologramChallengeDetailsReminder.SetActive(false);
+        m_messageReminderFocused = false;
+        updateMessageReminderMenu();
+    }
+
+    public void callbackReminderWindowBackButton()
+    {
+        m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackReminderWindowBackButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = true)");
+        m_hologramChallengeDetailsReminder.SetActive(false);
+        m_messageReminderFocused = false;
+        updateMessageReminderMenu();
+
+        m_hologramChallengeDetailsToDisplay.SetActive(true);
+        m_messageDetailedFocused = true;
+        updateMessageDetailedMenu();
     }
 
     // This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge
@@ -124,8 +174,6 @@ public class MouseChallengeCleanTable : MonoBehaviour
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageDetailedMenu", MouseDebugMessagesManager.MessageLevel.Warning, "This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge");
             return;
         }
-
-
         if (m_messageDetailedFocused && m_palmOpened)
         {
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageDetailedMenu", MouseDebugMessagesManager.MessageLevel.Info, "Display palm menu");
@@ -139,6 +187,33 @@ public class MouseChallengeCleanTable : MonoBehaviour
         else if ( m_messageDetailedFocused == false)
         {
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageDetailedMenu", MouseDebugMessagesManager.MessageLevel.Info, "Closing menus");
+            cleanTableDetailsChallenge.displayMenus(false, false);
+        }
+    }
+
+    void updateMessageReminderMenu()
+    {
+        MouseChallengeCleanTableDetailsChallenge cleanTableDetailsChallenge = m_hologramChallengeDetailsReminder.GetComponent<MouseChallengeCleanTableDetailsChallenge>();
+
+        if (cleanTableDetailsChallenge == null)
+        {
+            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageReminderMenu", MouseDebugMessagesManager.MessageLevel.Warning, "This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge");
+            return;
+        }
+
+        if (m_messageReminderFocused && m_palmOpened)
+        {
+            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageReminderMenu", MouseDebugMessagesManager.MessageLevel.Info, "Display palm menu");
+            cleanTableDetailsChallenge.displayMenus(false, true);
+        }
+        else if (m_messageReminderFocused && m_palmOpened == false)
+        {
+            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageReminderMenu", MouseDebugMessagesManager.MessageLevel.Info, "Display window menu");
+            cleanTableDetailsChallenge.displayMenus(true, false);
+        }
+        else if (m_messageReminderFocused == false)
+        {
+            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageReminderMenu", MouseDebugMessagesManager.MessageLevel.Info, "Closing menus");
             cleanTableDetailsChallenge.displayMenus(false, false);
         }
     }
