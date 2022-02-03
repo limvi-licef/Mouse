@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 
 // Todo: Make this class more generic, i.e. by using the normal of the surface, and rotating the cube to use to populate the surface by the normal.
 // This class relies on the "Interactable MRTK component to catch a touch event. Other classes implement the interface, as they need the details of the event. Interactable does not provide such details, but is easier to implement. Here we do not need those information, so that is why we use this Interactable component.
@@ -12,9 +15,10 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public int m_numberOfCubesToAddInColumn;
     public GameObject m_hologramToUseToPopulateSurface;
     public GameObject m_hologramToDisplayOnFinished;
-    public GameObject m_inviteChallengeHologram;
+    public GameObject m_hologramInviteChallenge;
     public GameObject m_hologramChallengeDetailsToDisplay;
     public GameObject m_hologramChallengeDetailsReminder;
+    public GameObject m_hologramInteractionSurface;
 
     bool m_surfaceTouched; // Bool to detect the touch trigerring the challenge only once.
 
@@ -33,8 +37,13 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_cubesTouched = new Dictionary<Tuple<float, float>, Tuple<GameObject, bool>>();
         m_messageReminderFocused = false;
 
+        // Connect all the callbacks
+        m_hologramInteractionSurface.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackOnTapToPlaceFinished);
+        m_hologramInteractionSurface.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackOnTapToPlaceFinished); // Use the same callback than for taptoplace as the process to do is the same
+        m_hologramInteractionSurface.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(onTouch);
+
         // Sanity checks
-        if (m_inviteChallengeHologram.GetComponent<MouseChallengeCleanTableInvite>() == null)
+        if (m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>() == null)
         {
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Start", MouseDebugMessagesManager.MessageLevel.Error, "The invite challenge hologram must have the MouseChallengeCubeInteractions component. The object will most likely crash because the implementation is not that safe.");
         }
@@ -60,7 +69,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     void inviteChallengeHologramTouched(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
-        m_inviteChallengeHologram.SetActive(false);
+        m_hologramInviteChallenge.SetActive(false);
         m_hologramChallengeDetailsToDisplay.SetActive(true);
         
         //populateTablePanel();
@@ -164,6 +173,20 @@ public class MouseChallengeCleanTable : MonoBehaviour
         updateMessageDetailedMenu();
     }
 
+    public void callbackOnTapToPlaceFinished()
+    {
+        m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        // Bring specific components to the center of the interaction surface
+        //m_hologramInviteChallenge.transform.localPosition = new Vector3(m_hologramInteractionSurface.transform.localPosition.x, m_hologramInteractionSurface.transform.localPosition.y+50, m_hologramInteractionSurface.transform.localPosition.z);
+
+        gameObject.transform.position = m_hologramInteractionSurface.transform.position;
+        //gameObject.transform. = m_hologramInteractionSurface.transform.localScale;
+        m_hologramInteractionSurface.transform.localPosition = new Vector3(0, 1, 0);
+        //m_hologramInteractionSurface.transform.localScale = new Vector3(1, 1, 1);
+
+    }
+
     // This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge
     void updateMessageDetailedMenu ()
     {
@@ -232,36 +255,50 @@ public class MouseChallengeCleanTable : MonoBehaviour
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Local position of table panel: x =" + goLocalPosition.x.ToString() + " y =" + goLocalPosition.y.ToString() + " z =" + goLocalPosition.z.ToString());
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Position of table panel: x =" + gameObject.transform.position.x.ToString() + " y =" + gameObject.transform.position.y.ToString() + " z =" + gameObject.transform.position.z.ToString());
 
-            float goScaleX = gameObject.transform.localScale.x;
+            /*float goScaleX = gameObject.transform.localScale.x;
             float goScaleY = gameObject.transform.localScale.y;
-            float goScaleZ = gameObject.transform.localScale.z;
+            float goScaleZ = gameObject.transform.localScale.z;*/
+
+            float goScaleX = 1.0f;
+            float goScaleZ = 1.0f;
+
+            /*float goScaleX = m_hologramInteractionSurface.transform.localScale.x;
+            float goScaleZ = m_hologramInteractionSurface.transform.localScale.z;*/
 
             float posX = 0.0f;
             float posZ = 0.0f;
 
+            /*float incrementX = goScaleX / m_numberOfCubesToAddInColumn;
+            float incrementZ = goScaleZ / m_numberOfCubesToAddInRow;*/
+
+            /*float incrementX = 1.0f / m_numberOfCubesToAddInColumn;
+            float incrementZ = 1.0f / m_numberOfCubesToAddInRow;*/
+
             float incrementX = goScaleX / m_numberOfCubesToAddInColumn;
             float incrementZ = goScaleZ / m_numberOfCubesToAddInRow;
 
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Table panel position x=" + gameObject.transform.position.x.ToString() + " z=" + gameObject.transform.position.z.ToString());
+            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Table panel position x=" + gameObject.transform.position.x.ToString() + " z=" + gameObject.transform.position.z.ToString() + " increment: x = " + incrementX.ToString() + " z = " + incrementZ.ToString());
 
             for (posX = 0.0f; posX < goScaleX; posX += incrementX)
             {
                 for (posZ = 0.0f; posZ < goScaleZ; posZ += incrementZ)
                 {
                     GameObject temp = Instantiate(m_hologramToUseToPopulateSurface);
-                    temp.transform.SetParent(gameObject.transform.parent, false);
+                    //temp.transform.SetParent(gameObject.transform, false);
+                    temp.transform.SetParent(m_hologramInteractionSurface.transform, false);
                     temp.transform.localPosition = Vector3.zero;
                     temp.transform.localScale = new Vector3(incrementX, 0.01f, incrementZ);
-                    float posXP = posX + incrementX / 2.0f - 0.05f;
-                    float posZP = posZ + incrementZ / 2.0f - 0.05f;
+                    float posXP = posX /*- incrementX / 2.0f*/ - goScaleX/2.0f + temp.transform.localScale.x/2.0f;
+                    float posZP = posZ /*- incrementZ / 2.0f*/ - goScaleZ/2.0f + temp.transform.localScale.z / 2.0f;
 
                     m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Position of the cube in x=" + posXP.ToString() + " z=" + posZP.ToString() + " | Size of the cube: x= " + temp.transform.localScale.x.ToString() +" z=" + temp.transform.localScale.z.ToString() );
 
-                    temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 0.05f, posZP);
+                    temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 0.2f, posZP);
 
                     MouseChallengeCleanTableHologramForSurfaceToClean cubeInteractions = temp.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>();
                     cubeInteractions.CubeTouchedEvent += cubeTouched;
                     m_cubesTouched.Add(new Tuple<float,float>(posXP, posZP), new Tuple<GameObject, bool>(temp, false));
+                    temp.SetActive(true); // Hidden by default
                 }
             }
             
@@ -285,10 +322,14 @@ public class MouseChallengeCleanTable : MonoBehaviour
         if (m_surfaceTouched == false) // Surface can be touched only once
         {
             m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_inviteChallengeHologram.SetActive(true);
-            MouseChallengeCleanTableInvite cubeInteractions = m_inviteChallengeHologram.GetComponent<MouseChallengeCleanTableInvite>();
+            m_hologramInviteChallenge.SetActive(true);
+            MouseChallengeCleanTableInvite cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>();
             cubeInteractions.m_mouseChallengeCleanTableInviteHologramTouched += inviteChallengeHologramTouched; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched
             m_surfaceTouched = true;
+        }
+        else
+        {
+            m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Surface touched but process disabled");
         }
         
     }
@@ -326,5 +367,11 @@ public class MouseChallengeCleanTable : MonoBehaviour
         }
 
         m_hologramToDisplayOnFinished.SetActive(true);
+    }
+
+    public void resetChallenge()
+    {
+        m_hologramToDisplayOnFinished.SetActive(false);
+        m_surfaceTouched = false;
     }
 }
