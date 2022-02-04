@@ -19,6 +19,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public GameObject m_hologramChallengeDetailsToDisplay;
     public GameObject m_hologramChallengeDetailsReminder;
     public GameObject m_hologramInteractionSurface;
+    public AudioClip m_audioClipToPlayOnTouchInteractionSurface;
+    public AudioListener m_audioListener;
 
     bool m_surfaceTouched; // Bool to detect the touch trigerring the challenge only once.
 
@@ -182,7 +184,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
         gameObject.transform.position = m_hologramInteractionSurface.transform.position;
         //gameObject.transform. = m_hologramInteractionSurface.transform.localScale;
-        m_hologramInteractionSurface.transform.localPosition = new Vector3(0, 1, 0);
+        m_hologramInteractionSurface.transform.localPosition = new Vector3(0, 0, 0);
         //m_hologramInteractionSurface.transform.localScale = new Vector3(1, 1, 1);
 
     }
@@ -251,9 +253,9 @@ public class MouseChallengeCleanTable : MonoBehaviour
         {
             Vector3 goLocalPosition = gameObject.transform.localPosition;
 
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Size of table panel: x=" + gameObject.GetComponent<Renderer>().bounds.size.x.ToString() + " y=" + gameObject.GetComponent<Renderer>().bounds.size.y.ToString());
+            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Size of table panel: x=" + gameObject.GetComponent<Renderer>().bounds.size.x.ToString() + " y=" + gameObject.GetComponent<Renderer>().bounds.size.y.ToString());
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Local position of table panel: x =" + goLocalPosition.x.ToString() + " y =" + goLocalPosition.y.ToString() + " z =" + goLocalPosition.z.ToString());
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Position of table panel: x =" + gameObject.transform.position.x.ToString() + " y =" + gameObject.transform.position.y.ToString() + " z =" + gameObject.transform.position.z.ToString());
+            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Position of table panel: x =" + gameObject.transform.position.x.ToString() + " y =" + gameObject.transform.position.y.ToString() + " z =" + gameObject.transform.position.z.ToString());*/
 
             /*float goScaleX = gameObject.transform.localScale.x;
             float goScaleY = gameObject.transform.localScale.y;
@@ -293,7 +295,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
                     m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Position of the cube in x=" + posXP.ToString() + " z=" + posZP.ToString() + " | Size of the cube: x= " + temp.transform.localScale.x.ToString() +" z=" + temp.transform.localScale.z.ToString() );
 
-                    temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 0.2f, posZP);
+                    temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 3.0f, posZP);
 
                     MouseChallengeCleanTableHologramForSurfaceToClean cubeInteractions = temp.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>();
                     cubeInteractions.CubeTouchedEvent += cubeTouched;
@@ -326,6 +328,11 @@ public class MouseChallengeCleanTable : MonoBehaviour
             MouseChallengeCleanTableInvite cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>();
             cubeInteractions.m_mouseChallengeCleanTableInviteHologramTouched += inviteChallengeHologramTouched; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched
             m_surfaceTouched = true;
+
+            // Play sound to get the user's attention from audio on top of visually
+            //m_hologramInteractionSurface.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
+            m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
+
         }
         else
         {
@@ -366,12 +373,26 @@ public class MouseChallengeCleanTable : MonoBehaviour
             tempKeyValue.Value.Item1.SetActive(false);
         }
 
+        // Play a sound and display and hologram to inform the user that the challenge is completed
         m_hologramToDisplayOnFinished.SetActive(true);
+        m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
     }
 
     public void resetChallenge()
     {
+        m_debug.displayMessage("MouseChallengeCleanTable", "resetChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        // Here we will remove the cubes from the table and display an hologram in the center of the table
+        foreach (KeyValuePair<Tuple<float, float>, Tuple<GameObject, bool>> tempKeyValue in m_cubesTouched)
+        {
+            Destroy(tempKeyValue.Value.Item1);
+        }
+
+        m_cubesTouched.Clear();
+
         m_hologramToDisplayOnFinished.SetActive(false);
         m_surfaceTouched = false;
+        m_hologramInviteChallenge.SetActive(false);
+
     }
 }

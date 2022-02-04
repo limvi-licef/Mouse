@@ -5,20 +5,28 @@ using UnityEngine;
 /**
  * Settings are applied to the first level of children
  **/
-public class MouseUtilitiesApplyParentSettingsToChildren : MonoBehaviour
+public class MouseUtilities : MonoBehaviour
 {
     public bool m_showHideChildren;
+    public bool m_lookAtUser;
 
     // Start is called before the first frame update
     void Start()
     {
         m_showHideChildren = false;
+        m_lookAtUser = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (m_lookAtUser)
+        {
+            if (Vector3.Distance(Camera.main.transform.position, transform.position) > 1 )
+            {
+                gameObject.transform.LookAt(Camera.main.transform);
+            }
+        }
     }
 
     private void OnEnable()

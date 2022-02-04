@@ -57,18 +57,19 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         else
         {
             m_positioningInteractionSurfaceEnabled = true;
-            materialName = "Mouse_Standard_Red";
+            materialName = "Mouse_Cyan_Glowing";
         }
 
         m_hologramInteractionSurface.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
         m_hologramInteractionSurface.GetComponent<BoundsControl>().enabled = m_positioningInteractionSurfaceEnabled;
         m_hologramInteractionSurface.GetComponent<TapToPlace>().enabled = m_positioningInteractionSurfaceEnabled;
+        m_hologramInteractionSurface.GetComponent<MeshRenderer>().enabled = m_positioningInteractionSurfaceEnabled;
     }
 
     public void callbackBringInteractionSurface()
     {
         m_debug.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z + 1.5f);
+        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
     }
 
     public void callbackSwitchStaticOrMovingMenu()
@@ -96,7 +97,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackDebugBringWindow()
     {
-        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z + 1.5f);
+        m_hologramDebug.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+        m_hologramDebug.transform.LookAt(Camera.main.transform);
     }
 
     public void callbackDebugClearWindow()

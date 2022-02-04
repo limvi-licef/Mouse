@@ -21,10 +21,12 @@ public class MouseChallengeCleanTableHologramForSurfaceToClean : MonoBehaviour, 
 
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
     {
+        m_debugMessages.displayMessage("MouseCubeInteractions", "IMixedRealityTouchHandler.OnTouchStarted", MouseDebugMessagesManager.MessageLevel.Info, "Touched");
+
         gameObject.GetComponent<Renderer>().material = m_matWhenTouched;
         CubeTouchedEvent?.Invoke(this, EventArgs.Empty);
         
-        m_debugMessages.displayMessage("MouseCubeInteractions", "IMixedRealityTouchHandler.OnTouchStarted", MouseDebugMessagesManager.MessageLevel.Info, "Touched");
+        
     }
 
     // Here because it has to be to complete the implementation of the interface
