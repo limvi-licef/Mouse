@@ -47,11 +47,11 @@ public class MouseChallengeCleanTable : MonoBehaviour
         // Sanity checks
         if (m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>() == null)
         {
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Start", MouseDebugMessagesManager.MessageLevel.Error, "The invite challenge hologram must have the MouseChallengeCubeInteractions component. The object will most likely crash because the implementation is not that safe.");
+            m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "The invite challenge hologram must have the MouseChallengeCubeInteractions component. The object will most likely crash because the implementation is not that safe.");
         }
         if (m_hologramChallengeDetailsToDisplay.GetComponent<MouseChallengeCleanTableDetailsChallenge>() == null)
         {
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "Start", MouseDebugMessagesManager.MessageLevel.Error, "This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge");
+            m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge");
         }
 
     }
@@ -69,12 +69,29 @@ public class MouseChallengeCleanTable : MonoBehaviour
         checkIfSurfaceClean();
     }
 
-    void inviteChallengeHologramTouched(object sender, EventArgs e)
+    void callbackInviteChallengeHologramHelp(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
+        m_debug.displayMessage("MouseChallengeCleanTable", "inviteChallengeHologramTouched", MouseDebugMessagesManager.MessageLevel.Info, "Called");
         m_hologramInviteChallenge.SetActive(false);
         m_hologramChallengeDetailsToDisplay.SetActive(true);
         
         //populateTablePanel();
+    }
+
+    void callbackInviteChallengeHologramOk(object sender, EventArgs e)
+    { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
+        m_debug.displayMessage("MouseChallengeCleanTable", "callbackInviteChallengeHologramOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        m_hologramInviteChallenge.SetActive(false);
+        //m_hologramChallengeDetailsToDisplay.SetActive(true);
+
+        populateTablePanel();
+    }
+
+    void callbackInviteChallengeHologramNok(object sender, EventArgs e)
+    { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
+        m_debug.displayMessage("MouseChallengeCleanTable", "callbackInviteChallengeHologramNok", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        m_hologramInviteChallenge.SetActive(false);
+        m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.
     }
 
     public void callbackForMessageDetailingChallengeOkButton()
@@ -325,8 +342,12 @@ public class MouseChallengeCleanTable : MonoBehaviour
         {
             m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Called");
             m_hologramInviteChallenge.SetActive(true);
-            MouseChallengeCleanTableInvite cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>();
-            cubeInteractions.m_mouseChallengeCleanTableInviteHologramTouched += inviteChallengeHologramTouched; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched
+            /*MouseChallengeCleanTableInvite cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>();
+            cubeInteractions.m_mouseChallengeCleanTableInviteHologramTouched += inviteChallengeHologramTouched; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched*/
+            MouseUtilitiesHologramInteractionSwipes cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseUtilitiesHologramInteractionSwipes>();
+            cubeInteractions.m_utilitiesInteractionSwipesEventHelp += callbackInviteChallengeHologramHelp; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched
+            cubeInteractions.m_utilitiesInteractionSwipesEventOk += callbackInviteChallengeHologramOk;
+            cubeInteractions.m_utilitiesInteractionSwipesEventNok += callbackInviteChallengeHologramNok;
             m_surfaceTouched = true;
 
             // Play sound to get the user's attention from audio on top of visually
