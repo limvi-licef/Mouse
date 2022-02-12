@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
-using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 // Todo: Make this class more generic, i.e. by using the normal of the surface, and rotating the cube to use to populate the surface by the normal.
 // This class relies on the "Interactable MRTK component to catch a touch event. Other classes implement the interface, as they need the details of the event. Interactable does not provide such details, but is easier to implement. Here we do not need those information, so that is why we use this Interactable component.
@@ -15,9 +14,10 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public int m_numberOfCubesToAddInColumn;
     public GameObject m_hologramToUseToPopulateSurface;
     public GameObject m_hologramToDisplayOnFinished;
-    public GameObject m_hologramInviteChallenge;
-    public GameObject m_hologramChallengeDetailsToDisplay;
-    public GameObject m_hologramChallengeDetailsReminder;
+    public GameObject m_hologramAssistanceStimulateAbstract;
+    public GameObject m_hologramAssistanceStimulate;
+    public GameObject m_hologramAssistanceSolution;
+    public GameObject m_hologramAssistanceReminder;
     public GameObject m_hologramInteractionSurface;
     public AudioClip m_audioClipToPlayOnTouchInteractionSurface;
     public AudioListener m_audioListener;
@@ -27,8 +27,22 @@ public class MouseChallengeCleanTable : MonoBehaviour
     bool m_palmOpened;
     bool m_messageDetailedFocused;
     bool m_messageReminderFocused;
+    bool m_startAnimationDisplayMessageGradationLevel1;
 
     Dictionary<Tuple<float, float>, Tuple<GameObject, bool>> m_cubesTouched;
+
+    enum ChallengeCleanTableStates
+    {
+        AssistanceStimulateAbstract = 0,
+        AssistanceStimulate = 1,
+        AssistanceSolution = 2,
+        AssistanceReminder = 3,
+        Challenge = 4,
+        StandBy = 5
+    }
+
+    ChallengeCleanTableStates m_stateCurrent;
+    ChallengeCleanTableStates m_statePrevious;
 
     // Start is called before the first frame update
     void Start()
@@ -38,18 +52,22 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_messageDetailedFocused = false;
         m_cubesTouched = new Dictionary<Tuple<float, float>, Tuple<GameObject, bool>>();
         m_messageReminderFocused = false;
+        m_startAnimationDisplayMessageGradationLevel1 = false;
+
+        m_stateCurrent = ChallengeCleanTableStates.StandBy;
+        m_statePrevious = ChallengeCleanTableStates.StandBy;
 
         // Connect all the callbacks
         m_hologramInteractionSurface.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackOnTapToPlaceFinished);
         m_hologramInteractionSurface.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackOnTapToPlaceFinished); // Use the same callback than for taptoplace as the process to do is the same
-        m_hologramInteractionSurface.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(onTouch);
+        m_hologramInteractionSurface.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackTableTouched);
 
         // Sanity checks
-        if (m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>() == null)
+        if (m_hologramAssistanceStimulateAbstract.GetComponent<MouseChallengeCleanTableInvite>() == null)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "The invite challenge hologram must have the MouseChallengeCubeInteractions component. The object will most likely crash because the implementation is not that safe.");
         }
-        if (m_hologramChallengeDetailsToDisplay.GetComponent<MouseChallengeCleanTableDetailsChallenge>() == null)
+        if (m_hologramAssistanceSolution.GetComponent<MouseChallengeCleanTableDetailsChallenge>() == null)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge");
         }
@@ -69,61 +87,71 @@ public class MouseChallengeCleanTable : MonoBehaviour
         checkIfSurfaceClean();
     }
 
-    void callbackInviteChallengeHologramHelp(object sender, EventArgs e)
+    void callbackHologramAssistanceStimulateAbstractHelp(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
-        m_debug.displayMessage("MouseChallengeCleanTable", "inviteChallengeHologramTouched", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramInviteChallenge.SetActive(false);
-        m_hologramChallengeDetailsToDisplay.SetActive(true);
-        
-        //populateTablePanel();
+        updateChallenge(ChallengeCleanTableStates.AssistanceStimulate);
     }
 
-    void callbackInviteChallengeHologramOk(object sender, EventArgs e)
+    void callbackHologramAssistanceStimulateAbstractOk(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackInviteChallengeHologramOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramInviteChallenge.SetActive(false);
-        //m_hologramChallengeDetailsToDisplay.SetActive(true);
+        //m_hologramAssistanceStimulateAbstract.SetActive(false);
 
-        populateTablePanel();
+        updateChallenge(ChallengeCleanTableStates.Challenge);
     }
 
-    void callbackInviteChallengeHologramNok(object sender, EventArgs e)
+    void callbackHologramAssistanceStimulateAbstractNok(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackInviteChallengeHologramNok", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramInviteChallenge.SetActive(false);
-        m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.
+        /*m_hologramAssistanceStimulateAbstract.SetActive(false);
+        m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.*/
+
+        updateChallenge(ChallengeCleanTableStates.StandBy);
     }
 
-    public void callbackForMessageDetailingChallengeOkButton()
+    public void callbackHologramAssistanceStimulateOk()
     {
-        m_debug.displayMessage("MouseHandInteractions", "callbackForMessageDetailingChallengeOkButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = false)");
-        m_hologramChallengeDetailsToDisplay.SetActive(false);
-        populateTablePanel();
-        m_messageDetailedFocused = false;
-        updateMessageDetailedMenu();
+        updateChallenge(ChallengeCleanTableStates.Challenge);
     }
 
-    public void callbackForMessageDetailingChallengeNotOkButton()
+    public void callbackHologramAssistanceStimulateNok()
+    {
+        updateChallenge(ChallengeCleanTableStates.StandBy);
+    }
+
+    public void callbackHologramAssistanceStimulateLater()
+    {
+        m_debug.displayMessage("MouseHandInteractions", "callbackHologramAssistanceStimulateLater", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
+    }
+
+    public void callbackHologramAssistanceStimulateHelp()
+    {
+        m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateHelp", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+       
+        updateChallenge(ChallengeCleanTableStates.AssistanceSolution);
+    }
+
+    public void callbackHologramAssistanceSolutionOk()
+    {
+        m_debug.displayMessage("MouseHandInteractions", "callbackForMessageDetailingChallengeOkButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = false)");    
+
+        updateChallenge(ChallengeCleanTableStates.Challenge);
+    }
+
+    public void callbackHologramAssistanceSolutionNok()
     {
         m_debug.displayMessage("MouseHandInteractions", "callbackForMessageDetailingChallengeNotOkButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = false)");
-        m_hologramChallengeDetailsToDisplay.SetActive(false);
-        m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.
-        m_messageDetailedFocused = false;
-        updateMessageDetailedMenu();
+        
+        updateChallenge(ChallengeCleanTableStates.StandBy);
     }
 
-    public void callbackForMessageDetailingChallengeMaybeLaterButton()
+    public void callbackHologramAssistanceSolutionLater()
     {
         m_debug.displayMessage("MouseHandInteractions", "callbackForMessageDetailingChallengeMaybeLaterButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = false)");
-        m_hologramChallengeDetailsToDisplay.SetActive(false);
 
-        //m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackForMessageDetailingChallengeMaybeLaterButton", MouseDebugMessagesManager.MessageLevel.Warning, "TODO: Needs to be implemented");
-        m_messageDetailedFocused = false;
-        updateMessageDetailedMenu();
-
-        m_hologramChallengeDetailsReminder.SetActive(true);
-        m_messageReminderFocused = true;
-        updateMessageReminderMenu();
+        updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
     }
 
     public void callbackHandPalmFacingUser()
@@ -173,23 +201,16 @@ public class MouseChallengeCleanTable : MonoBehaviour
         updateMessageReminderMenu();
     }
 
-    public void callbackReminderWindowOkButton()
+    public void callbackHologramAssistanceReminderOk()
     {
-        m_hologramChallengeDetailsReminder.SetActive(false);
-        m_messageReminderFocused = false;
-        updateMessageReminderMenu();
+        updateChallenge(ChallengeCleanTableStates.StandBy);
     }
 
-    public void callbackReminderWindowBackButton()
+    public void callbackHologramAssistanceReminderBack()
     {
         m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackReminderWindowBackButton", MouseDebugMessagesManager.MessageLevel.Info, "Called (has m_messageDetailedFocused = true)");
-        m_hologramChallengeDetailsReminder.SetActive(false);
-        m_messageReminderFocused = false;
-        updateMessageReminderMenu();
-
-        m_hologramChallengeDetailsToDisplay.SetActive(true);
-        m_messageDetailedFocused = true;
-        updateMessageDetailedMenu();
+ 
+        updateChallenge(m_statePrevious); // We want to go to the previous state, so we use the previous state as input parameter
     }
 
     public void callbackOnTapToPlaceFinished()
@@ -209,7 +230,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
     // This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge
     void updateMessageDetailedMenu ()
     {
-        MouseChallengeCleanTableDetailsChallenge cleanTableDetailsChallenge = m_hologramChallengeDetailsToDisplay.GetComponent<MouseChallengeCleanTableDetailsChallenge>();
+        MouseChallengeCleanTableDetailsChallenge cleanTableDetailsChallenge = m_hologramAssistanceSolution.GetComponent<MouseChallengeCleanTableDetailsChallenge>();
 
         if (cleanTableDetailsChallenge == null)
         {
@@ -235,7 +256,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     void updateMessageReminderMenu()
     {
-        MouseChallengeCleanTableDetailsChallenge cleanTableDetailsChallenge = m_hologramChallengeDetailsReminder.GetComponent<MouseChallengeCleanTableDetailsChallenge>();
+        MouseChallengeCleanTableDetailsChallenge cleanTableDetailsChallenge = m_hologramAssistanceReminder.GetComponent<MouseChallengeCleanTableDetailsChallenge>();
 
         if (cleanTableDetailsChallenge == null)
         {
@@ -334,33 +355,16 @@ public class MouseChallengeCleanTable : MonoBehaviour
             m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Transform has changed");
             transform.hasChanged = false;
         }
+
     }
 
-    public void onTouch()
+    public void callbackTableTouched()
     {
-        if (m_surfaceTouched == false) // Surface can be touched only once
-        {
-            m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramInviteChallenge.SetActive(true);
-            /*MouseChallengeCleanTableInvite cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>();
-            cubeInteractions.m_mouseChallengeCleanTableInviteHologramTouched += inviteChallengeHologramTouched; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched*/
-            MouseUtilitiesHologramInteractionSwipes cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseUtilitiesHologramInteractionSwipes>();
-            cubeInteractions.m_utilitiesInteractionSwipesEventHelp += callbackInviteChallengeHologramHelp; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched
-            cubeInteractions.m_utilitiesInteractionSwipesEventOk += callbackInviteChallengeHologramOk;
-            cubeInteractions.m_utilitiesInteractionSwipesEventNok += callbackInviteChallengeHologramNok;
-            m_surfaceTouched = true;
+        m_statePrevious = m_stateCurrent;
+        m_stateCurrent = ChallengeCleanTableStates.AssistanceStimulateAbstract;
 
-            // Play sound to get the user's attention from audio on top of visually
-            //m_hologramInteractionSurface.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
-            m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
-
-        }
-        else
-        {
-            m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Surface touched but process disabled");
-        }
-        
-    }
+        updateChallenge(ChallengeCleanTableStates.AssistanceStimulateAbstract);
+     }
 
     void checkIfSurfaceClean()
     {
@@ -413,7 +417,158 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
         m_hologramToDisplayOnFinished.SetActive(false);
         m_surfaceTouched = false;
-        m_hologramInviteChallenge.SetActive(false);
+        m_hologramAssistanceStimulateAbstract.SetActive(false);
+        m_hologramAssistanceReminder.SetActive(false);
 
+        updateChallenge(ChallengeCleanTableStates.StandBy);
+
+    }
+
+    void updateChallenge(ChallengeCleanTableStates newState)
+    {
+        m_statePrevious = m_stateCurrent;
+        m_stateCurrent = newState;
+
+        if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateAbstract)
+        {
+            m_hologramAssistanceReminder.SetActive(false);
+
+            if (m_surfaceTouched == false) // Surface can be touched only once
+            {
+                m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+                m_hologramAssistanceStimulateAbstract.SetActive(true);
+                /*MouseChallengeCleanTableInvite cubeInteractions = m_hologramInviteChallenge.GetComponent<MouseChallengeCleanTableInvite>();
+                cubeInteractions.m_mouseChallengeCleanTableInviteHologramTouched += inviteChallengeHologramTouched; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched*/
+                MouseUtilitiesHologramInteractionSwipes cubeInteractions = m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>();
+                cubeInteractions.m_utilitiesInteractionSwipesEventHelp += callbackHologramAssistanceStimulateAbstractHelp; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched
+                cubeInteractions.m_utilitiesInteractionSwipesEventOk += callbackHologramAssistanceStimulateAbstractOk;
+                cubeInteractions.m_utilitiesInteractionSwipesEventNok += callbackHologramAssistanceStimulateAbstractNok;
+                m_surfaceTouched = true;
+
+                // Play sound to get the user's attention from audio on top of visually
+                //m_hologramInteractionSurface.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
+                m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
+
+            }
+            else
+            {
+                m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Surface touched but process disabled");
+            }
+        }
+        else if (m_stateCurrent == ChallengeCleanTableStates.Challenge)
+        {
+            // First we not go in for subtleties, i.e. we just hide all assistance windows without looking which one is currently displayed.
+            m_hologramAssistanceStimulateAbstract.SetActive(false);
+            m_hologramAssistanceStimulate.SetActive(false);
+            m_hologramAssistanceSolution.SetActive(false);
+
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceSolution)
+            {
+                m_messageDetailedFocused = false;
+                updateMessageDetailedMenu();
+            }
+
+            populateTablePanel();
+        }
+        else if (m_stateCurrent == ChallengeCleanTableStates.StandBy)
+        {
+            // Here as well, we not go in for subtleties, i.e. we just hide all assistance windows without looking which one is currently displayed.
+            m_hologramAssistanceStimulateAbstract.SetActive(false);
+            m_hologramAssistanceStimulate.SetActive(false);
+            m_hologramAssistanceSolution.SetActive(false);
+
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceSolution)
+            {
+                m_messageDetailedFocused = false;
+                updateMessageDetailedMenu();
+            }
+            else if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
+            {
+                m_hologramAssistanceReminder.SetActive(false);
+                m_messageReminderFocused = false;
+                updateMessageReminderMenu();
+            }
+
+            m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.
+        }
+        else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulate)
+        {
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateAbstract)
+            {
+                m_debug.displayMessage("MouseChallengeCleanTable", "inviteChallengeHologramTouched", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+                m_hologramAssistanceStimulateAbstract.SetActive(false);
+
+                // Animate the next window to display
+                m_hologramAssistanceStimulate.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                m_hologramAssistanceStimulate.transform.position = m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramHelp.hologram.transform.position;
+
+                m_hologramAssistanceStimulate.SetActive(true);
+
+                //m_startAnimationDisplayMessageGradationLevel1 = true;
+
+                MouseUtilitiesAnimation animator = m_hologramAssistanceStimulate.AddComponent<MouseUtilitiesAnimation>();
+                animator.m_debug = m_debug;
+                animator.m_scalingstep = 0.05f;
+                animator.m_positionEnd = gameObject.transform.TransformPoint(new Vector3(0, 1.0f, 0));
+                animator.m_scalingEnd = new Vector3(1.0f, 1.0f, 1.0f);
+                animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
+                animator.startAnimation();
+            }
+            else if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
+            {
+                m_hologramAssistanceReminder.SetActive(false);
+                m_messageReminderFocused = false;
+                updateMessageReminderMenu();
+
+                m_hologramAssistanceStimulate.SetActive(true);
+            }
+        }
+        else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceReminder)
+        {
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulate)
+            {
+                m_hologramAssistanceStimulate.SetActive(false);
+            }
+            else if (m_statePrevious == ChallengeCleanTableStates.AssistanceSolution)
+            {
+                m_hologramAssistanceSolution.SetActive(false);
+
+                //m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackForMessageDetailingChallengeMaybeLaterButton", MouseDebugMessagesManager.MessageLevel.Warning, "TODO: Needs to be implemented");
+                m_messageDetailedFocused = false;
+                updateMessageDetailedMenu();
+            }
+            
+
+            m_hologramAssistanceReminder.SetActive(true);
+            m_messageReminderFocused = true;
+            updateMessageReminderMenu();
+
+
+        }
+        else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceSolution)
+        {
+            m_hologramAssistanceStimulate.SetActive(false);
+            m_hologramAssistanceReminder.SetActive(false);
+
+            // Making this window diseappearing
+            MouseUtilitiesAnimation animator = m_hologramAssistanceStimulate.AddComponent<MouseUtilitiesAnimation>();
+            animator.m_debug = m_debug;
+            animator.m_scalingstep = 0.1f;
+            animator.m_positionEnd = m_hologramAssistanceStimulate.transform.TransformPoint(m_hologramAssistanceStimulate.transform.position);
+            animator.m_scalingEnd = new Vector3(0f, 0f, 0f);
+            animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
+            animator.startAnimation();
+
+            // Animate the next window to display
+            m_hologramAssistanceSolution.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            m_hologramAssistanceSolution.SetActive(true);
+            animator = m_hologramAssistanceSolution.AddComponent<MouseUtilitiesAnimation>();
+            animator.m_debug = m_debug;
+            animator.m_scalingstep = 0.1f;
+            animator.m_positionEnd = m_hologramAssistanceSolution.transform.TransformPoint(m_hologramAssistanceSolution.transform.position);
+            animator.m_scalingEnd = new Vector3(1.0f, 1.0f, 1.0f);
+            animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
+            animator.startAnimation();
+        }
     }
 }

@@ -22,7 +22,7 @@ public class MouseUtilities : MonoBehaviour
     {
         if (m_lookAtUser)
         {
-            if (Vector3.Distance(Camera.main.transform.position, transform.position) > 1 )
+            if (Vector3.Distance(Camera.main.transform.position, transform.position) > 1)
             {
                 gameObject.transform.LookAt(Camera.main.transform);
             }
@@ -38,7 +38,7 @@ public class MouseUtilities : MonoBehaviour
                 gameObject.transform.GetChild(i).gameObject.SetActive(true);
             }
         }
-        
+
     }
 
     private void OnDisable()
@@ -50,6 +50,6 @@ public class MouseUtilities : MonoBehaviour
                 gameObject.transform.GetChild(i).gameObject.SetActive(false);
             }
         }
-        
+
     }
 }
