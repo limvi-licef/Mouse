@@ -4,6 +4,7 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Timers;
 
 // Todo: Make this class more generic, i.e. by using the normal of the surface, and rotating the cube to use to populate the surface by the normal.
 // This class relies on the "Interactable MRTK component to catch a touch event. Other classes implement the interface, as they need the details of the event. Interactable does not provide such details, but is easier to implement. Here we do not need those information, so that is why we use this Interactable component.
@@ -27,10 +28,12 @@ public class MouseChallengeCleanTable : MonoBehaviour
     bool m_palmOpened;
     bool m_messageDetailedFocused;
     bool m_messageReminderFocused;
-    bool m_startAnimationDisplayMessageGradationLevel1;
+    //bool m_startAnimationDisplayMessageGradationLevel1;
+
+    System.Timers.Timer m_timerCaptureAttention;
 
     Dictionary<Tuple<float, float>, Tuple<GameObject, bool>> m_cubesTouched;
-
+    
     enum ChallengeCleanTableStates
     {
         AssistanceStimulateAbstract = 0,
@@ -44,6 +47,10 @@ public class MouseChallengeCleanTable : MonoBehaviour
     ChallengeCleanTableStates m_stateCurrent;
     ChallengeCleanTableStates m_statePrevious;
 
+    public int m_timerAssistanceStimulateAbstract = 2; // in Seconds
+    bool m_timerAssistanceStimulateAbstractStart;
+    int m_timerAssistanceStimulateAbstractCountdown;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,26 +59,35 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_messageDetailedFocused = false;
         m_cubesTouched = new Dictionary<Tuple<float, float>, Tuple<GameObject, bool>>();
         m_messageReminderFocused = false;
-        m_startAnimationDisplayMessageGradationLevel1 = false;
+        //m_startAnimationDisplayMessageGradationLevel1 = false;
 
         m_stateCurrent = ChallengeCleanTableStates.StandBy;
         m_statePrevious = ChallengeCleanTableStates.StandBy;
 
-        // Connect all the callbacks
-        m_hologramInteractionSurface.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackOnTapToPlaceFinished);
-        m_hologramInteractionSurface.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackOnTapToPlaceFinished); // Use the same callback than for taptoplace as the process to do is the same
-        m_hologramInteractionSurface.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackTableTouched);
+        m_timerAssistanceStimulateAbstractStart = false;
+        m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
 
         // Sanity checks
-        if (m_hologramAssistanceStimulateAbstract.GetComponent<MouseChallengeCleanTableInvite>() == null)
+        if (m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>() == null)
         {
-            m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "The invite challenge hologram must have the MouseChallengeCubeInteractions component. The object will most likely crash because the implementation is not that safe.");
+            m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "The invite challenge hologram must have the MouseUtilitiesHologramInteractionSwipes component. The object will most likely crash because the implementation is not that safe.");
+        }
+        if (m_hologramAssistanceStimulateAbstract.GetComponent<Interactable>() == null)
+        {
+            m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "The invite challenge hologram must have the Interactable component. The object will most likely crash because the implementation is not that safe.");
         }
         if (m_hologramAssistanceSolution.GetComponent<MouseChallengeCleanTableDetailsChallenge>() == null)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "Start", MouseDebugMessagesManager.MessageLevel.Error, "This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge");
         }
 
+        // Connect all the callbacks
+        m_hologramInteractionSurface.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackOnTapToPlaceFinished);
+        m_hologramInteractionSurface.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackOnTapToPlaceFinished); // Use the same callback than for taptoplace as the process to do is the same
+        m_hologramInteractionSurface.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackTableTouched);
+        /*m_hologramAssistanceStimulateAbstract.GetComponent<Interactable>().GetReceiver<InteractableOnFocusReceiver>().OnFocusOn.AddListener(callbackHologramAssistanceStimulateAbstractFocusOn);
+        m_hologramAssistanceStimulateAbstract.GetComponent<Interactable>().GetReceiver<InteractableOnFocusReceiver>().OnFocusOff.AddListener(callbackHologramAssistanceStimulateAbstractFocusOff);*/
+        
     }
 
     void cubeTouched(object sender, EventArgs e)
@@ -107,6 +123,32 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.*/
 
         updateChallenge(ChallengeCleanTableStates.StandBy);
+    }
+
+    public void callbackHologramAssistanceStimulateAbstractTimerGradationCaptureAttention(System.Object source, ElapsedEventArgs e)
+    {
+        m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateTimerGradationCaptureAttention", MouseDebugMessagesManager.MessageLevel.Info, "Timer called");
+
+        m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().increaseAssistanceGradation();
+    }
+
+    public void callbackHologramAssistanceStimulateAbstractFocusOn()
+    {
+        m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateAbstractFocusOn", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        // Start timer to determine when going to the next VISUAL capture attention gradation
+        startTimerAssistanceStimulateAbstract();
+    }
+
+    public void callbackHologramAssistanceStimulateAbstractFocusOff()
+    {
+        m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateAbstractFocusOff", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        // Stop timer as the person does not look at the hologram anymore ...
+        stopTimerAssistanceStimulateAbstract();
+
+        // ... so maybe trigger an audio gradation? 
+
     }
 
     public void callbackHologramAssistanceStimulateOk()
@@ -350,12 +392,25 @@ public class MouseChallengeCleanTable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.hasChanged)
+        /*if (transform.hasChanged)
         {
             m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Transform has changed");
             transform.hasChanged = false;
-        }
+        }*/
+        if (m_timerAssistanceStimulateAbstractStart)
+        {
+            m_timerAssistanceStimulateAbstractCountdown -= 1;
 
+            if (m_timerAssistanceStimulateAbstractCountdown == 0)
+            {
+                m_debug.displayMessage("MouseChallengeCleanTable", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Timer finished!");
+
+                m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().increaseAssistanceGradation();
+
+                m_timerAssistanceStimulateAbstractStart = false;
+                m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
+            }
+        }
     }
 
     public void callbackTableTouched()
@@ -500,7 +555,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
                 // Animate the next window to display
                 m_hologramAssistanceStimulate.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                m_hologramAssistanceStimulate.transform.position = m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramHelp.hologram.transform.position;
+                m_hologramAssistanceStimulate.transform.position = m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramHelp.getPositionWorld();//.hologram.transform.position;
 
                 m_hologramAssistanceStimulate.SetActive(true);
 
@@ -570,5 +625,17 @@ public class MouseChallengeCleanTable : MonoBehaviour
             animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
             animator.startAnimation();
         }
+    }
+
+    void startTimerAssistanceStimulateAbstract ()
+    {
+        m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
+        m_timerAssistanceStimulateAbstractStart = true;
+    }
+
+    void stopTimerAssistanceStimulateAbstract ()
+    {
+        m_timerAssistanceStimulateAbstractStart = false;
+        m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
     }
 }
