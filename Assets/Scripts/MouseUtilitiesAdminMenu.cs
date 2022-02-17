@@ -5,6 +5,8 @@ using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using Microsoft.MixedReality.Toolkit.SpatialAwareness;
+using Microsoft.MixedReality.Toolkit.Diagnostics;
 using TMPro;
 
 public class MouseUtilitiesAdminMenu : MonoBehaviour
@@ -15,12 +17,17 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public GameObject m_hologramInteractionSurface;
     bool m_positioningInteractionSurfaceEnabled;
     public GameObject m_hologramDebug;
+    public GameObject m_MRTK;
 
     // Start is called before the first frame update
     void Start()
     {
         m_menuShown = false; // By default, the menu is hidden
         m_positioningInteractionSurfaceEnabled = true; // Enabled by default
+
+        // Check if the occlusion is enabled
+        MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
+        // mrtk.GetService<MixedRealitySpatialAwarenessSystem>().ConfigurationProfile;
     }
 
     // Update is called once per frame
@@ -97,7 +104,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackDebugBringWindow()
     {
-        m_hologramDebug.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+        m_hologramDebug.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
         m_hologramDebug.transform.LookAt(Camera.main.transform);
     }
 
@@ -105,5 +112,10 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     {
         TextMeshPro temp = m_hologramDebug.GetComponent<TextMeshPro>();
         temp.SetText("");
+    }
+
+    public void callbackDebugDisplayDebugInWindow()
+    {
+        m_hologramDebug.GetComponent<MouseDebugMessagesManager>().m_displayOnConsole = false;
     }
 }

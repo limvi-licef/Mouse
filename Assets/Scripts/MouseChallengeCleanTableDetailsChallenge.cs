@@ -27,7 +27,7 @@ public class MouseChallengeCleanTableDetailsChallenge : MonoBehaviour
 
     public void displayMenus (bool displayWindowMenu, bool displayHandMenu)
     {
-        m_debug.displayMessage("MouseChallengeCleanTableDetailsChallenge", "displayMenus", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        /*m_debug.displayMessage("MouseChallengeCleanTableDetailsChallenge", "displayMenus", MouseDebugMessagesManager.MessageLevel.Info, "Called");*/
 
         m_WindowMenu.SetActive(displayWindowMenu);
         //m_HandMenu.SetActive(displayHandMenu);

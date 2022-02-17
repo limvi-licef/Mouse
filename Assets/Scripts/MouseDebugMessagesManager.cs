@@ -12,7 +12,7 @@ public class MouseDebugMessagesManager : MonoBehaviour
         Error
     }
 
-    public bool displayOnConsole;
+    public bool m_displayOnConsole;
 
     // Start is called before the first frame update
     void Start()
@@ -47,7 +47,7 @@ public class MouseDebugMessagesManager : MonoBehaviour
         messageToDisplay += " - " + message;
 
         // Message is processed differently following if we want to have it shown in the console or in the Hololens
-        if (displayOnConsole)
+        if (m_displayOnConsole)
         {
             switch (messageLevel)
             {
