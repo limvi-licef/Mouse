@@ -8,7 +8,7 @@ using System.Timers;
 
 // Todo: Make this class more generic, i.e. by using the normal of the surface, and rotating the cube to use to populate the surface by the normal.
 // This class relies on the "Interactable MRTK component to catch a touch event. Other classes implement the interface, as they need the details of the event. Interactable does not provide such details, but is easier to implement. Here we do not need those information, so that is why we use this Interactable component.
-public class MouseChallengeCleanTable : MonoBehaviour
+public class MouseChallengeCleanTableV1 : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
     public int m_numberOfCubesToAddInRow;
@@ -178,7 +178,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearToPosition(transform.TransformPoint(new Vector3(0, 0, 0)), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackHologramAssistanceStimulateOk", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-            m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceStimulate.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.Challenge); 
         }));
@@ -191,7 +191,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateNok", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-            m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceStimulate.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.StandBy);
         }));
@@ -204,7 +204,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateLater", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-            m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceStimulate.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
         }));
@@ -217,7 +217,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateHelp", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceStimulate.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.AssistanceSolution);
         }));
@@ -230,7 +230,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearToPosition(transform.TransformPoint(new Vector3(0f, 0f, 0f)), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceSolutionOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceSolution.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceSolution.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.Challenge);
         }));
@@ -243,7 +243,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceSolutionNok", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceSolution.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceSolution.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.StandBy);
         }));
@@ -256,7 +256,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceSolutionLater", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceSolution.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceSolution.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
         }));
@@ -269,7 +269,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceReminder.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+            m_hologramAssistanceReminder.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
             updateChallenge(ChallengeCleanTableStates.StandBy);
         }));
@@ -285,7 +285,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
             {
                 m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderBack", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-                m_hologramAssistanceReminder.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+                m_hologramAssistanceReminder.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
                 updateChallenge(m_statePrevious);
             }));
@@ -295,7 +295,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
             animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderBack", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-                m_hologramAssistanceReminder.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
+                m_hologramAssistanceReminder.GetComponent<MouseUtilitiesHolograms>().resetHologram(m_positionLocalReferenceForHolograms);
 
                 updateChallenge(m_statePrevious); // We want to go to the previous state, so we use the previous state as input parameter
             }));

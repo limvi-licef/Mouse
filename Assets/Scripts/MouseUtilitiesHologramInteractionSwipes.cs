@@ -154,7 +154,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 
         // Prepare parent's animator, i.e. connect the callback. For the initialization of the different parameters, will be done when required during the process
         MouseUtilitiesAnimation animatorParent = gameObject.AddComponent<MouseUtilitiesAnimation>();
-        animatorParent.m_eventAnimationFinished += callbackAnimationParentFinished;
+        //animatorParent.m_eventAnimationFinished += callbackAnimationParentFinished;
         animatorParent.m_animationSpeed = 1.0f;
         animatorParent.m_debug = m_debug;
         animatorParent.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnPositioning;
@@ -300,10 +300,10 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 
             m_objectStatus = InteractionState.InteractionStateParentAnimationOngoing;
 
-            animatorParent.m_eventAnimationFinished += new EventHandler(delegate (System.Object o, EventArgs e)
+            /*animatorParent.m_eventAnimationFinished += new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Animation finished");
-            });
+            });*/
 
             animatorParent.startAnimation();
         }
@@ -333,7 +333,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 
             MouseUtilitiesAnimation animatorParent = gameObject.GetComponent<MouseUtilitiesAnimation>();
             animatorParent.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-            animatorParent.m_eventAnimationFinished += callbackAnimationMenuFinished;
+            //animatorParent.m_eventAnimationFinished += callbackAnimationMenuFinished;
             animatorParent.m_debug = m_debug;
             animatorParent.m_scalingEnd = new Vector3(0.001f, 0.001f, 0.001f);
             animatorParent.m_animationSpeed = 3.0f;

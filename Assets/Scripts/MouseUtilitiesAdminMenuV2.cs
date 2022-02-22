@@ -8,16 +8,20 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using Microsoft.MixedReality.Toolkit.SpatialAwareness;
 using Microsoft.MixedReality.Toolkit.Diagnostics;
 using TMPro;
+using System.Reflection;
 
-public class MouseUtilitiesAdminMenu : MonoBehaviour
+public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
 {
     bool m_menuShown;
-    public MouseChallengeCleanTable m_challengeCleanTable;
+    public MouseChallengeCleanTableV2 m_challengeCleanTable;
     public MouseDebugMessagesManager m_debug;
     public GameObject m_hologramInteractionSurface;
+    public GameObject m_hologramRagInteractionSurface;
     bool m_positioningInteractionSurfaceEnabled;
     public GameObject m_hologramDebug;
     public GameObject m_MRTK;
+
+    public bool m_menuStatic = false;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +32,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         // Check if the occlusion is enabled
         MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
         // mrtk.GetService<MixedRealitySpatialAwarenessSystem>().ConfigurationProfile;
+
+        switchStaticOrMovingMenu();
     }
 
     // Update is called once per frame
@@ -76,25 +82,20 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public void callbackBringInteractionSurface()
     {
         m_debug.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+    }
+
+    public void callbackBringRagInteractionSurface()
+    {
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
     }
 
     public void callbackSwitchStaticOrMovingMenu()
     {
-        string materialName;
+        m_menuStatic = !m_menuStatic;
 
-        gameObject.GetComponent<RadialView>().enabled = !gameObject.GetComponent<RadialView>().enabled;
-
-        if (gameObject.GetComponent<RadialView>().enabled)
-        {
-            materialName = "Mouse_Orange_Glowing";
-        }
-        else
-        {
-            materialName = "Mouse_Purple_Glowing";
-        }
-
-        gameObject.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
+        switchStaticOrMovingMenu();
     }
 
     public void callbackDebugSwitchDisplay()
@@ -117,5 +118,24 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public void callbackDebugDisplayDebugInWindow()
     {
         m_hologramDebug.GetComponent<MouseDebugMessagesManager>().m_displayOnConsole = false;
+    }
+
+
+    public void switchStaticOrMovingMenu()
+    {
+        string materialName;
+
+        gameObject.GetComponent<RadialView>().enabled = !m_menuStatic; // Menu static == RadialView must be disabled
+
+        if (gameObject.GetComponent<RadialView>().enabled)
+        {
+            materialName = "Mouse_Orange_Glowing";
+        }
+        else
+        {
+            materialName = "Mouse_Purple_Glowing";
+        }
+
+        gameObject.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
     }
 }

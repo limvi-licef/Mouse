@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Reflection;
 
 public class MouseUtilitiesAnimation : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     public float m_animationSpeed = 4.0f;
     public float m_scalingstep = 0.05f;
 
-    public event EventHandler m_eventAnimationFinished;
+    event EventHandler m_eventAnimationFinished;
 
     bool m_startAnimation = false;
 
@@ -62,13 +63,15 @@ public class MouseUtilitiesAnimation : MonoBehaviour
             else if (m_scalingGrow == false && gameObject.transform.localScale.x > m_scalingEnd.x)
             {
                 gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x - m_scalingstep, gameObject.transform.localScale.y - m_scalingstep, gameObject.transform.localScale.z - m_scalingstep);
+
+                //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Animation with gameobject shrinking ongoing");
             }
 
             if ( m_triggerStopAnimation == ConditionStopAnimation.OnPositioning )
             {
                 if (Vector3.Distance(gameObject.transform.position, m_positionEnd) < 0.001f)
                 {
-                    //m_debug.displayMessage("MouseUtilitiesAnimation", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Animation finished - with position");
+                    /*m_debug.displayMessage("MouseUtilitiesAnimation", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Animation finished - with position");*/
                     // Animation is finished: trigger event
                     m_eventAnimationFinished?.Invoke(this, EventArgs.Empty);
 
@@ -80,7 +83,7 @@ public class MouseUtilitiesAnimation : MonoBehaviour
                 if ((m_scalingGrow && gameObject.transform.localScale.x >= m_scalingEnd.x) ||
                     m_scalingGrow == false && gameObject.transform.localScale.x <= m_scalingEnd.x)
                 {
-                    //m_debug.displayMessage("MouseUtilitiesAnimation", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Animation finished - with scaling");
+                    /*m_debug.displayMessage("MouseUtilitiesAnimation", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Animation finished - with scaling");*/
 
                     // Animation is finished: trigger event
                     m_eventAnimationFinished?.Invoke(this, EventArgs.Empty);
@@ -100,17 +103,41 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         m_startAnimation = true;
     }
 
-    public void animateDiseappearInPlace(MouseDebugMessagesManager debug ,EventHandler e)
+    public void animateDiseappearInPlace(MouseDebugMessagesManager debug, EventHandler eventHandler)
+    {
+        EventHandler[] temp = new EventHandler[1];
+
+        temp[0] = eventHandler;
+
+        animateDiseappearInPlace(debug, temp);
+    }
+
+    public void animateDiseappearInPlace(MouseDebugMessagesManager debug ,EventHandler[] eventHandlers)
     {
         m_debug = debug;
+
+        /*m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");*/
+
         m_positionEnd = gameObject.transform.position;//gameObject.transform.TransformPoint(new Vector3(0, 0.6f, 0));
         m_scalingEnd = new Vector3(0f, 0f, 0f);
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-        m_eventAnimationFinished += e;
+
+        foreach (EventHandler e in eventHandlers) {
+            //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Adding event handler to the signal");
+            m_eventAnimationFinished += e;
+        }
+            
         startAnimation();
     }
 
     public void animateAppearInPlace(MouseDebugMessagesManager debug, EventHandler e)
+    {
+        EventHandler[] eventHandlers = new EventHandler[] { e };
+
+        animateAppearInPlace(debug, eventHandlers);
+    }
+
+    public void animateAppearInPlace(MouseDebugMessagesManager debug, EventHandler[] e)
     {
         /*m_debug = debug;
         m_animationSpeed = 1.0f;
@@ -127,16 +154,26 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         animateAppearInPlaceToScaling(new Vector3(1.0f, 1.0f, 1.0f), debug, e);
     }
 
-    public void animateAppearInPlaceToScaling(Vector3 targetScaling, MouseDebugMessagesManager debug, EventHandler e)
+    public void animateAppearInPlaceToScaling(Vector3 targetScaling, MouseDebugMessagesManager debug, EventHandler eventHandler)
+    {
+        animateAppearInPlaceToScaling(targetScaling, debug, new EventHandler[] { eventHandler });
+    }
+
+    public void animateAppearInPlaceToScaling(Vector3 targetScaling, MouseDebugMessagesManager debug, EventHandler[] eventHandlers)
     {
         m_debug = debug;
         gameObject.transform.localScale = new Vector3(0, 0, 0);
         m_positionEnd = gameObject.transform.position;//gameObject.transform.TransformPoint(new Vector3(0, 0.6f, 0));
         m_scalingEnd = targetScaling;
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-        m_eventAnimationFinished += e;
+        foreach (EventHandler e in eventHandlers)
+        {
+            m_eventAnimationFinished += e;
+        }
 
         gameObject.SetActive(true);
+        //MouseUtilities.show(transform);
+
         startAnimation();
     }
 
@@ -155,6 +192,7 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         gameObject.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f); // Set scaling to 0 before starting
 
         gameObject.SetActive(true);
+        //MouseUtilities.show(transform);
 
         startAnimation();
     }
