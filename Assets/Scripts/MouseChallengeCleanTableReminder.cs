@@ -149,13 +149,5 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
 
         m_hologramClockView.gameObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         m_hologramWindowReminderView.gameObject.transform.localScale = new Vector3(1, 1, 1);
-        //m_hologramWindowReminder.gameObject.transform.localPosition=
     }
-
-    /*
-     * TODO
-     * When the object is enabled, make sure the clock is displayed by default. and when it is disables, that the clock is again the hologram that will first be displayed.
-     * 
-     * Have event if the yes of the "nok" button are clicked.
-     * */
 }

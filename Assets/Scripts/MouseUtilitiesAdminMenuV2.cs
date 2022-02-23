@@ -18,6 +18,7 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
     public GameObject m_hologramInteractionSurface;
     public GameObject m_hologramRagInteractionSurface;
     bool m_positioningInteractionSurfaceEnabled;
+    bool m_positioningRagInteractionSurfaceEnabled;
     public GameObject m_hologramDebug;
     public GameObject m_MRTK;
 
@@ -28,6 +29,7 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
     {
         m_menuShown = false; // By default, the menu is hidden
         m_positioningInteractionSurfaceEnabled = true; // Enabled by default
+        m_positioningRagInteractionSurfaceEnabled = true;
 
         // Check if the occlusion is enabled
         MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
@@ -77,6 +79,27 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
         m_hologramInteractionSurface.GetComponent<BoundsControl>().enabled = m_positioningInteractionSurfaceEnabled;
         m_hologramInteractionSurface.GetComponent<TapToPlace>().enabled = m_positioningInteractionSurfaceEnabled;
         m_hologramInteractionSurface.GetComponent<MeshRenderer>().enabled = m_positioningInteractionSurfaceEnabled;
+    }
+
+    public void callbackSwitchPositioningRagInteractionSurface()
+    {
+        string materialName = "";
+
+        if (m_positioningRagInteractionSurfaceEnabled)
+        {
+            m_positioningRagInteractionSurfaceEnabled = false;
+            materialName = "Mouse_White_Transparent";
+        }
+        else
+        {
+            m_positioningRagInteractionSurfaceEnabled = true;
+            materialName = "Mouse_Cyan_Glowing";
+        }
+
+        m_hologramRagInteractionSurface.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
+        m_hologramRagInteractionSurface.GetComponent<BoundsControl>().enabled = m_positioningRagInteractionSurfaceEnabled;
+        m_hologramRagInteractionSurface.GetComponent<TapToPlace>().enabled = m_positioningRagInteractionSurfaceEnabled;
+        m_hologramRagInteractionSurface.GetComponent<MeshRenderer>().enabled = m_positioningRagInteractionSurfaceEnabled;
     }
 
     public void callbackBringInteractionSurface()

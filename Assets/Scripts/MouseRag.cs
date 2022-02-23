@@ -74,14 +74,6 @@ public class MouseRag : MonoBehaviour
         m_interactionSurfaceRagView.transform.localPosition = new Vector3(0, 0f, 0);
     }
 
-    /*public void setHelpAndLineAnimateAppear()
-    {
-        m_assistanceStimulateLevel2View.gameObject.SetActive(true);
-        setHelpButtonAnimateAppear();
-        m_assistanceStimulateLevel2Controller.displayLine(true);
-
-    }*/
-
     public void hideAssistanceStimulateLevel2(EventHandler eventHandler)
     {
         if (m_assistanceStimulateLevel2View.gameObject.activeSelf)
@@ -105,14 +97,7 @@ public class MouseRag : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 2 already shown - nothing to do");
         }
-        //m_assistanceStimulateLevel2Controller.displayHelpButton(true);
     }
-
-   /* public void setHelpButtonAnimateDisappear(EventHandler e)
-    { // Disappear in place
-        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Assistance reminder - help button - is going to be hidden");
-        m_assistanceStimulateLevel2Controller.hideHelpButton(true, e);
-    }*/
 
     public void hideAssistanceReminder(EventHandler e)
     {
@@ -137,18 +122,6 @@ public class MouseRag : MonoBehaviour
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance reminder is disabled - no hide action to take");
         }
     }
-
-    /*public void setAssistanceReminderActive(bool status, )
-    {
-        if (status)
-        {
-            m_assistanceReminderController.show(e);
-        }
-        else
-        {
-            m_assistanceReminderController.hide(e);
-        }
-    }*/
 
     public void showAssistanceCueing(EventHandler e)
     {

@@ -27,17 +27,6 @@ public class MouseCueing : MonoBehaviour
 
     void callbackButtonHelpClicked()
     {
-        /*MouseUtilitiesAnimation animator = gameObject.AddComponent<MouseUtilitiesAnimation>();
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_eventHelpButtonClicked?.Invoke(this, EventArgs.Empty);
-
-            gameObject.transform.localScale = new Vector3(1, 1, 1);
-            Destroy(animator);
-            gameObject.SetActive(false);
-
-        }));*/
-
         m_eventHelpButtonClicked?.Invoke(this, EventArgs.Empty);
     }
 

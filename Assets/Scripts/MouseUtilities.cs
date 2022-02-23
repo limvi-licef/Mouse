@@ -8,21 +8,6 @@ using System.Reflection;
 using System;
 using System.Timers;
 
-/*public class MouseUtilities : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}*/
-
 static class MouseUtilities
 {
     // Utilities functions: to be moved to a dedicated namespace later?
@@ -71,19 +56,4 @@ static class MouseUtilities
             debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, debugMessage);
         });
     }
-
-    /*public static void hide(Transform t)
-    {
-        t.GetComponent<Renderer>().enabled = false;
-    }
-    
-    public static void show(Transform t)
-    {
-        t.GetComponent<Renderer>().enabled = true;
-    }
-
-    public static bool isShown(Transform t)
-    {
-        return t.GetComponent<Renderer>().enabled;
-    }*/
 }

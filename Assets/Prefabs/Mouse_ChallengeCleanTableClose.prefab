@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 9191753609764045470}
   - component: {fileID: 9191753609764045471}
   - component: {fileID: 9191753609764045461}
-  - component: {fileID: 9191753609764045458}
+  - component: {fileID: 5758575580853915512}
   m_Layer: 0
   m_Name: Mouse_ChallengeCleanTableClose
   m_TagString: Untagged
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9948d5003ab513c4d9365b621fde690b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_debugMessages: {fileID: 0}
+  m_debug: {fileID: 0}
 --- !u!114 &9191753609764045461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoConstraintSelection: 1
   selectedConstraints: []
---- !u!114 &9191753609764045458
+--- !u!114 &5758575580853915512
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,8 +172,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 9191753609764045469}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fcaf896491074042b7ed7684454a412, type: 3}
+  m_Script: {fileID: 11500000, guid: 98c748f3768ab714a8449b60fb9edc5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   eventsToReceive: 0
   debounceThreshold: 0.01
+  localForward: {x: -0, y: -0, z: -1}
+  localUp: {x: 0, y: 1, z: 0}
+  localCenter: {x: 0, y: 0, z: 0}
+  bounds: {x: 0, y: 0}
+  touchableCollider: {fileID: 9191753609764045457}

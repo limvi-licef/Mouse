@@ -23,12 +23,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-        // Get children
-        //m_hologramHelp = MouseUtilities.mouseUtilitiesFindChild(gameObject, "Help");
-        //m_hologramLine = gameObject.transform.Find("Line");//MouseUtilities.mouseUtilitiesFindChild(gameObject, "Line");
-
         if ( m_hologramLine == null )
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "Line hologram not initialized properly");
@@ -49,20 +43,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         m_eventHologramHelpTouched?.Invoke(this, EventArgs.Empty);
-
-        /*m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-            m_eventHologramHelpTouched?.Invoke(this, EventArgs.Empty);
-
-            m_hologramHelp.gameObject.SetActive(false);
-
-            // Let also delete the line
-            m_hologramLine.GetComponent<MouseLineToObject>().hideLine();
-
-            resetObject();
-        }));*/
     }
 
     void resetObject()
@@ -74,103 +54,12 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-   /* public void displayHelpButton (bool withAnimation)
-    {
-        if (gameObject.activeSelf)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Help button already displayed, so no animation to run");
-
-            //
-        }
-        else
-        {
-            gameObject.SetActive(true);
-
-            if (withAnimation)
-            {
-                m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-                {
-                    m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-                    Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
-                }));
-            }
-            else
-            {
-                m_hologramHelp.gameObject.SetActive(true);
-            }
-        }
-    }*/
-
-    // Additional event handler so that the user can execute an extra event.
-    /*public void hideHelpButton(bool withAnimation, EventHandler eventHandler)
-    {
-        if (m_hologramHelp.gameObject.activeSelf == false)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Help button is already hidden, so no animation will be started");
-        }
-        else
-        {
-            if (withAnimation)
-            {
-                EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-                m_hologramHelp.gameObject.SetActive(false);
-
-                m_hologramHelp.localScale = new Vector3(0.1f,0.1f,0.1f);
-
-                Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
-            }), eventHandler };
-
-                m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
-            }
-            else
-            {
-                m_hologramHelp.gameObject.SetActive(false);
-            }
-        }
-
-        
-    }*/
-
-    /*public void displayLine(bool withAnimation)
-    {
-        if (m_hologramLine.GetComponent<MouseLineToObject>() == null)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "No MouseLineToObjects found");
-        }
-        else
-        {
-            m_hologramLine.GetComponent<MouseLineToObject>().displayLine(withAnimation);
-        }
-    }*/
-
-    /*public void hideLine(bool withAnimation)
-    {
-        if(withAnimation)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "Not implemented yet with animation");
-        }
-        else
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-            m_hologramLine.GetComponent<MouseLineToObject>().hideLine();
-
-            //m_hologramLine.gameObject.SetActive(false);
-        }
-    }*/
-
     public void show(EventHandler eventHandler)
     {
         // Showing button
         if (gameObject.activeSelf)
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Help button already displayed, so no animation to run");
-
-            //
         }
         else
         {
@@ -207,8 +96,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         {
 			EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
 		    {
-			    //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
 			    m_hologramHelp.gameObject.SetActive(false);
 
 			    m_hologramHelp.localScale = new Vector3(0.1f,0.1f,0.1f);

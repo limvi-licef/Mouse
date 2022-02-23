@@ -7,20 +7,16 @@ using UnityEngine;
 using System.Timers;
 using System.Reflection;
 
-// Todo: Make this class more generic, i.e. by using the normal of the surface, and rotating the cube to use to populate the surface by the normal.
-// This class relies on the "Interactable MRTK component to catch a touch event. Other classes implement the interface, as they need the details of the event. Interactable does not provide such details, but is easier to implement. Here we do not need those information, so that is why we use this Interactable component.
 public class MouseChallengeCleanTableV2 : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
     public int m_numberOfCubesToAddInRow;
     public int m_numberOfCubesToAddInColumn;
     
-    public GameObject m_hologramToDisplayOnFinished;
-    //Transform m_hologramAssistanceStimulateLevel1;
-    public GameObject m_hologramAssistanceCueing;
-    public GameObject m_hologramAssistanceSolution;
-    //public GameObject m_hologramAssistanceReminder;
-    //public GameObject m_hologramInteractionSurface;
+    
+    //public GameObject m_hologramAssistanceCueing;
+    //public GameObject m_hologramAssistanceSolution;
+
     
     public AudioClip m_audioClipToPlayOnTouchInteractionSurface;
     public AudioListener m_audioListener;
@@ -29,24 +25,27 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     MouseTable m_containerTableController;
     Transform m_containerRagView;
     MouseRag m_containerRagController;
+    MouseUtilitiesRefuseChallenge m_refuseChallengeController;
 
     bool m_surfaceTableTouched; // Bool to detect the touch trigerring the challenge only once.
     bool m_surfaceRagTouched;
 
     System.Timers.Timer m_timerCaptureAttention;
-    
+
+    public MouseUtilitiesTimer m_timer;
+
     enum ChallengeCleanTableStates
     {
         StandBy = 0,
-        AssistanceStimulateLevel1Gradation1 = 1,
-        AssistanceStimulateLevel1Gradation2 = 2,
-        AssistanceStimulateLevel1Gradation3 = 3,
-        AssistanceStimulateLevel2 = 4,
-        AssistanceCueing = 5,
-        AssistanceSolution = 6,
-        AssistanceReminder = 7,
-        Challenge = 8,
-        Success = 9
+        AssistanceStimulateLevel1 = 1,
+        //AssistanceStimulateLevel1Gradation2 = 2,
+        //AssistanceStimulateLevel1Gradation3 = 3,
+        AssistanceStimulateLevel2 = 2,
+        AssistanceCueing = 3,
+        AssistanceSolution = 4,
+        AssistanceReminder = 5,
+        Challenge = 6,
+        Success = 7
     }
 
     ChallengeCleanTableStates m_stateCurrent;
@@ -57,6 +56,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     //int m_timerAssistanceStimulateAbstractCountdown;
 
     Vector3 m_positionLocalReferenceForHolograms = new Vector3(0.0f, 0.6f, 0.0f);
+    MouseAssistanceStimulateLevel1.AssistanceGradation m_currentGradation = MouseAssistanceStimulateLevel1.AssistanceGradation.Default; // This is to now when the last gradation level is reached, so that we can stop the timer. Equals to default ... by default
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +68,8 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_stateCurrent = ChallengeCleanTableStates.StandBy;
         m_statePrevious = ChallengeCleanTableStates.StandBy;
 
+        m_timer.m_timerDuration = 20;
+
         //m_timerAssistanceStimulateAbstractStart = false;
         //m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
 
@@ -75,7 +77,8 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_containerRagView = gameObject.transform.Find("Rag");
         m_containerTableView = gameObject.transform.Find("Table");
         //m_hologramAssistanceStimulateLevel1 = m_containerTableView.Find("MouseChallengeCleanTableAssistanceStimulateLevel1");
-
+        m_refuseChallengeController = gameObject.transform.Find("RefuseChallengeDetection").GetComponent<MouseUtilitiesRefuseChallenge>();
+        
         // Sanity checks
 
 
@@ -84,14 +87,10 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_containerTableController.m_eventInteractionSurfaceTableTouched += callbackTableTouched;
         m_containerTableController.m_eventInteractionSurfaceCleaned += callbackSurfaceCleaned;
 
-        //m_hologramAssistanceReminder.GetComponent<MouseChallengeCleanTableReminder>().m_eventHologramClockTouched += callbackHologramAssistanceReminderTouched;
         m_containerTableController.m_eventReminderClockTouched += callbackHologramAssistanceReminderTouched;
         m_containerTableController.m_eventReminderOkTouched += callbackHologramAssistanceReminderOk;
         m_containerTableController.m_eventReminderBackTouched += callbackHologramAssistanceReminderBack;
-        //m_hologramAssistanceReminder.GetComponent<MouseChallengeCleanTableReminder>().m_eventHologramWindowButtonOkTouched += callbackHologramAssistanceReminderOk;
-        //m_hologramAssistanceReminder.GetComponent<MouseChallengeCleanTableReminder>().m_eventHologramWindowButtonBackTouched += callbackHologramAssistanceReminderBack;
 
-        //MouseUtilities.mouseUtilitiesAddTouchCallback(m_debug, m_hologramAssistanceStimulateLevel1, callbackHologramAssistanceStimulateLevel1Help);
         m_containerTableController.m_eventAssistanceStimulateLevel1Touched += callbackHologramAssistanceStimulateLevel1Help;
 
         m_containerRagController = m_containerRagView.GetComponent<MouseRag>();
@@ -101,6 +100,29 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_containerRagController.m_eventHologramReminderClockTouched += callbackHologramAssistanceReminderTouched;
         m_containerRagController.m_eventHologramReminderOkTouched += callbackHologramAssistanceReminderOk;
         m_containerRagController.m_eventHologramReminderBackTouched += callbackHologramAssistanceReminderBack;
+
+        m_containerTableController.m_eventAssistanceChallengeSuccessOk += callbackAssistanceChallengeSuccessOk;
+
+        //gameObject.GetComponent<HandConstraintPalmUp>().OnFirstHandDetected.AddListener(callbackAssistanceRefuse);
+        m_refuseChallengeController.m_eventChallengeRefused += callbackAssistanceRefuse;
+
+        // Timer for gradation
+        m_timer.m_eventTimerFinished += new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            MouseAssistanceStimulateLevel1.AssistanceGradation gradation = m_containerTableController.increaseGradationAssistanceStimulateLevel1();
+
+            if (m_currentGradation != gradation) 
+            {  
+                m_currentGradation = gradation;
+
+                m_timer.m_timerDuration = 20;
+                m_timer.startTimerOneShot();
+            }
+            else
+            { // Means we have reached the last level
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Last gradation level reached for stimulate assistance level 1 - no timer will be started anymore");
+            }
+        });
     }
 
     void callbackHologramAssistanceStimulateLevel1Help(System.Object o, EventArgs e)
@@ -108,16 +130,6 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel2);
-
-        /*m_hologramAssistanceStimulateLevel1.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-       {
-           updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel2);
-
-           m_hologramAssistanceStimulateLevel1.gameObject.SetActive(false);
-           m_hologramAssistanceStimulateLevel1.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-       }));*/
-
-
     }
 
     void callbackAssistanceRabGrabbed(object sender, EventArgs e)
@@ -138,25 +150,22 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
      * */
     void callbackAssistanceRefuse(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
-        m_debug.displayMessage("MouseChallengeCleanTable", "callbackInviteChallengeHologramNok", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        /*m_hologramAssistanceStimulateAbstract.SetActive(false);
-        m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.*/
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Challenge to be stopped");
 
         updateChallenge(ChallengeCleanTableStates.StandBy);
+
+        /*if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateLevel1 &&
+            m_containerTableController.hasFocusAssistanceStimulateLevel1())
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Challenge stopped");
+            updateChallenge(ChallengeCleanTableStates.StandBy);
+        }*/
     }
 
-    /*void callbackHologramAssistanceStimulateAbstractReminder(object sender, EventArgs e)
+    void callbackAssistanceChallengeSuccessOk(object sender, EventArgs e)
     {
-
-        updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
-    }*/
-
-    /*public void callbackHologramAssistanceStimulateAbstractTimerGradationCaptureAttention(System.Object source, ElapsedEventArgs e)
-    {
-        m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateTimerGradationCaptureAttention", MouseDebugMessagesManager.MessageLevel.Info, "Timer called");
-
-        m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().increaseAssistanceGradation();
-    }*/
+        updateChallenge(ChallengeCleanTableStates.StandBy);
+    }
 
     public void callbackHologramAssistanceSimulateLevel1FocusOn()
     {
@@ -177,187 +186,32 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
     }
 
-    /*public void callbackHologramAssistanceStimulateAbstractIsMoved()
-    { // If the person interact with the object, then no need to continue to have the timer running
-        stopTimerAssistanceStimulateAbstract();
-    }*/
-
-    /*public void callbackHologramAssistanceCueingOk()
-    {
-        MouseUtilitiesAnimation animator = m_hologramAssistanceCueing.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearToPosition(transform.TransformPoint(new Vector3(0, 0, 0)), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackHologramAssistanceStimulateOk", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-            m_hologramAssistanceCueing.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.Challenge); 
-        }));
-    }*/
-
-    /*public void callbackHologramAssistanceCueingNok()
-    {
-        MouseUtilitiesAnimation animator = m_hologramAssistanceCueing.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateNok", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-            m_hologramAssistanceCueing.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.StandBy);
-        }));
-    }*/
-
     public void callbackHologramAssistanceReminderTouched(System.Object o, EventArgs e)
     {
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-        /*MouseUtilitiesAnimation animator = m_hologramAssistanceStimulate.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateLater", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-            m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
-        }));*/
 
         updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
     }
 
     public void callbackHologramAssistanceStimulateLevel2Help(System.Object o, EventArgs e)
     {
-        /*MouseUtilitiesAnimation animator = m_hologramAssistanceStimulateLevel2.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateHelp", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.AssistanceSolution);
-        }));*/
-
-
         updateChallenge(ChallengeCleanTableStates.AssistanceCueing);
 
     }
-
-    /*public void callbackHologramAssistanceSolutionOk()
-    {
-        MouseUtilitiesAnimation animator = m_hologramAssistanceSolution.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearToPosition(transform.TransformPoint(new Vector3(0f, 0f, 0f)), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceSolutionOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceSolution.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.Challenge);
-        }));
-    }*/
-
-    /*public void callbackHologramAssistanceSolutionNok()
-    {       
-        MouseUtilitiesAnimation animator = m_hologramAssistanceSolution.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceSolutionNok", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceSolution.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.StandBy);
-        }));
-    }*/
-
-    /*public void callbackHologramAssistanceSolutionLater()
-    {
-        MouseUtilitiesAnimation animator = m_hologramAssistanceSolution.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceSolutionLater", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceSolution.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
-        }));
-    }*/
 
     public void callbackHologramAssistanceReminderOk(System.Object o, EventArgs e)
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         updateChallenge(ChallengeCleanTableStates.StandBy);
-
-        /*MouseUtilitiesAnimation animator = m_hologramAssistanceReminder.AddComponent<MouseUtilitiesAnimation>();
-
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            m_hologramAssistanceReminder.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-            updateChallenge(ChallengeCleanTableStates.StandBy);
-        }));*/
     }
 
     public void callbackHologramAssistanceReminderBack(System.Object o, EventArgs e)
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderBack", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-        /*if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation1)
-        {
-            updateChallenge(m_statePrevious);
-        }
-        else if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
-        {
-            updateChallenge(m_statePrevious);
-        }*/
-
         updateChallenge(m_statePrevious);
-
-        /*MouseUtilitiesAnimation animator = m_hologramAssistanceReminder.AddComponent<MouseUtilitiesAnimation>();
-
-        if ( m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateAbstract)
-        {
-            animator.animateDiseappearToPosition(m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramReminder.getPositionWorld(), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderBack", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-                m_hologramAssistanceReminder.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-                updateChallenge(m_statePrevious);
-            }));
-        }
-        else
-        {
-            animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderBack", MouseDebugMessagesManager.MessageLevel.Info, "Animation for reminder window finished");
-                m_hologramAssistanceReminder.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-
-                updateChallenge(m_statePrevious); // We want to go to the previous state, so we use the previous state as input parameter
-            }));
-        }*/
     }
-
-    // TODO: Delegate this to a dedicated script hosted by the Table gameobject?
-    /*public void callbackHologramInteractionSurfaceMovedFinished()
-    {
-        m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-        // Bring specific components to the center of the interaction surface
-
-        //gameObject.transform.position = m_hologramInteractionSurface.transform.position;
-        m_containerTable.transform.position = m_hologramInteractionSurfaceTable.transform.position;
-        m_hologramInteractionSurfaceTable.transform.localPosition = new Vector3(0, 0f, 0);
-    }*/
-
-    // TODO: Delegate this to a dedicated script hosted by the Rag gameobject?
-    /*public void callbackHologramRagInteractionSurfaceMovedFinished()
-    {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-        m_containerRag.transform.position = m_hologramInteractionSurfaceRag.transform.position;
-        m_hologramInteractionSurfaceRag.transform.localPosition = new Vector3(0, 0f, 0);
-    }*/
 
         void callbackHologramAssistanceCueingHelp(System.Object o, EventArgs e)
     {
@@ -393,7 +247,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     {
         if (m_surfaceTableTouched == false)
         { // This can be called only if the surface can be touched
-            updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation1);
+            updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel1);
         }
         else
         {
@@ -410,23 +264,27 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "resetChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-        m_containerTableView.GetComponent<MouseTable>().hideInteractionSurfaceTable(MouseUtilities.getEventHandlerEmpty());
+        //m_containerTableView.GetComponent<MouseTable>().hideInteractionSurfaceTable(MouseUtilities.getEventHandlerEmpty());
 
-        m_hologramToDisplayOnFinished.SetActive(false);
+        
         m_surfaceTableTouched = false;
-        //m_hologramAssistanceStimulateLevel1.gameObject.SetActive(false);
-        //if (m_containerTableController.isAssistanceStimulateLevel1Active())
-        //{
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding assistance stimulate level 1");
+        m_surfaceRagTouched = false;
+
+        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding assistance stimulate level 1");
         m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
-        //}
-            
-        //if (m_containerTableController.isAssistanceReminderActive())
-        //{
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding reminder assistance");
+        m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+        m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+        m_containerTableController.hideInteractionSurfaceTable(MouseUtilities.getEventHandlerEmpty());
         m_containerRagController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
-        //}
-        //m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+        m_containerRagController.hideAssistanceCueing(MouseUtilities.getEventHandlerEmpty());
+        m_containerRagController.hideAssistanceSolution(MouseUtilities.getEventHandlerEmpty());
+        m_containerRagController.hideAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());
+        m_containerTableController.hideAssistanceChallengeSuccess(MouseUtilities.getEventHandlerEmpty());
+
+        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding reminder assistance");
+
+
+        m_timer.stopTimer();
 
         if (m_stateCurrent != ChallengeCleanTableStates.StandBy) // To avoid an infinite loop in the case the function is called from the standby state
         {
@@ -442,7 +300,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_statePrevious = m_stateCurrent;
         m_stateCurrent = newState;
 
-        if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation1)
+        if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateLevel1)
         {
             if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
             {
@@ -467,20 +325,21 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
                 // Play sound to get the user's attention from audio on top of visually
                 m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
+
+                // Start timer for gratation
+                m_timer.startTimerOneShot();
             }
             else
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Surface touched but process disabled");
             }
         }
-        else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation2)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "The new state does not seem to be managed");
-        }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateLevel2)
         {
-            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation1)
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
             {
+                m_timer.stopTimer();
+
                 // Display the help and line components
                 m_containerTableController.hideAssistanceStimulateLevel1(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -496,12 +355,9 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                 m_containerRagController.hideAssistanceReminder(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
                     m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
-                    //m_containerRagController.setHelpAndLineAnimateAppear();
                     m_containerRagController.showAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());
                 }));
-                
             }
-            
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceCueing)
         {
@@ -516,7 +372,6 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cueing window should be displayed now");
                     }));
                 }));
-                //m_containerRagController.hideAssistanceStimulateLevel2();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
             {
@@ -524,8 +379,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                 {
                     m_containerRagController.showAssistanceCueing(MouseUtilities.getEventHandlerEmpty());
                     m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
-                    //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Calle" +
-                        }));
+                }));
             }
             else
             {
@@ -535,9 +389,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.Challenge)
         {
-            if ( m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation1 ||
-                m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation2 ||
-                m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation3)
+            if ( m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
             {
                 m_containerTableController.hideAssistanceStimulateLevel1(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -585,35 +437,23 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "The new state does not seem to be managed");
             }
-
-            
-
-            // TODO: hide all potential assistances that might still be displayed.
-        }
-        else if (m_stateCurrent == ChallengeCleanTableStates.StandBy)
-        {
-            if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
-            { // Means the "ok" button of the reminder assistance has just been pressed, so we have to hide this window.
-                m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Table assistance reminder should be hidden now - greeting from standby mode"));
-                m_containerRagController.hideAssistanceReminder(MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Rag assistance reminder should be hidden now - greeting from standby mode"));
-                m_surfaceTableTouched = false; // Giving the possibility for the user to touch the surface again
-                m_surfaceRagTouched = true;
-            }
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceReminder)
         {
-            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation1 || m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1Gradation2)
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reminder assistance: hiding stimulate assistance level 1");
 
                 // Make the cube diseappearing
                 m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
+
+                m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reminder assistance: hiding stimulate assistance level 2");
 
-                m_containerRagController.hideAssistanceStimulateLevel2(/* .setHelpButtonAnimateDisappear(*/MouseUtilities.getEventHandlerEmpty());
+                m_containerRagController.hideAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());
                 //m_containerRagController.hideAssistanceStimulateLevel2();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceCueing)
@@ -628,31 +468,6 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
                 m_containerRagController.hideAssistanceSolution(MouseUtilities.getEventHandlerEmpty());
             }
-
-            /*if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulate || m_statePrevious == ChallengeCleanTableStates.AssistanceSolution)
-            {
-                MouseUtilitiesAnimation animator = m_hologramAssistanceReminder.AddComponent<MouseUtilitiesAnimation>();
-                animator.animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-                {
-                    m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-                }));
-
-                //m_hologramAssistanceStimulate.SetActive(false);
-            }
-            else if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateAbstract)
-            {
-                m_hologramAssistanceStimulateAbstract.SetActive(false);
-
-                MouseUtilitiesAnimation animator = m_hologramAssistanceReminder.AddComponent<MouseUtilitiesAnimation>();
-                animator.animateAppearFromPosition(m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramReminder.getPositionWorld(), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-                {
-                    m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-                    //m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
-                }));
-            }
-            //m_hologramAssistanceReminder.SetActive(true);
-            m_messageReminderFocused = true;
-            updateMessageReminderMenu();*/
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceSolution)
         {
@@ -681,59 +496,43 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "The new state does not seem to be managed");
             }
-
-            /*MouseUtilitiesAnimation animator = m_hologramAssistanceSolution.AddComponent<MouseUtilitiesAnimation>();
-            animator.animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-            }));*/
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.Success)
         {
             //m_hologramInteractionSurfaceTable.GetComponent<MouseChallengeCleanTableSurfaceToPopulateWithCubes>().resetCubesStates();
             m_containerTableView.GetComponent<MouseTable>().hideInteractionSurfaceTable(MouseUtilities.getEventHandlerEmpty());
 
-        // Play a sound and display and hologram to inform the user that the challenge is completed
-        m_hologramToDisplayOnFinished.SetActive(true);
+            // Play a sound and display and hologram to inform the user that the challenge is completed
+            m_containerTableController.showAssistanceChallengeSuccess(MouseUtilities.getEventHandlerEmpty());
             m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
         }
+        else if (m_stateCurrent == ChallengeCleanTableStates.StandBy)
+        {
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
+            { // Means the "ok" button of the reminder assistance has just been pressed, so we have to hide this window.
+                m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Table assistance reminder should be hidden now - greeting from standby mode"));
+                m_containerRagController.hideAssistanceReminder(MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Rag assistance reminder should be hidden now - greeting from standby mode"));
+                m_surfaceTableTouched = false; // Giving the possibility for the user to touch the surface again
+                m_surfaceRagTouched = true;
+
+                m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+            }
+            else if (m_statePrevious == ChallengeCleanTableStates.Success)
+            {
+                m_containerTableController.hideAssistanceChallengeSuccess(new EventHandler(delegate (object o, EventArgs e)
+                {
+                    m_surfaceTableTouched = false; // Giving the possibility for the user to touch the surface again
+                    m_surfaceRagTouched = true;
+                    //m_containerTableController.
+
+                    //resetChallenge();
+                }));
+                
+            }
+            else
+            { // Otherwise means interrruption by the user
+                resetChallenge();
+            }
+        }
     }
-
-    /*void startTimerAssistanceStimulateAbstract ()
-    {
-        m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
-        m_timerAssistanceStimulateAbstractStart = true;
-    }*/
-
-    /*void stopTimerAssistanceStimulateAbstract ()
-    {
-        m_timerAssistanceStimulateAbstractStart = false;
-        m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
-    }*/
-
-    // Utilities functions: to be moved to a dedicated namespace later?
-   /* void utilitiesAddTouchCallback(Transform transform, UnityEngine.Events.UnityAction callback)
-    {
-        GameObject gameObject = transform.gameObject;
-
-        Interactable interactable = gameObject.GetComponent<Interactable>();
-
-        if (interactable == null)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No interactable component to the gameobject: adding one");
-
-            interactable = gameObject.AddComponent<Interactable>();
-        }
-
-        InteractableOnTouchReceiver receiver = interactable.GetReceiver<InteractableOnTouchReceiver>();
-
-        if ( receiver == null)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No touch receiver to the interactable gameobject: adding one");
-
-            receiver = interactable.AddReceiver<InteractableOnTouchReceiver>();
-        }
-
-        receiver.OnTouchStart.AddListener(callback);
-    }*/
 }
