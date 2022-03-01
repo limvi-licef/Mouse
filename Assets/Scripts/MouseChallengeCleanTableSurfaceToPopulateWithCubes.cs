@@ -147,7 +147,7 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
 
     public void resetCubesStates(EventHandler eventHandler)
     {
-        bool hideCubes = false;
+        /*bool hideCubes = false;
 
         if (m_cubesTouched.Count > 0)
         {
@@ -178,6 +178,17 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
             }
 
             eventHandler?.Invoke(this, EventArgs.Empty);
+        }*/
+
+        // Here we will remove the cubes from the table and display an hologram in the center of the table
+        foreach (KeyValuePair<Tuple<float, float>, Tuple<GameObject, bool>> tempKeyValue in m_cubesTouched)
+        {
+            //tempKeyValue.Value.Item1.SetActive(false);
+            Destroy(tempKeyValue.Value.Item1);
         }
+
+        m_cubesTouched.Clear();
+
+        eventHandler?.Invoke(this, EventArgs.Empty);
     }
 }

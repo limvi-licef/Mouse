@@ -24,12 +24,19 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
 
     public bool m_menuStatic = false;
 
+    string m_hologramRagInteractionSurfaceMaterialName;
+
     // Start is called before the first frame update
     void Start()
     {
+        // Variables
         m_menuShown = false; // By default, the menu is hidden
         m_positioningInteractionSurfaceEnabled = true; // Enabled by default
         m_positioningRagInteractionSurfaceEnabled = true;
+
+        m_hologramRagInteractionSurfaceMaterialName = m_hologramRagInteractionSurface.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
 
         // Check if the occlusion is enabled
         MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
@@ -93,7 +100,8 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
         else
         {
             m_positioningRagInteractionSurfaceEnabled = true;
-            materialName = "Mouse_Cyan_Glowing";
+            materialName = m_hologramRagInteractionSurfaceMaterialName; //"Mouse_Orange_Glowing";
+            
         }
 
         m_hologramRagInteractionSurface.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
@@ -111,7 +119,7 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
     public void callbackBringRagInteractionSurface()
     {
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+        m_hologramRagInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
     }
 
     public void callbackSwitchStaticOrMovingMenu()

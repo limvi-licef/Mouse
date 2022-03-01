@@ -354,6 +354,8 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             {
                 m_containerRagController.hideAssistanceReminder(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
+                    m_timer.stopTimer();
+
                     m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
                     m_containerRagController.showAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());
                 }));
@@ -515,6 +517,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                 m_surfaceTableTouched = false; // Giving the possibility for the user to touch the surface again
                 m_surfaceRagTouched = true;
 
+                m_timer.stopTimer();
                 m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.Success)
@@ -526,6 +529,8 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                     //m_containerTableController.
 
                     //resetChallenge();
+                    m_timer.stopTimer();
+                    m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
                 }));
                 
             }
