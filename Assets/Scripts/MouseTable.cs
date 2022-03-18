@@ -43,7 +43,6 @@ public class MouseTable : MonoBehaviour
         m_assistanceReminderView = gameObject.transform.Find("MouseChallengeCleanTableAssistanceReminder");
         m_assistanceReminderController = m_assistanceReminderView.GetComponent<MouseChallengeCleanTableReminder>();
         m_assistanceStimulateLevel1View = gameObject.transform.Find("AssistanceStimulateLevel1");
-        //MouseUtilities.mouseUtilitiesAddTouchCallback(m_debug, m_assistanceStimulateLevel1View, delegate () { m_eventAssistanceStimulateLevel1Touched?.Invoke(this, EventArgs.Empty); } );
         m_assistanceStimulateLevel1Controller = m_assistanceStimulateLevel1View.GetComponent<MouseAssistanceStimulateLevel1>();
         m_assistanceChallengeSuccessView = gameObject.transform.Find("Mouse_ChallengeCleanTableClose");
         m_assistanceChallengeSuccessController = m_assistanceChallengeSuccessView.GetComponent<MouseAssistanceChallengeSuccess>();
@@ -82,8 +81,6 @@ public class MouseTable : MonoBehaviour
         m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         // Bring specific components to the center of the interaction surface
-
-        //gameObject.transform.position = m_hologramInteractionSurface.transform.position;
         gameObject.transform.position = m_interactionSurfaceTableView.transform.position;
         m_interactionSurfaceTableView.transform.localPosition = new Vector3(0, 0f, 0);
     }
@@ -109,6 +106,11 @@ public class MouseTable : MonoBehaviour
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance reminder is disabled - no hide action to take");
         }
         
+    }
+
+    public void setAssistanceReminderToOriginalPosition()
+    {
+        m_assistanceReminderController.setObjectToOriginalPosition();
     }
 
     public void hideAssistanceChallengeSuccess(EventHandler eventHandler)
@@ -149,30 +151,12 @@ public class MouseTable : MonoBehaviour
 
     public void hideAssistanceStimulateLevel1(EventHandler eventHandler)
     { // We manage all the animations and the reset of the object here, as it is a simple cube, i.e. it does not have an attached customized component.
-
-        /*if (m_assistanceStimulateLevel1View.gameObject.activeSelf)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube is going to be hidden");
-
-
-            EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
-               {
-                   m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube should be hidden now");
-
-                   m_assistanceStimulateLevel1View.gameObject.SetActive(false);
-                   m_assistanceStimulateLevel1View.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-                   Destroy(m_assistanceStimulateLevel1View.GetComponent<MouseUtilitiesAnimation>());
-               }), eventHandler };
-
-            m_assistanceStimulateLevel1View.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, eventHandlers);
-        }
-        else
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is disabled - no hide action to take");
-        }*/
-
         m_assistanceStimulateLevel1Controller.hide(eventHandler);
-        
+    }
+
+    public void setAssistanceStimulateLevel1ToOriginalPosition()
+    {
+        m_assistanceStimulateLevel1Controller.setPositionToOriginalLocation();
     }
 
     public bool hasFocusAssistanceStimulateLevel1 ()
@@ -180,12 +164,12 @@ public class MouseTable : MonoBehaviour
         return m_assistanceStimulateLevel1Controller.hasFocus();
     }
 
-    public MouseAssistanceStimulateLevel1.AssistanceGradation increaseGradationAssistanceStimulateLevel1()
+    public bool increaseGradationAssistanceStimulateLevel1()
     {
         return m_assistanceStimulateLevel1Controller.increaseGradation();
     }
 
-    public MouseAssistanceStimulateLevel1.AssistanceGradation decreaseGradationAssistanceStimulateLevel1()
+    public bool decreaseGradationAssistanceStimulateLevel1()
     {
         return m_assistanceStimulateLevel1Controller.decreaseGradation();
     }
@@ -195,26 +179,23 @@ public class MouseTable : MonoBehaviour
         m_assistanceStimulateLevel1Controller.setGradationToMinimum();
     }
 
+    public bool increaseGradationAssistanceReminder()
+    {
+        return m_assistanceReminderController.increaseGradation();
+    }
+
+    public void setGradationAssistanceReminderToMinimum()
+    {
+        m_assistanceReminderController.setGradationToMinimum();
+    }
+
     public void showAssistanceStimulateLevel1(EventHandler eventHandler)
     {
-        /*if (m_assistanceStimulateLevel1View.gameObject.activeSelf == false)
-        {
-            MouseUtilitiesAnimation animator = m_assistanceStimulateLevel1View.gameObject.AddComponent<MouseUtilitiesAnimation>();
-
-            EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                Destroy(animator);
-            }), eventHandler };
-
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Target scaling: " + m_assistanceStimulateLevel1View.transform.localScale.ToString());
-
-            animator.animateAppearInPlaceToScaling(m_assistanceStimulateLevel1View.transform.localScale, m_debug, eventHandlers);
-        }
-        else
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is enabled - no hide action to take");
-        }*/
-
         m_assistanceStimulateLevel1Controller.show(eventHandler);
+    }
+
+    public void assistanceStimulateLevel1OpeningCube(EventHandler eventHandler)
+    {
+        m_assistanceStimulateLevel1Controller.openingCube(eventHandler);
     }
 }

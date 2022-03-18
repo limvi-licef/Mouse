@@ -13,8 +13,6 @@ public class MouseLineToObject : MonoBehaviour
     LineRenderer m_line;
 
     bool m_drawLine;
-    //public float m_animationSpeed = 1.0f;
-    //float m_delayBetweenTwoPoints = 0.1f;
 
     private float m_timerWaitTime = 0.006f;
     private float m_timer = 0.0f;
@@ -56,7 +54,6 @@ public class MouseLineToObject : MonoBehaviour
 
                 // Remove the recorded 2 seconds.
                 m_timer = m_timer - m_timerWaitTime;
-                //Time.timeScale = scrollBar;
 
                 // Stoping the process when the line is fully drawn
                 if (m_drawWithAnimationT >= 1.0f)
@@ -65,49 +62,57 @@ public class MouseLineToObject : MonoBehaviour
                     m_drawLine = false;
 
                     m_eventProcessFinished?.Invoke(this, EventArgs.Empty);
+
+                    m_mutexShow = false;
                 }
             }
         }
     }
 
+    bool m_mutexShow = false;
     public void show (EventHandler eventHandler)
     {
-        if (gameObject.activeSelf == false)
+        if (m_mutexShow == false)
         {
+            m_mutexShow = true;
 
-            Vector3 endPoint = gameObject.transform.position;
-            Vector3 startPoint = m_HologramTarget.transform.position;
-            Vector3 midPoint = (startPoint + endPoint) / 2;
-            midPoint.y += 2.0f;
-
-            gameObject.SetActive(true);
-
-            /*if (withAnimation == false)
+            if (gameObject.activeSelf == false)
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Drawing line without animation - Starting point: " + startPoint.ToString() + " Mid point: " + midPoint.ToString() + " End point: " + endPoint.ToString());
 
-                drawQuadraticCurve(startPoint, midPoint, endPoint);
+                Vector3 endPoint = gameObject.transform.position;
+                Vector3 startPoint = m_HologramTarget.transform.position;
+                Vector3 midPoint = (startPoint + endPoint) / 2;
+                midPoint.y += 2.0f;
+
+                gameObject.SetActive(true);
+
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Drawing line with animation - Starting point: " + startPoint.ToString() + " Mid point: " + midPoint.ToString() + " End point: " + endPoint.ToString());
+
+
+
+                m_drawWithAnimationT = 0.0f;
+                m_drawWithAnimationStartingPoint = startPoint;
+                m_drawWithAnimationMidPoint = midPoint;
+                m_drawWithAnimationEndPoint = endPoint;
+
+                m_line.SetPosition(0, startPoint);
+
+                m_eventProcessFinished += eventHandler;
+
+                m_drawLine = true;
             }
             else
-            {*/
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Drawing line with animation - Starting point: " + startPoint.ToString() + " Mid point: " + midPoint.ToString() + " End point: " + endPoint.ToString());
-
-            m_drawLine = true;
-
-            m_drawWithAnimationT = 0.0f;
-            m_drawWithAnimationStartingPoint = startPoint;
-            m_drawWithAnimationMidPoint = midPoint;
-            m_drawWithAnimationEndPoint = endPoint;
-
-            m_line.SetPosition(0, startPoint);
-
-            m_eventProcessFinished += eventHandler;
-            //}
+            {
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already shown - nothing to do");
+                m_mutexShow = false;
+            }
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already shown - nothing to do");
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
         }
+
+        
 
     }
 
@@ -135,25 +140,32 @@ public class MouseLineToObject : MonoBehaviour
 
         toReturn = (1.0f - t) * (1.0f - t) * p0+2*(1-t)*t*p1+t*t*p2;
 
-        /*m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "New point on the line: " + toReturn.ToString());*/
-
         return toReturn;
     }
 
+    bool m_mutexHide = false;
     public void hide (EventHandler eventHandler) // Does not work with animations
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding line - setting position counter to 0, so that the points will be overwritten next time it is displayed");
+        if (m_mutexHide == false)
+        {
+            m_mutexHide = true;
 
-        /*Vector3[] temp = new Vector3[1];
-        temp[0] = new Vector3(0, 0, 0);
-            
-        m_line.SetPositions(temp);*/
-        m_line.positionCount = 1;
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding line - setting position counter to 0, so that the points will be overwritten next time it is displayed");
 
-        //m_line.Res
+            m_line.positionCount = 1;
 
-        m_line.gameObject.SetActive(false);
+            //m_line.Res
 
-        eventHandler?.Invoke(this, EventArgs.Empty);
+            m_line.gameObject.SetActive(false);
+
+            eventHandler?.Invoke(this, EventArgs.Empty);
+
+            m_mutexHide = false;
+        }
+        else
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
+        }
+
     }
 }

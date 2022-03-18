@@ -13,11 +13,6 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     public int m_numberOfCubesToAddInRow;
     public int m_numberOfCubesToAddInColumn;
     
-    
-    //public GameObject m_hologramAssistanceCueing;
-    //public GameObject m_hologramAssistanceSolution;
-
-    
     public AudioClip m_audioClipToPlayOnTouchInteractionSurface;
     public AudioListener m_audioListener;
 
@@ -25,12 +20,9 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     MouseTable m_containerTableController;
     Transform m_containerRagView;
     MouseRag m_containerRagController;
-    MouseUtilitiesRefuseChallenge m_refuseChallengeController;
 
     bool m_surfaceTableTouched; // Bool to detect the touch trigerring the challenge only once.
     bool m_surfaceRagTouched;
-
-    System.Timers.Timer m_timerCaptureAttention;
 
     public MouseUtilitiesTimer m_timer;
 
@@ -38,8 +30,6 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     {
         StandBy = 0,
         AssistanceStimulateLevel1 = 1,
-        //AssistanceStimulateLevel1Gradation2 = 2,
-        //AssistanceStimulateLevel1Gradation3 = 3,
         AssistanceStimulateLevel2 = 2,
         AssistanceCueing = 3,
         AssistanceSolution = 4,
@@ -51,12 +41,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     ChallengeCleanTableStates m_stateCurrent;
     ChallengeCleanTableStates m_statePrevious;
 
-    //public int m_timerAssistanceStimulateAbstract = 2; // in Seconds
-    //bool m_timerAssistanceStimulateAbstractStart;
-    //int m_timerAssistanceStimulateAbstractCountdown;
-
     Vector3 m_positionLocalReferenceForHolograms = new Vector3(0.0f, 0.6f, 0.0f);
-    MouseAssistanceStimulateLevel1.AssistanceGradation m_currentGradation = MouseAssistanceStimulateLevel1.AssistanceGradation.Default; // This is to now when the last gradation level is reached, so that we can stop the timer. Equals to default ... by default
 
     // Start is called before the first frame update
     void Start()
@@ -70,15 +55,11 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
         m_timer.m_timerDuration = 20;
 
-        //m_timerAssistanceStimulateAbstractStart = false;
-        //m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
-
         // Children
         m_containerRagView = gameObject.transform.Find("Rag");
         m_containerTableView = gameObject.transform.Find("Table");
-        //m_hologramAssistanceStimulateLevel1 = m_containerTableView.Find("MouseChallengeCleanTableAssistanceStimulateLevel1");
-        m_refuseChallengeController = gameObject.transform.Find("RefuseChallengeDetection").GetComponent<MouseUtilitiesRefuseChallenge>();
-        
+
+
         // Sanity checks
 
 
@@ -103,24 +84,20 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
         m_containerTableController.m_eventAssistanceChallengeSuccessOk += callbackAssistanceChallengeSuccessOk;
 
-        //gameObject.GetComponent<HandConstraintPalmUp>().OnFirstHandDetected.AddListener(callbackAssistanceRefuse);
-        m_refuseChallengeController.m_eventChallengeRefused += callbackAssistanceRefuse;
-
         // Timer for gradation
         m_timer.m_eventTimerFinished += new EventHandler(delegate (System.Object o, EventArgs e)
         {
-            MouseAssistanceStimulateLevel1.AssistanceGradation gradation = m_containerTableController.increaseGradationAssistanceStimulateLevel1();
-
-            if (m_currentGradation != gradation) 
+            if (m_containerTableController.increaseGradationAssistanceStimulateLevel1() == false) 
             {  
-                m_currentGradation = gradation;
-
                 m_timer.m_timerDuration = 20;
                 m_timer.startTimerOneShot();
             }
             else
             { // Means we have reached the last level
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Last gradation level reached for stimulate assistance level 1 - no timer will be started anymore");
+
+                // Last level reached: increase the gradation level of the reminder window so that it will also follow the user
+                m_containerTableController.increaseGradationAssistanceReminder();
             }
         });
     }
@@ -144,35 +121,14 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         
     }
 
-    /*
-     * Will have to be called when the person is doing a sign with the hand to refuse the challenge AND is focusing on the object.
-     * 
-     * */
-    void callbackAssistanceRefuse(object sender, EventArgs e)
-    { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Challenge to be stopped");
-
-        updateChallenge(ChallengeCleanTableStates.StandBy);
-
-        /*if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateLevel1 &&
-            m_containerTableController.hasFocusAssistanceStimulateLevel1())
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Challenge stopped");
-            updateChallenge(ChallengeCleanTableStates.StandBy);
-        }*/
-    }
-
     void callbackAssistanceChallengeSuccessOk(object sender, EventArgs e)
     {
         updateChallenge(ChallengeCleanTableStates.StandBy);
     }
 
-    public void callbackHologramAssistanceSimulateLevel1FocusOn()
+    /*public void callbackHologramAssistanceSimulateLevel1FocusOn()
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateAbstractFocusOn", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-        // Start timer to determine when going to the next VISUAL capture attention gradation
-        //startTimerAssistanceStimulateAbstract();
     }
 
     public void callbackHologramAssistanceStimulateLevel1FocusOff()
@@ -184,7 +140,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
         // ... so maybe trigger an audio gradation? 
 
-    }
+    }*/
 
     public void callbackHologramAssistanceReminderTouched(System.Object o, EventArgs e)
     {
@@ -219,28 +175,16 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     }
 
     // Update is called once per frame
+
+    bool m_initFirstState = false;
     void Update()
     {
-        /*if (m_timerAssistanceStimulateAbstractStart)
-        {
-            m_timerAssistanceStimulateAbstractCountdown -= 1;
+        if (m_initFirstState == false)
+        { // Quick and very dirty way to initialise the first state to another state than the default state. The boolean allows to have it called only once. There is most lileky a much more elegant way to do, but well ... I have more urgent things to do at the moment.
+            updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel1);
 
-            if (m_timerAssistanceStimulateAbstractCountdown > 0)
-            {
-                if ((m_timerAssistanceStimulateAbstract * 60) % m_timerAssistanceStimulateAbstractCountdown == 0)
-                {
-                    m_debug.displayMessage("MouseChallengeCleanTable", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Timer: seconds remaining: " + (m_timerAssistanceStimulateAbstractCountdown / 60).ToString());
-                }
-            }
-            else
-            {
-                m_debug.displayMessage("MouseChallengeCleanTable", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Timer finished!");
-               m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().increaseAssistanceGradation();
-
-                m_timerAssistanceStimulateAbstractStart = false;
-                m_timerAssistanceStimulateAbstractCountdown = m_timerAssistanceStimulateAbstract * 60;
-            }
-        }*/
+            m_initFirstState = true;
+        }
     }
 
     public void callbackTableTouched(System.Object o, EventArgs e)
@@ -263,26 +207,23 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     public void resetChallenge()
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "resetChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-        //m_containerTableView.GetComponent<MouseTable>().hideInteractionSurfaceTable(MouseUtilities.getEventHandlerEmpty());
-
         
         m_surfaceTableTouched = false;
         m_surfaceRagTouched = false;
 
-        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding assistance stimulate level 1");
         m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
+        m_containerTableController.setAssistanceStimulateLevel1ToOriginalPosition();
         m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+        m_containerTableController.setGradationAssistanceReminderToMinimum();
         m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+        m_containerTableController.setAssistanceReminderToOriginalPosition();
         m_containerTableController.hideInteractionSurfaceTable(MouseUtilities.getEventHandlerEmpty());
         m_containerRagController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+        m_containerRagController.setAssistanceReminderToOriginalPosition();
         m_containerRagController.hideAssistanceCueing(MouseUtilities.getEventHandlerEmpty());
         m_containerRagController.hideAssistanceSolution(MouseUtilities.getEventHandlerEmpty());
         m_containerRagController.hideAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());
         m_containerTableController.hideAssistanceChallengeSuccess(MouseUtilities.getEventHandlerEmpty());
-
-        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hiding reminder assistance");
-
 
         m_timer.stopTimer();
 
@@ -340,31 +281,46 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             {
                 m_timer.stopTimer();
 
-                // Display the help and line components
-                m_containerTableController.hideAssistanceStimulateLevel1(new EventHandler(delegate (System.Object o, EventArgs e)
-                {
-                    m_containerRagController.showAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());//.setHelpAndLineAnimateAppear();
+                // Display the help and line components - From the new "opening cube", we leave it displayed until the next assistance gradation.
+                m_containerRagController.showAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());//.setHelpAndLineAnimateAppear();
 
-                    //Hide the clock component and make it appearing close to this new help component
-                    m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Assistance reminder hidden - greetings from AssistanceStimulateLevel2 (previous state AssistanceStimulateLevel1Gradation1)"));
-                    m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
-                }));
+                //Hide the clock component and make it appearing close to this new help component
+                m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+                m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+                m_containerTableController.setGradationAssistanceReminderToMinimum();
             }
             else
-            {
+            { // Means it is from a reminder
                 m_containerRagController.hideAssistanceReminder(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
-                    m_timer.stopTimer();
-
                     m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
                     m_containerRagController.showAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());
+
+
+                    m_containerTableController.hideAssistanceReminder(new EventHandler(delegate (System.Object ooo, EventArgs eee)
+                    {
+                        m_timer.stopTimer();
+
+                        m_containerTableController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+                        m_containerTableController.showAssistanceStimulateLevel1(new EventHandler(delegate (System.Object oo, EventArgs ee)
+                        { // Opening the cube
+                            m_containerTableController.assistanceStimulateLevel1OpeningCube(MouseUtilities.getEventHandlerEmpty());
+                        }));
+
+                        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing assistance reminder on table surface");
+                    }));
                 }));
+
+                
             }
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceCueing)
         {
             if ( m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
             {
+                m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
+                m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+
                 m_containerRagController.hideAssistanceStimulateLevel2(/* .setHelpButtonAnimateDisappear(*/new EventHandler(delegate (System.Object o, EventArgs e)
                 {
                     m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
@@ -403,6 +359,9 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
             {
+                m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
+                m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+
                 m_containerRagController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
                 m_containerRagController.hideAssistanceStimulateLevel2(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -450,13 +409,15 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                 m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
 
                 m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+                m_containerTableController.setGradationAssistanceReminderToMinimum();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reminder assistance: hiding stimulate assistance level 2");
 
+                m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
+
                 m_containerRagController.hideAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());
-                //m_containerRagController.hideAssistanceStimulateLevel2();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceCueing)
             {
@@ -479,11 +440,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                 {
                     m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-                    m_containerRagController.showAssistanceSolution(new EventHandler(delegate (System.Object oo, EventArgs ee)
-                    {
-
-                        //m_containerRagController.displayAssistanceSolution()
-                    }));
+                    m_containerRagController.showAssistanceSolution(MouseUtilities.getEventHandlerEmpty());
                 }));
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
@@ -519,6 +476,9 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
                 m_timer.stopTimer();
                 m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+                m_containerTableController.setAssistanceReminderToOriginalPosition();
+                m_containerTableController.setAssistanceStimulateLevel1ToOriginalPosition();
+                m_containerTableController.setGradationAssistanceReminderToMinimum();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.Success)
             {
@@ -531,6 +491,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                     //resetChallenge();
                     m_timer.stopTimer();
                     m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+                    m_containerTableController.setGradationAssistanceReminderToMinimum();
                 }));
                 
             }

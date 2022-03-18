@@ -12,7 +12,6 @@ public class MouseRag : MonoBehaviour
     public MouseDebugMessagesManager m_debug;
 
     Transform m_interactionSurfaceRagView;
-    //Transform m_interactionLineView;
     Transform m_assistanceStimulateLevel2View;
     MouseChallengeCleanTableAssistanceStimulateLevel2 m_assistanceStimulateLevel2Controller;
     Transform m_assistanceReminderView;
@@ -109,6 +108,11 @@ public class MouseRag : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance reminder is disabled - no hide action to take");
         }
+    }
+
+    public void setAssistanceReminderToOriginalPosition()
+    {
+        m_assistanceReminderController.setObjectToOriginalPosition();
     }
 
     public void showAssistanceReminder(EventHandler e)

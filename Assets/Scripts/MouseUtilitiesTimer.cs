@@ -31,15 +31,8 @@ public class MouseUtilitiesTimer : MonoBehaviour
         {
             m_timerDurationInternal -= 1;
 
-            if (m_timerDurationInternal > 0)
-            {
-                /*if ((m_timerDuration * 60) % m_timerDurationInternal == 0)
-                {
-                    m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Timer: seconds remaining: " + (m_timerDurationInternal / 60).ToString());
-                }*/
-            }
-            else
-            {
+            if (m_timerDurationInternal <= 0)
+            { 
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Timer finished!");
                
                 m_timerStart = false;
@@ -56,6 +49,8 @@ public class MouseUtilitiesTimer : MonoBehaviour
         {
             m_timerStart = true;
             m_timerDurationInternal = m_timerDuration * 60;
+
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Timer started");
         }
         else
         {

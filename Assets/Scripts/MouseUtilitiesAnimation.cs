@@ -183,4 +183,24 @@ public class MouseUtilitiesAnimation : MonoBehaviour
 
         startAnimation();
     }
+
+    /**
+    * In this function, the animation will start from the current position, and will bring it to the given position
+    **/
+    public void animateMoveToPosition(Vector3 posDest, MouseDebugMessagesManager debug, EventHandler e)
+    {
+        m_debug = debug;
+        m_positionEnd = posDest;//gameObject.transform.TransformPoint(new Vector3(0, 0.6f, 0));
+        m_scalingEnd = gameObject.transform.localScale;
+        m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnPositioning;
+        m_eventAnimationFinished += e;
+
+        //gameObject.transform.position = pos; // Moving the object to the starting position
+        //gameObject.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f); // Set scaling to 0 before starting
+
+        gameObject.SetActive(true);
+        //MouseUtilities.show(transform);
+
+        startAnimation();
+    }
 }
