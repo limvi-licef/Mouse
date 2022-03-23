@@ -56,4 +56,27 @@ static class MouseUtilities
             debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, debugMessage);
         });
     }
+
+    public static void adjustObjectHeightToHeadHeight(MouseDebugMessagesManager debug, Transform t, float originalLocalHeightPos=0.0f)
+    {
+        debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Adjusting object height to head position: x= " + t.position.x + " y= Camera position (" + Camera.main.transform.position.y + ") + local position (" + originalLocalHeightPos + ") z=" + t.position.z);
+
+        t.position = new Vector3(t.position.x, Camera.main.transform.position.y + /*t.localPosition.y*/ originalLocalHeightPos, t.position.z);
+    }
+
+    // From https://forum.unity.com/threads/how-to-know-if-a-script-is-running-inside-unity-editor-when-using-device-simulator.921827/
+    public static bool IsEditorSimulator()
+    {
+#if UNITY_EDITOR
+        return !Application.isEditor;
+#endif
+        return false;
+    }
+    public static bool IsEditorGameView()
+    {
+#if UNITY_EDITOR
+        return Application.isEditor;
+#endif
+        return false;
+    }
 }

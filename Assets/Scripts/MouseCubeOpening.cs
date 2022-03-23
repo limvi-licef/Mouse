@@ -18,6 +18,9 @@ public class MouseCubeOpening : MonoBehaviour
 
     public event EventHandler m_eventCubetouched;
 
+    Vector3 m_scalingOriginal;
+    Vector3 m_scalingReduced;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +33,12 @@ public class MouseCubeOpening : MonoBehaviour
 
         // Add callbacks
         gameObject.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackCubeTouched);
+
+        // Get data required for later
+        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Local scale: " + gameObject.transform.localScale);
+
+        // Values will most likely br wrong, because will be intialized whereas the cube won't be displayed. So will be updated in one of the gradation state.
+        backupScaling();
     }
 
     // Update is called once per frame
@@ -98,4 +107,23 @@ public class MouseCubeOpening : MonoBehaviour
         }
     }
         
+    public void setScalingToOriginal()
+    {
+        transform.localScale = m_scalingOriginal;
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Set scaling to original: " + transform.localScale.ToString());
+    }
+
+    public void backupScaling()
+    {
+        m_scalingOriginal = gameObject.transform.localScale;
+        m_scalingReduced = m_scalingOriginal / 3.0f;
+    }
+
+    public void setScalingReduced()
+    {
+        transform.localScale = m_scalingReduced;
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reducing scale to: " + m_scalingReduced.ToString());
+    }
 }

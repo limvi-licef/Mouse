@@ -76,14 +76,16 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
             {
                 MouseUtilitiesAnimation animator = m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>();
 
+                MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform, m_hologramOriginalLocalPos.y);
+
                 EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
                     {
                         Destroy(animator);
+                        m_hologramController.backupScaling();
                         m_mutexShow = false;
+
+                        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "(animation finished) Scale: " + m_hologramView.transform.localScale.ToString() + " Local position: " + m_hologramView.transform.localPosition.ToString());
                     }), eventHandler };
-
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Target scaling: " + m_hologramView.transform.localScale.ToString() + " Local position: " + m_hologramView.transform.localPosition.ToString());
-
 
                 animator.animateAppearInPlaceToScaling(m_hologramView.transform.localScale, m_debug, eventHandlers);
             }
@@ -154,7 +156,12 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_hologramController.updateMaterials("Mouse_Clean_Bottom", "Mouse_Clean_Top-Left", "Mouse_Clean_Top-Right");
         m_lightView.gameObject.SetActive(false);
         m_hologramController.GetComponent<Billboard>().enabled = true;
-        m_hologramView.gameObject.GetComponent<RadialView>().enabled = false;
+        //m_hologramView.gameObject.GetComponent<RadialView>().enabled = false;
+        GetComponent<RadialView>().enabled = false;
+        m_hologramController.setScalingToOriginal();
+        //m_hologramView.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramView.localPosition.y, m_hologramView.localPosition.z - 0.25f);// Removing the offset
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing default gradation");
     }
 
     void callbackGradationLowVivid(System.Object o, EventArgs e)
@@ -162,14 +169,28 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_hologramController.updateMaterials("Mouse_Clean_Bottom_Vivid", "Mouse_Clean_Top-Left_Vivid", "Mouse_Clean_Top-Right_Vivid");
         m_lightView.gameObject.SetActive(true);
         m_hologramController.GetComponent<Billboard>().enabled = true;
-        m_hologramView.gameObject.GetComponent<RadialView>().enabled = false;
+        //m_hologramView.gameObject.GetComponent<RadialView>().enabled = false;
+        GetComponent<RadialView>().enabled = false;
+        m_hologramController.setScalingToOriginal(); // setting back the scaling to the original one.
+        //m_hologramView.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramView.localPosition.y, m_hologramView.localPosition.z - 0.25f);// Removing the offset
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing low vivid gradation");
     }
 
     void callbackGradationHighFollow(System.Object o, EventArgs e)
     {
-        m_hologramView.gameObject.GetComponent<RadialView>().enabled = true;
-        m_hologramView.gameObject.GetComponent<Billboard>().enabled = false;
+        // Add an offset in y to the cube to avoid that they remain too much "in front" of the user
+        //m_hologramView.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramView.localPosition.y, m_hologramView.localPosition.z+0.25f);
+
+        //m_hologramView.gameObject.GetComponent<RadialView>().enabled = true;
+        GetComponent<RadialView>().enabled = true;
+        m_hologramView.gameObject.GetComponent<Billboard>().enabled = false; // The billboard is present on the parent object so that the cube can be shifted to avoid that it is too much in front of the user.
         m_lightView.gameObject.SetActive(false);
+
+        // reducing the scale of the cube to have it less intrusive
+        m_hologramController.setScalingReduced();
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing high gradation");
     }
 
     public void openingCube(EventHandler eventHandler)

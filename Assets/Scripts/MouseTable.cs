@@ -97,15 +97,15 @@ public class MouseTable : MonoBehaviour
 
     public void hideAssistanceReminder(EventHandler e)
     {
-        if (m_assistanceReminderView.gameObject.activeSelf)
+        /*if (m_assistanceReminderView.gameObject.activeSelf)
         {
             m_assistanceReminderController.hide(e);
         }
         else
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance reminder is disabled - no hide action to take");
-        }
-        
+        }*/
+        m_assistanceReminderController.hide(e);
     }
 
     public void setAssistanceReminderToOriginalPosition()
@@ -139,14 +139,16 @@ public class MouseTable : MonoBehaviour
 
     public void showAssistanceReminder(EventHandler e)
     {
-        if (m_assistanceReminderView.gameObject.activeSelf == false)
+        m_assistanceReminderController.show(e);
+
+        /*if (m_assistanceReminderView.gameObject.activeSelf == false)
         {
             m_assistanceReminderController.show(e);
         }
         else
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance reminder is disabled - no hide action to take");
-        }
+        }*/
     }
 
     public void hideAssistanceStimulateLevel1(EventHandler eventHandler)

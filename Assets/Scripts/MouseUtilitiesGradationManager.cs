@@ -109,8 +109,14 @@ public class MouseUtilitiesGradationManager : MonoBehaviour
 
     public void setGradationToMinimum()
     {
-        m_assistanceGradationIndexCurrent = 0;
-
-        m_assistanceGradation[m_assistanceGradationIndexCurrent].callback?.Invoke(this, EventArgs.Empty);
+        if (m_assistanceGradationIndexCurrent == 0)
+        { // If gradation is already to the minimum, then nothing to do
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Gradation already at minimal level - nothing to do");
+        }
+        else
+        {
+            m_assistanceGradationIndexCurrent = 0;
+            m_assistanceGradation[m_assistanceGradationIndexCurrent].callback?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

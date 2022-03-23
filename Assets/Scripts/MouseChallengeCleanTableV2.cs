@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Timers;
 using System.Reflection;
+using System.Linq;
 
 public class MouseChallengeCleanTableV2 : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
     public int m_numberOfCubesToAddInRow;
     public int m_numberOfCubesToAddInColumn;
-    
+
     public AudioClip m_audioClipToPlayOnTouchInteractionSurface;
     public AudioListener m_audioListener;
 
@@ -43,6 +44,8 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
     Vector3 m_positionLocalReferenceForHolograms = new Vector3(0.0f, 0.6f, 0.0f);
 
+    MouseUtilitiesGradationAssistanceManager m_assistanceGradationManager;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -65,30 +68,39 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
         // Callbacks
         m_containerTableController = m_containerTableView.GetComponent<MouseTable>();
-        m_containerTableController.m_eventInteractionSurfaceTableTouched += callbackTableTouched;
+        //m_containerTableController.m_eventInteractionSurfaceTableTouched += callbackTableTouched;
         m_containerTableController.m_eventInteractionSurfaceCleaned += callbackSurfaceCleaned;
 
-        m_containerTableController.m_eventReminderClockTouched += callbackHologramAssistanceReminderTouched;
-        m_containerTableController.m_eventReminderOkTouched += callbackHologramAssistanceReminderOk;
-        m_containerTableController.m_eventReminderBackTouched += callbackHologramAssistanceReminderBack;
+        // Old way
+        //m_containerTableController.m_eventReminderClockTouched += callbackHologramAssistanceReminderTouched;
+        // New way
+        //m_containerTableController.m_eventReminderClockTouched += callbackAssistanceReminderTableClockTouched;
 
-        m_containerTableController.m_eventAssistanceStimulateLevel1Touched += callbackHologramAssistanceStimulateLevel1Help;
+        //m_containerTableController.m_eventReminderOkTouched += callbackAssistanceReminderTableOk; //callbackHologramAssistanceReminderOk;
+        //m_containerTableController.m_eventReminderBackTouched += callbackAssistanceReminderTableBack; //callbackHologramAssistanceReminderBack;
+
+        //m_containerTableController.m_eventAssistanceStimulateLevel1Touched += callbackAssistanceStimulateLevel1Help;
 
         m_containerRagController = m_containerRagView.GetComponent<MouseRag>();
         m_containerRagController.m_eventHologramHelpButtonTouched += callbackHologramAssistanceStimulateLevel2Help;
         m_containerRagController.m_eventHologramInteractionSurfaceTouched += callbackAssistanceRabGrabbed;
         m_containerRagController.m_eventHologramHelpButtonCueingTouched += callbackHologramAssistanceCueingHelp;
-        m_containerRagController.m_eventHologramReminderClockTouched += callbackHologramAssistanceReminderTouched;
+
+        // Old way
+        //m_containerRagController.m_eventHologramReminderClockTouched += callbackHologramAssistanceReminderTouched;
+        // New way
+        m_containerRagController.m_eventHologramReminderClockTouched += callbackHologramAssistanceReminderRagClockTouched;
+
         m_containerRagController.m_eventHologramReminderOkTouched += callbackHologramAssistanceReminderOk;
-        m_containerRagController.m_eventHologramReminderBackTouched += callbackHologramAssistanceReminderBack;
+        m_containerRagController.m_eventHologramReminderBackTouched += callbackAssistanceReminderBack;
 
         m_containerTableController.m_eventAssistanceChallengeSuccessOk += callbackAssistanceChallengeSuccessOk;
 
         // Timer for gradation
         m_timer.m_eventTimerFinished += new EventHandler(delegate (System.Object o, EventArgs e)
         {
-            if (m_containerTableController.increaseGradationAssistanceStimulateLevel1() == false) 
-            {  
+            if (m_containerTableController.increaseGradationAssistanceStimulateLevel1() == false)
+            {
                 m_timer.m_timerDuration = 20;
                 m_timer.startTimerOneShot();
             }
@@ -100,13 +112,33 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                 m_containerTableController.increaseGradationAssistanceReminder();
             }
         });
+
+        if (MouseUtilities.IsEditorSimulator() || MouseUtilities.IsEditorGameView())
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Editor simulator");
+        }
+        else
+        { // Means running in the Hololens, so adjusting some parameters
+            m_debug.m_displayOnConsole = false;
+
+        }
+
+        m_assistanceGradationManager = new MouseUtilitiesGradationAssistanceManager();
+        m_assistanceGradationManager.m_debug = m_debug;
+        initializeScenario1();
     }
 
-    void callbackHologramAssistanceStimulateLevel1Help(System.Object o, EventArgs e)
+    void callbackAssistanceStimulateLevel1Help(System.Object o, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-        updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel2);
+        //updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel2);
+
+        // Old way
+        //updateChallenge(ChallengeCleanTableStates.AssistanceCueing);
+
+        // New way
+        m_assistanceGradationManager.goToNextState("messageCue");
     }
 
     void callbackAssistanceRabGrabbed(object sender, EventArgs e)
@@ -118,7 +150,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             updateChallenge(ChallengeCleanTableStates.Challenge);
             m_surfaceRagTouched = true;
         }
-        
+
     }
 
     void callbackAssistanceChallengeSuccessOk(object sender, EventArgs e)
@@ -142,12 +174,58 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
 
     }*/
 
-    public void callbackHologramAssistanceReminderTouched(System.Object o, EventArgs e)
+    // New way
+    public void callbackAssistanceReminderTableClockTouched(System.Object o, EventArgs e)
+    {
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        m_assistanceGradationManager.goToNextState("reminder");
+    }
+    public void callbackAssistanceReminderTableOk(System.Object o, EventArgs e)
+    {
+        m_assistanceGradationManager.goToNextState("standBy");
+    }
+    public void callbackAssistanceReminderTableBack(System.Object o, EventArgs e)
+    {
+        switch (m_assistanceGradationManager.getGradationPrevious())
+        {
+            case "CubeRagTable":
+                m_assistanceGradationManager.goToNextState("cubeRagTable");
+                break;
+            case "MessageCue":
+                m_assistanceGradationManager.goToNextState("messageCue");
+                break;
+            default:
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Next state not managed");
+                break;
+        }
+
+        /*if (m_assistanceGradationManager.getGradationPrevious() == "CubeRagTable" )
+        {
+            m_assistanceGradationManager.goToNextState("cubeRagTable");
+        }
+        else if (m_assistanceGradationManager.getGradationCurrent() == "MessageCue")
+        {
+            m_assistanceGradationManager.goToNextState("messageCue");
+        }
+        else
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Next state not managed");
+        }*/
+    }
+
+    public void callbackHologramAssistanceReminderRagClockTouched(System.Object o, EventArgs e)
+    {
+        // TODO
+    }
+
+    // Old way
+    /*public void callbackHologramAssistanceReminderTouched(System.Object o, EventArgs e)
     {
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
-    }
+    }*/
 
     public void callbackHologramAssistanceStimulateLevel2Help(System.Object o, EventArgs e)
     {
@@ -162,40 +240,48 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         updateChallenge(ChallengeCleanTableStates.StandBy);
     }
 
-    public void callbackHologramAssistanceReminderBack(System.Object o, EventArgs e)
+    public void callbackAssistanceReminderBack(System.Object o, EventArgs e)
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceReminderBack", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         updateChallenge(m_statePrevious);
     }
 
-        void callbackHologramAssistanceCueingHelp(System.Object o, EventArgs e)
+    void callbackHologramAssistanceCueingHelp(System.Object o, EventArgs e)
     {
-        updateChallenge(ChallengeCleanTableStates.AssistanceSolution);
+        //updateChallenge(ChallengeCleanTableStates.AssistanceSolution);
+        updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel2);
     }
 
     // Update is called once per frame
 
-    bool m_initFirstState = false;
+    //bool m_initFirstState = false;
     void Update()
     {
-        if (m_initFirstState == false)
+        /*if (m_initFirstState == false)
         { // Quick and very dirty way to initialise the first state to another state than the default state. The boolean allows to have it called only once. There is most lileky a much more elegant way to do, but well ... I have more urgent things to do at the moment.
             updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel1);
 
             m_initFirstState = true;
-        }
+        }*/
     }
 
     public void callbackTableTouched(System.Object o, EventArgs e)
     {
-        if (m_surfaceTableTouched == false)
+        // Old way
+        /*if (m_surfaceTableTouched == false)
         { // This can be called only if the surface can be touched
             updateChallenge(ChallengeCleanTableStates.AssistanceStimulateLevel1);
         }
         else
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Surface touched but process disabled");
+        }*/
+
+        // New way
+        if (m_surfaceTableTouched == false)
+        {
+            m_assistanceGradationManager.goToNextState("CubeRagTable");
         }
     }
 
@@ -207,7 +293,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     public void resetChallenge()
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "resetChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        
+
         m_surfaceTableTouched = false;
         m_surfaceRagTouched = false;
 
@@ -231,8 +317,176 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         {
             updateChallenge(ChallengeCleanTableStates.StandBy);
         }
-        
+
     }
+
+    void initializeScenario1()
+    {
+        MouseUtilitiesGradationAssistance sStandBy = m_assistanceGradationManager.addNewAssistanceGradation("StandBy");
+        setStandByTransitions(sStandBy);
+        MouseUtilitiesGradationAssistance sCubeRagTable = m_assistanceGradationManager.addNewAssistanceGradation("CubeRagTable");
+        setCubeRagTransitions(sCubeRagTable);
+        MouseUtilitiesGradationAssistance sReminderCubeRagTable = m_assistanceGradationManager.addNewAssistanceGradation("ReminderCubeRagTable");
+        setReminderTableTransitions(sReminderCubeRagTable);
+        MouseUtilitiesGradationAssistance sMessageCue = m_assistanceGradationManager.addNewAssistanceGradation("MessageCue");
+        setMessageCueTransitions(sMessageCue);
+        //MouseUtilitiesGradationAssistance sReminderCueTable = m_assistanceGradationManager.addNewAssistanceGradation("ReminderCueTable");
+        //setReminderTableTransitions(sReminderCueTable);
+
+        MouseUtilitiesGradationAssistance sArchToRag = m_assistanceGradationManager.addNewAssistanceGradation("ArchToRag");
+
+
+        // Transition from StandBy to CubeRagTable
+        //List<MouseUtilitiesGradationAssistanceHideShowPair> nStandByToCubeRagTable = getTransitionFromStandByToCubeRagTable();
+
+        m_containerTableController.m_eventInteractionSurfaceTableTouched += sStandBy.addGradationNext(sCubeRagTable);
+        m_containerTableController.m_eventReminderClockTouched += sCubeRagTable.addGradationNext(sReminderCubeRagTable);
+        m_containerTableController.m_eventAssistanceStimulateLevel1Touched += sCubeRagTable.addGradationNext(sMessageCue);
+        //sReminderCubeRagTable.addGradationNext(sCubeRagTable);
+        m_containerTableController.m_eventReminderBackTouched += sReminderCubeRagTable.setGradationPrevious(); // Process to go back to the previous state.
+        m_containerTableController.m_eventReminderOkTouched += sReminderCubeRagTable.addGradationNext(sStandBy);
+        m_containerTableController.m_eventReminderClockTouched += sMessageCue.addGradationNext(sReminderCubeRagTable);
+        //sReminderCubeRagTable.addGradationNext(sMessageCue);
+        
+        
+
+        //sMessageCue.addGradationNext("")
+
+        // Transition from CubeRagTable to reminder
+        List<MouseUtilitiesGradationAssistanceHideShowPair> nCubeRagTableToReminder = getTransitionFromCubeRagTableToReminder();
+        //sCubeRagTable.addGradationNext("reminder", sReminderCubeRagTable, nCubeRagTableToReminder);
+
+        // Transition from reminder to CubeRagTable
+        //MouseUtilitiesGradationAssistanceNextState nReminderToCubeRagTable = sReminderCubeRagTable.addGradationNext("cubeRagTable");
+        //nReminderToCubeRagTable.setNextGradationState(sCubeRagTable);
+        //MouseUtilitiesGradationAssistanceHideShowPair pReminderToCubeRagTable = nReminderToCubeRagTable.addTransitionNextState();
+
+
+
+        //standBy.addGradationNext("next", cubeRagTable,)
+    }
+
+    void setStandByTransitions(MouseUtilitiesGradationAssistance state)
+    { // This state is the initial state. So no transitions needed here
+        state.addFunctionShow(delegate (EventHandler e)
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Table surface should be touchable again");
+
+            m_surfaceTableTouched = false; // Giving the possibility for the user to touch the surface again
+            m_surfaceRagTouched = true;
+            //m_containerTableController.
+
+            //resetChallenge();
+            m_timer.stopTimer();
+            m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+            m_containerTableController.setGradationAssistanceReminderToMinimum();
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        state.setFunctionHide(delegate (EventHandler e)
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hide function called for StandBy state");
+
+            m_surfaceTableTouched = true;
+            m_surfaceRagTouched = false; // From now on, if the user touches the rag, the surface will be populated (at least the callback supposed to trigger it will be fired.
+
+            // Play sound to get the user's attention from audio on top of visually
+            m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
+
+            // Start timer for gradation
+            m_timer.startTimerOneShot();
+
+            e?.Invoke(this, EventArgs.Empty);
+        }, MouseUtilities.getEventHandlerEmpty());
+    }
+
+    void setCubeRagTransitions(MouseUtilitiesGradationAssistance state)
+    {
+        state.addFunctionShow(m_containerTableController.showAssistanceStimulateLevel1, MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Assistance stimulate level 1 should be displayed now"));
+        state.addFunctionShow(m_containerTableController.showAssistanceReminder, MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Assistance reminder should be displayed now"));
+        state.addFunctionShow(delegate (EventHandler e)
+        {
+            e?.Invoke(this, EventArgs.Empty);
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        state.setFunctionHide(m_containerTableController.hideAssistanceStimulateLevel1, MouseUtilities.getEventHandlerEmpty());
+    }
+
+    void setReminderTableTransitions(MouseUtilitiesGradationAssistance state)
+    {
+        state.addFunctionShow(delegate (EventHandler e)
+        {
+            m_timer.stopTimer();
+
+            m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+            m_containerTableController.setGradationAssistanceReminderToMinimum();
+
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        state.setFunctionHide(m_containerTableController.hideAssistanceReminder, MouseUtilities.getEventHandlerEmpty());
+    }
+
+    void setMessageCueTransitions(MouseUtilitiesGradationAssistance state)
+    {
+        state.addFunctionShow(delegate (EventHandler e)
+        {
+            m_timer.stopTimer();
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        state.addFunctionShow(m_containerRagController.showAssistanceCueing, MouseUtilities.getEventHandlerEmpty());
+        state.addFunctionShow(m_containerTableController.showAssistanceReminder, MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Assistance reminder should be displayed now"));
+
+        state.setFunctionHide(m_containerRagController.hideAssistanceCueing, MouseUtilities.getEventHandlerEmpty());
+    }
+
+    /*void setReminderCueTable(MouseUtilitiesGradationAssistance state)
+    {
+
+    }*/
+
+    List<MouseUtilitiesGradationAssistanceHideShowPair> getTransitionFromStandByToCubeRagTable()
+    {
+        List<MouseUtilitiesGradationAssistanceHideShowPair> standByNext = new List<MouseUtilitiesGradationAssistanceHideShowPair>();
+        standByNext.Add(new MouseUtilitiesGradationAssistanceHideShowPair());
+        standByNext.Last().setFunctionHide(m_containerTableController.showAssistanceStimulateLevel1, MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Assistance stimulate level 1 should be displayed now"));
+        standByNext.Add(new MouseUtilitiesGradationAssistanceHideShowPair());
+        standByNext.Last().setFunctionHide(m_containerTableController.showAssistanceReminder, MouseUtilities.getEventHandlerWithDebugMessage(m_debug, "Assistance reminder should be displayed now"));
+        standByNext.Add(new MouseUtilitiesGradationAssistanceHideShowPair());
+        standByNext.Last().setFunctionHide(delegate (EventHandler e)
+        {
+            m_surfaceTableTouched = true;
+            m_surfaceRagTouched = false; // From now on, if the user touches the rag, the surface will be populated (at least the callback supposed to trigger it will be fired.
+
+            // Play sound to get the user's attention from audio on top of visually
+            m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
+
+            // Start timer for gratation
+            m_timer.startTimerOneShot();
+        });
+
+        return standByNext;
+    }
+
+    List<MouseUtilitiesGradationAssistanceHideShowPair> getTransitionFromCubeRagTableToReminder()
+    {
+        List<MouseUtilitiesGradationAssistanceHideShowPair> cubeRagTableReminder = new List<MouseUtilitiesGradationAssistanceHideShowPair>();
+        cubeRagTableReminder.Add(new MouseUtilitiesGradationAssistanceHideShowPair());
+        cubeRagTableReminder.Last().setFunctionHide(m_containerTableController.hideAssistanceStimulateLevel1, new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+            m_containerTableController.setGradationAssistanceReminderToMinimum();
+        }));
+
+        return cubeRagTableReminder;
+    }
+
+    /*List<Action<EventHandler>> getReminderTableDisplayFunctions()
+    {
+        List<Action<EventHandler>> temp;
+        temp.Add(m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum);
+
+    }*/
+
+        //List<Mou>
 
     void updateChallenge(ChallengeCleanTableStates newState)
     {
@@ -277,7 +531,19 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceStimulateLevel2)
         {
-            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
+            /*if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
+            {
+                m_timer.stopTimer();
+
+                // Display the help and line components - From the new "opening cube", we leave it displayed until the next assistance gradation.
+                m_containerRagController.showAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());//.setHelpAndLineAnimateAppear();
+
+                //Hide the clock component and make it appearing close to this new help component
+                m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+                m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+                m_containerTableController.setGradationAssistanceReminderToMinimum();
+            }*/
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceCueing)
             {
                 m_timer.stopTimer();
 
@@ -311,17 +577,17 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                     }));
                 }));
 
-                
+
             }
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceCueing)
         {
-            if ( m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
+            /*if ( m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
             {
                 m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
                 m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
 
-                m_containerRagController.hideAssistanceStimulateLevel2(/* .setHelpButtonAnimateDisappear(*/new EventHandler(delegate (System.Object o, EventArgs e)
+                m_containerRagController.hideAssistanceStimulateLevel2(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
                     m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
@@ -330,6 +596,18 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cueing window should be displayed now");
                     }));
                 }));
+            }*/
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
+            {
+                m_timer.stopTimer();
+
+                // Display the help and line components - From the new "opening cube", we leave it displayed until the next assistance gradation.
+                m_containerRagController.showAssistanceStimulateLevel2(MouseUtilities.getEventHandlerEmpty());//.setHelpAndLineAnimateAppear();
+
+                //Hide the clock component and make it appearing close to this new help component
+                m_containerRagController.showAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+                m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
+                m_containerTableController.setGradationAssistanceReminderToMinimum();
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
             {
@@ -347,7 +625,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.Challenge)
         {
-            if ( m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel1)
             {
                 m_containerTableController.hideAssistanceStimulateLevel1(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -434,13 +712,28 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceSolution)
         {
-            if (m_statePrevious == ChallengeCleanTableStates.AssistanceCueing)
+            /*if (m_statePrevious == ChallengeCleanTableStates.AssistanceCueing)
             {
                 m_containerRagController.hideAssistanceCueing(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
                     m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
                     m_containerRagController.showAssistanceSolution(MouseUtilities.getEventHandlerEmpty());
+                }));
+            }*/
+            if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateLevel2)
+            {
+                m_containerTableController.hideAssistanceStimulateLevel1(MouseUtilities.getEventHandlerEmpty());
+                m_containerTableController.hideAssistanceReminder(MouseUtilities.getEventHandlerEmpty());
+
+                m_containerRagController.hideAssistanceStimulateLevel2(new EventHandler(delegate (System.Object o, EventArgs e)
+                {
+                    m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+                    m_containerRagController.showAssistanceCueing(new EventHandler(delegate (System.Object oo, EventArgs ee)
+                    {
+                        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cueing window should be displayed now");
+                    }));
                 }));
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
@@ -493,12 +786,28 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
                     m_containerTableController.setGradationAssistanceStimulateLevel1ToMinimum();
                     m_containerTableController.setGradationAssistanceReminderToMinimum();
                 }));
-                
+
             }
             else
             { // Otherwise means interrruption by the user
                 resetChallenge();
             }
         }
+    }
+
+    //delegate void AnimateFunction(EventHandler e);
+
+    // One to hide, and once hidden, can show several
+    void hideAndShow(Action<EventHandler> fHide, List<Action<EventHandler>> fShows)
+    {
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        fHide(new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            foreach (Action<EventHandler> fShow in fShows)
+            {
+                fShow(MouseUtilities.getEventHandlerEmpty());
+            }
+        }));
     }
 }

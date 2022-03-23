@@ -28,43 +28,68 @@ public class MouseCueing : MonoBehaviour
     void callbackButtonHelpClicked()
     {
         m_eventHelpButtonClicked?.Invoke(this, EventArgs.Empty);
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clicked");
     }
 
+    bool m_mutexShow = false;
     public void show (bool withAnimation, EventHandler eventHandler)
     {
-        if (withAnimation)
+        if (m_mutexShow == false)
         {
-            EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
+            m_mutexShow = true;
+
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform);
+
+            if (withAnimation)
+            {
+                EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
                 Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+                    m_mutexShow = false;
             }), eventHandler };
 
-            gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, temp);
+                gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, temp);
+            }
+            else
+            {
+                gameObject.SetActive(true);
+                m_mutexShow = false;
+            }
         }
-        else
-        {
-            gameObject.SetActive(true);
-        }
+
+        
     }
 
+    bool m_mutexHide = false;
     public void hide (bool withAnimation, EventHandler eventHandler)
     {
-        if (withAnimation)
+        if (m_mutexHide == false)
         {
-            EventHandler[] temp = new EventHandler[] {eventHandler, new EventHandler(delegate (System.Object o, EventArgs e) {
+            m_mutexHide = true;
+
+            if (withAnimation)
+            {
+                EventHandler[] temp = new EventHandler[] {eventHandler, new EventHandler(delegate (System.Object o, EventArgs e) {
                 gameObject.transform.localScale = new Vector3(1,1,1);
                 gameObject.SetActive(false);
 
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
                 Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+                    m_mutexHide = false;
             })};
 
-            gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+                gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+                m_mutexHide = false;
+            }
         }
-        else
-        {
-            gameObject.SetActive(false);
-        }
+
+        
     }
 
     // Update is called once per frame

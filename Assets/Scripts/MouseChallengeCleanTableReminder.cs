@@ -23,6 +23,10 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
 
     Vector3 m_positionLocalOrigin;
 
+    // As the clock does not have an attached script, storing the required information here
+    Vector3 m_clockScalingOriginal;
+    Vector3 m_clockScalingReduced;
+
     bool m_mutexHiding = false;
 
     private void Awake()
@@ -55,6 +59,10 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
         m_gradationManager.addNewAssistanceGradation("HighFollow", callbackGradationHighFollow);
 
         m_positionLocalOrigin = transform.localPosition;
+
+        // Getting informations related to the clock
+        m_clockScalingOriginal = m_hologramClockView.transform.localScale;
+        m_clockScalingReduced = m_clockScalingOriginal / 3.0f;
     }
 
     // Update is called once per frame
@@ -72,9 +80,11 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
         MouseUtilitiesAnimation animator = m_hologramClockView.gameObject.AddComponent<MouseUtilitiesAnimation>();
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
          {
+             m_hologramClockView.gameObject.SetActive(false);
+
              // When the clock has diseappeared, make the windows appearing
-             animator = m_hologramWindowReminderView.gameObject.AddComponent<MouseUtilitiesAnimation>();
-             animator.animateAppearInPlace(m_debug, MouseUtilities.getEventHandlerEmpty());
+             MouseUtilitiesAnimation animatorText = m_hologramWindowReminderView.gameObject.AddComponent<MouseUtilitiesAnimation>();
+             animatorText.animateAppearInPlace(m_debug, MouseUtilities.getEventHandlerEmpty());
 
              Destroy(m_hologramClockView.GetComponent<MouseUtilitiesAnimation>());
          }));
@@ -82,12 +92,14 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
 
     void callbackOnWindowOkButtonTouched()
     {
-        MouseUtilitiesAnimation animator = m_hologramWindowReminderView.gameObject.AddComponent<MouseUtilitiesAnimation>();
+        m_eventHologramWindowButtonOkTouched?.Invoke(this, EventArgs.Empty);
+
+        /*MouseUtilitiesAnimation animator = m_hologramWindowReminderView.gameObject.AddComponent<MouseUtilitiesAnimation>();
         animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_eventHologramWindowButtonOkTouched?.Invoke(this, EventArgs.Empty);
             resetObject();
-        }));
+        }));*/
     }
 
     void callbackOnWindowBackButtonTouched()
@@ -97,12 +109,46 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
 
     public void hide(EventHandler e)
     {
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
         if (m_mutexHiding == false)
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
             m_mutexHiding = true;
 
-            if (m_hologramClockView == null || m_hologramWindowReminderView == null)
+            GameObject temp;
+
+            if (m_hologramClockView.gameObject.activeSelf)
+            {
+                temp = m_hologramClockView.gameObject;
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock is going to be hidden");
+            }
+            else
+            { // Only two children for know so fine this way. But to be extended if it happens that more children are added in the future
+                temp = m_hologramWindowReminderView.gameObject;
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Text is going to be hidden");
+            }
+
+            EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object oe, EventArgs ee)
+            {
+                //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reminder assistance hidden");
+
+                //gameObject.SetActive(false);
+
+                
+
+                m_mutexHiding = false;
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - object hidden");
+
+
+                Destroy(temp.GetComponent<MouseUtilitiesAnimation>());
+                resetObject();
+            }), e };
+
+            MouseUtilitiesAnimation animator = temp.AddComponent<MouseUtilitiesAnimation>();
+            animator.animateDiseappearInPlace(m_debug, eventHandlers);
+
+            /*if (m_hologramClockView == null || m_hologramWindowReminderView == null)
             {
                 //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "At least one of the object required for this animation is not initialized, so nothing will happen");
 
@@ -137,7 +183,7 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
             {
                 //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reminder assistance hidden");
 
-                gameObject.SetActive(false);
+                //gameObject.SetActive(false);
 
                 resetObject();
 
@@ -151,7 +197,7 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
 
                 MouseUtilitiesAnimation animator = temp.AddComponent<MouseUtilitiesAnimation>();
                 animator.animateDiseappearInPlace(m_debug, eventHandlers);
-            }
+            }*/
         }
         else
         {
@@ -161,14 +207,46 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
            
     }
 
+    bool m_mutexShow = false;
     public void show(EventHandler eventHandler)
     {
-        if (gameObject.activeSelf)
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        if (m_mutexShow == false)
+        {
+            m_mutexShow = true;
+
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
+
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform, m_positionLocalOrigin.y);     
+
+            EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e)
+            {
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock should be visible now");
+
+                Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+                m_mutexShow = false;
+
+            }), eventHandler };
+
+            MouseUtilitiesAnimation animator = m_hologramClockView.gameObject.AddComponent<MouseUtilitiesAnimation>();
+            animator.animateAppearInPlaceToScaling(m_hologramClockView.gameObject.transform.localScale, m_debug, eventHandlers);
+        }
+        else
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex already locked - nothing to do");
+        }
+
+        /*if (gameObject.activeSelf)
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Object already active - no animation will be started");
         }
         else
         {
+            //gameObject.transform.position = new Vector3(gameObject.transform.position.x, Camera.main.transform.position.y + gameObject.transform.localPosition.y, gameObject.transform.position.z);
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform, m_positionLocalOrigin.y);
+
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reminder assistance is going to be displayed");
 
             EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e)
@@ -181,8 +259,8 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
             
 
             MouseUtilitiesAnimation animator = gameObject.AddComponent<MouseUtilitiesAnimation>();
-            animator.animateAppearInPlaceToScaling(gameObject.transform.localScale/*new Vector3(0.1f, 0.1f, 0.1f)*/, m_debug, eventHandlers);
-        }
+            animator.animateAppearInPlaceToScaling(gameObject.transform.localScale, m_debug, eventHandlers);
+        }*/
         
     }
 
@@ -190,12 +268,16 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
     {
         GetComponent<Billboard>().enabled = true;
         GetComponent<RadialView>().enabled = false;
+        m_hologramClockView.transform.localScale = m_clockScalingOriginal;
+        //m_hologramClockView.localPosition = new Vector3(m_hologramClockView.localPosition.x, m_hologramClockView.localPosition.y, m_hologramClockView.localPosition.z - 0.25f);// Removing the offset
     }
 
     void callbackGradationHighFollow(System.Object o, EventArgs e)
     {
         GetComponent<Billboard>().enabled = false;
         GetComponent<RadialView>().enabled = true;
+        m_hologramClockView.transform.localScale = m_clockScalingReduced;
+        //m_hologramClockView.localPosition = new Vector3(m_hologramClockView.localPosition.x, m_hologramClockView.localPosition.y, m_hologramClockView.localPosition.z + 0.25f); // Adding an offset to avoid that the object remains in front of the user
     }
 
     public bool increaseGradation()
@@ -216,11 +298,12 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
     // Be aware that this function does not send the object back to its original position
     void resetObject()
     {
-        m_hologramClockView.gameObject.SetActive(true);
-        m_hologramWindowReminderView.gameObject.SetActive(false);
+        //m_hologramClockView.gameObject.SetActive(true);
+        //m_hologramWindowReminderView.gameObject.SetActive(false);
 
         m_hologramClockView.gameObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         m_hologramWindowReminderView.gameObject.transform.localScale = new Vector3(1, 1, 1);
+        m_hologramWindowReminderView.gameObject.SetActive(false);
 
         m_gradationManager.setGradationToMinimum();
     }
@@ -228,5 +311,7 @@ public class MouseChallengeCleanTableReminder : MonoBehaviour
     public void setObjectToOriginalPosition()
     {
         transform.localPosition = m_positionLocalOrigin;
+
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Changing position");
     }
 }

@@ -42,6 +42,12 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
         MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
         // mrtk.GetService<MixedRealitySpatialAwarenessSystem>().ConfigurationProfile;
 
+
+        if (MouseUtilities.IsEditorSimulator() == false && MouseUtilities.IsEditorGameView() == false)
+        { // Means running in the Hololens, so adjusting some parameters
+            m_menuStatic = false;
+        }
+
         switchStaticOrMovingMenu();
     }
 
