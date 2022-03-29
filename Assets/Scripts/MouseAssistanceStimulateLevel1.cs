@@ -12,7 +12,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
 
-    Transform m_hologramView;
+    public Transform m_hologramView;
     MouseCubeOpening m_hologramController;
     Vector3 m_hologramOriginalLocalPos;
     Transform m_lightView;
@@ -26,8 +26,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
     public bool m_hasFocus;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         // Variables
         m_hasFocus = false;
@@ -39,7 +38,11 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
         m_lightView = transform.Find("Light");
         m_lightController = m_lightView.GetComponent<MouseUtilitiesLight>();
+    }
 
+    // Start is called before the first frame update
+    void Start()
+    {
         // Setting up the gradation manger
         m_gradationManager = transform.GetComponent<MouseUtilitiesGradationManager>();
         m_gradationManager.addNewAssistanceGradation("Default", callbackGradationDefault);

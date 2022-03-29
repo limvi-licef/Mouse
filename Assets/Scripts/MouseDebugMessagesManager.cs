@@ -24,7 +24,7 @@ public class MouseDebugMessagesManager : MonoBehaviour
 
         // For now, filtering is hard coded
         //m_classNameFilter.Add("MouseChallengeCleanTableReminder");
-        m_classNameFilter.Add("MouseUtilitiesGradationAssistanceManager");
+        //m_classNameFilter.Add("MouseUtilitiesGradationAssistanceManager");
         /*m_classNameFilter.Add("MouseUtilitiesHolograms");
         m_classNameFilter.Add("MouseCueing");*/
     }

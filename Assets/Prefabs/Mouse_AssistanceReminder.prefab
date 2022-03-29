@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 7702019422697629607}
   - component: {fileID: 7702019422697629603}
   - component: {fileID: 7702019422697629600}
+  - component: {fileID: 4991681929783953643}
   m_Layer: 0
   m_Name: MouseChallengeCleanTableAssistanceReminderClock
   m_TagString: Untagged
@@ -180,6 +181,18 @@ MonoBehaviour:
   localCenter: {x: 0, y: 0, z: -0.5}
   bounds: {x: 1, y: 1}
   touchableCollider: {fileID: 7702019422697629607}
+--- !u!114 &4991681929783953643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7702019422697629605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7cbc11053a28cf43abeb0d177af959c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7702019422724241882
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,6 +720,7 @@ MonoBehaviour:
   m_showHideChildren: 0
   m_lookAtUser: 0
   m_useHeadHeightForPlacement: 1
+  m_debug: {fileID: 0}
 --- !u!114 &7702019423848489627
 MonoBehaviour:
   m_ObjectHideFlags: 0

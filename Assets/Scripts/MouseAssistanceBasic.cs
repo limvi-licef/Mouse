@@ -1,0 +1,104 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using System.Reflection;
+using System;
+
+/**
+ * This class manages a basic show / hide for a child that should be named ... "child" (I am a creative person)
+ * An event is emitted if the nested hologram is touched.
+ * Appears / disappears in place. I told you it was basic.
+ * */
+public class MouseAssistanceBasic : MonoBehaviour
+{
+    public MouseDebugMessagesManager m_debug;
+
+    public Transform m_childView;
+
+    Vector3 m_childScaleOrigin;
+
+    MouseUtilitiesMutex m_mutexShow;
+    MouseUtilitiesMutex m_mutexHide;
+
+    public event EventHandler s_touched;
+
+    private void Awake()
+    {
+        // Initialize variables
+        m_mutexShow = new MouseUtilitiesMutex(m_debug);
+        m_mutexHide = new MouseUtilitiesMutex(m_debug);
+
+        // Children
+        m_childView = gameObject.transform.Find("Child");
+
+        // Scale origin
+        m_childScaleOrigin = m_childView.localScale;
+
+        // Adding the touch event
+        MouseUtilitiesHologramInteractions interactions = m_childView.GetComponent<MouseUtilitiesHologramInteractions>();
+        if (interactions == null)
+        {
+            interactions = m_childView.gameObject.AddComponent<MouseUtilitiesHologramInteractions>();
+        }
+        interactions.s_touched += delegate (System.Object sender, EventArgs args)
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "!!!!!!!!!!!!!!! Called");
+            s_touched?.Invoke(sender, args);
+        };
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void show(EventHandler eventHandler)
+    {
+        if (m_mutexShow.isLocked() == false)
+        {
+            m_mutexShow.lockMutex();
+
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform);
+
+            EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
+                Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+                    m_mutexShow.unlockMutex();
+            }), eventHandler };
+
+            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_childScaleOrigin, m_debug, temp);
+        }
+
+        
+    }
+
+    public void hide(EventHandler eventHandler)
+    {
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "!!!!!!!!!!!!!!! Called 2 - the return");
+
+        if (m_mutexHide.isLocked() == false)
+        {
+            m_mutexHide.lockMutex();
+
+            EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
+                m_childView.gameObject.transform.localScale = m_childScaleOrigin;
+                Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+                m_childView.gameObject.SetActive(false);
+                   m_mutexHide.unlockMutex();
+            }), eventHandler };
+
+            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+        }
+
+        
+    }
+}

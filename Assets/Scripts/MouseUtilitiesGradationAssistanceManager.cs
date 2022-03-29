@@ -8,7 +8,7 @@ using System.Timers;
 using System.Reflection;
 using System.Linq;
 
-public class MouseUtilitiesGradationAssistanceManager : MonoBehaviour
+public class MouseUtilitiesGradationAssistanceManager
 {
     public MouseDebugMessagesManager m_debug;
 
@@ -102,9 +102,17 @@ public class MouseUtilitiesGradationAssistanceManager : MonoBehaviour
         {
             MouseUtilitiesGradationAssistance caller = (MouseUtilitiesGradationAssistance)o;
             MouseUtilisiesGradationAssistanceArgs args = (MouseUtilisiesGradationAssistanceArgs)e;
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Caller: " + caller.getId() + " | next state: " + args.m_nextState);
 
-            goToNextState(args.m_nextState);
+            if (caller.getId() == m_gradationCurrent)
+            { // A same trigger can call several time the same event for different objects (typically, the reminder one for instance, which is present at different stages of the scenario). So here we take into account only the trigger sent from the current gradation level.
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Caller: " + caller.getId() + " | next state: " + args.m_nextState);
+
+                goToNextState(args.m_nextState);
+            }
+            else
+            {
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Caller: " + caller.getId() + " is different from current state (" + m_gradationCurrent + ") so nothing will happen. This is labelled as a warning, by most likely this is a good safety thing.");
+            }
         });
 
         newItem.m_triggerPrevious += new EventHandler(delegate (System.Object o, EventArgs e)
@@ -166,7 +174,7 @@ public class MouseUtilitiesGradationAssistanceManager : MonoBehaviour
 
         if (stateNext == null)
         { // Means we have reached the last state of the state machine. So nothing to do excepted informing the user
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "The state " + idNext + " does not exist. Nothing will happen. This can be a normal behavior. For information, current state: " + stateCurrent.getId());
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "The required next state " + idNext + " is not defined as a potentiel next state for the current state " + stateCurrent.getId() + ". Nothing will happen. This can be a normal behavior.");
 
             toReturn = true;
         }
@@ -215,6 +223,8 @@ public class MouseUtilitiesGradationAssistanceManager : MonoBehaviour
     // Don't make this function public! Should not be called if you do not know what your are doing.
     void goToState(MouseUtilitiesGradationAssistance current, MouseUtilitiesGradationAssistance next)
     { // Current: will call hide function; Next: will call show functions
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. Going from " + current.getId() + " to " + next.getId());
+
         raiseEventsGradation(current.getFunctionHide(), current.getFunctionHideEventHandler(), next.getFunctionsShow(), next.getFunctionsShowEventHandlers());
     }
 
@@ -414,7 +424,7 @@ public class MouseUtilitiesGradationAssistance
         m_nextStates.Add(nextState.getId(), nextState);
         //return m_nextStates[id];
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Next state added: " + nextState.getId());
+        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Next state added: " + nextState.getId());
 
         return new EventHandler(delegate (System.Object o, EventArgs e)
         {
@@ -431,6 +441,14 @@ public class MouseUtilitiesGradationAssistance
         //Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>> toReturn = null;
         //MouseUtilitiesGradationAssistanceNextState toReturn = null;
         MouseUtilitiesGradationAssistance toReturn = null;
+
+        /*m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. List of states for " + m_id + ": ");
+
+        foreach (string s in m_nextStates.Keys)
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "- " + s);
+        }*/
+
 
         if (m_nextStates.ContainsKey(id))
         {

@@ -10,23 +10,23 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 public class MouseTable : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
-    Transform m_interactionSurfaceTableView;
+    public Transform m_interactionSurfaceTableView;
     MouseChallengeCleanTableSurfaceToPopulateWithCubes m_interactionSurfaceTableController;
-    Transform m_assistanceReminderView;
-    MouseChallengeCleanTableReminder m_assistanceReminderController;
+    //Transform m_assistanceReminderView;
+    //MouseChallengeCleanTableReminder m_assistanceReminderController;
     Transform m_assistanceStimulateLevel1View;
-    MouseAssistanceStimulateLevel1 m_assistanceStimulateLevel1Controller;
-    Transform m_assistanceChallengeSuccessView;
+    //MouseAssistanceStimulateLevel1 m_assistanceStimulateLevel1Controller;
+    //Transform m_assistanceChallengeSuccessView;
     MouseAssistanceChallengeSuccess m_assistanceChallengeSuccessController;
 
 
     public event EventHandler m_eventInteractionSurfaceTableTouched;
     public event EventHandler m_eventInteractionSurfaceCleaned;
-    public event EventHandler m_eventReminderClockTouched;
-    public event EventHandler m_eventReminderOkTouched;
-    public event EventHandler m_eventReminderBackTouched;
-    public event EventHandler m_eventAssistanceStimulateLevel1Touched;
-    public event EventHandler m_eventAssistanceChallengeSuccessOk;
+    //public event EventHandler m_eventReminderClockTouched;
+    //public event EventHandler m_eventReminderOkTouched;
+    //public event EventHandler m_eventReminderBackTouched;
+    //public event EventHandler m_eventAssistanceStimulateLevel1Touched;
+    //public event EventHandler m_eventAssistanceChallengeSuccessOk;
 
     MouseTable()
     {
@@ -40,12 +40,12 @@ public class MouseTable : MonoBehaviour
         // Children
         m_interactionSurfaceTableView = gameObject.transform.Find("InteractionSurfaceTable");
         m_interactionSurfaceTableController = m_interactionSurfaceTableView.GetComponent<MouseChallengeCleanTableSurfaceToPopulateWithCubes>();
-        m_assistanceReminderView = gameObject.transform.Find("MouseChallengeCleanTableAssistanceReminder");
-        m_assistanceReminderController = m_assistanceReminderView.GetComponent<MouseChallengeCleanTableReminder>();
-        m_assistanceStimulateLevel1View = gameObject.transform.Find("AssistanceStimulateLevel1");
-        m_assistanceStimulateLevel1Controller = m_assistanceStimulateLevel1View.GetComponent<MouseAssistanceStimulateLevel1>();
-        m_assistanceChallengeSuccessView = gameObject.transform.Find("Mouse_ChallengeCleanTableClose");
-        m_assistanceChallengeSuccessController = m_assistanceChallengeSuccessView.GetComponent<MouseAssistanceChallengeSuccess>();
+        //m_assistanceReminderView = gameObject.transform.Find("MouseChallengeCleanTableAssistanceReminder");
+        //m_assistanceReminderController = m_assistanceReminderView.GetComponent<MouseChallengeCleanTableReminder>();
+        //m_assistanceStimulateLevel1View = gameObject.transform.Find("AssistanceStimulateLevel1");
+        //m_assistanceStimulateLevel1Controller = m_assistanceStimulateLevel1View.GetComponent<MouseAssistanceStimulateLevel1>();
+        //m_assistanceChallengeSuccessView = gameObject.transform.Find("Mouse_ChallengeCleanTableClose");
+        //m_assistanceChallengeSuccessController = m_assistanceChallengeSuccessView.GetComponent<MouseAssistanceChallengeSuccess>();
 
 
         // Sanity check
@@ -62,11 +62,11 @@ public class MouseTable : MonoBehaviour
             m_eventInteractionSurfaceTableTouched?.Invoke(this, EventArgs.Empty);
         }); // Only have to forward the event
         m_interactionSurfaceTableController.m_eventSurfaceCleaned += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventInteractionSurfaceCleaned?.Invoke(this, EventArgs.Empty); });
-        m_assistanceReminderController.m_eventHologramClockTouched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventReminderClockTouched?.Invoke(this, EventArgs.Empty); });
-        m_assistanceReminderController.m_eventHologramWindowButtonBackTouched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventReminderBackTouched?.Invoke(this, EventArgs.Empty); });
-        m_assistanceReminderController.m_eventHologramWindowButtonOkTouched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventReminderOkTouched?.Invoke(this, EventArgs.Empty); });
+        //m_assistanceReminderController.m_eventHologramClockTouched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventReminderClockTouched?.Invoke(this, EventArgs.Empty); });
+        //m_assistanceReminderController.m_eventHologramWindowButtonBackTouched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventReminderBackTouched?.Invoke(this, EventArgs.Empty); });
+        //m_assistanceReminderController.m_eventHologramWindowButtonOkTouched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventReminderOkTouched?.Invoke(this, EventArgs.Empty); });
 
-        m_assistanceStimulateLevel1Controller.m_eventHologramStimulateLevel1Gradation1Or2Touched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventAssistanceStimulateLevel1Touched?.Invoke(this, EventArgs.Empty); });
+        //m_assistanceStimulateLevel1Controller.m_eventHologramStimulateLevel1Gradation1Or2Touched += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventAssistanceStimulateLevel1Touched?.Invoke(this, EventArgs.Empty); });
 
     }
 
@@ -95,25 +95,17 @@ public class MouseTable : MonoBehaviour
         m_interactionSurfaceTableController.showInteractionCubesTablePanel(eventHandler);
     }
 
-    public void hideAssistanceReminder(EventHandler e)
+    /*public void hideAssistanceReminder(EventHandler e)
     {
-        /*if (m_assistanceReminderView.gameObject.activeSelf)
-        {
-            m_assistanceReminderController.hide(e);
-        }
-        else
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance reminder is disabled - no hide action to take");
-        }*/
         m_assistanceReminderController.hide(e);
-    }
+    }*/
 
-    public void setAssistanceReminderToOriginalPosition()
+    /*public void setAssistanceReminderToOriginalPosition()
     {
         m_assistanceReminderController.setObjectToOriginalPosition();
-    }
+    }*/
 
-    public void hideAssistanceChallengeSuccess(EventHandler eventHandler)
+   /* public void hideAssistanceChallengeSuccess(EventHandler eventHandler)
     {
         if (m_assistanceChallengeSuccessView.gameObject.activeSelf)
         {
@@ -123,9 +115,9 @@ public class MouseTable : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance challenge success is disabled - no hide action to take");
         }
-    }
+    }*/
 
-    public void showAssistanceChallengeSuccess(EventHandler eventHandler)
+    /*public void showAssistanceChallengeSuccess(EventHandler eventHandler)
     {
         if (m_assistanceChallengeSuccessView.gameObject.activeSelf == false)
         {
@@ -135,28 +127,19 @@ public class MouseTable : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance challenge success is enabled - no show action to take");
         }
-    }
+    }*/
 
-    public void showAssistanceReminder(EventHandler e)
+    /*public void showAssistanceReminder(EventHandler e)
     {
         m_assistanceReminderController.show(e);
+    }*/
 
-        /*if (m_assistanceReminderView.gameObject.activeSelf == false)
-        {
-            m_assistanceReminderController.show(e);
-        }
-        else
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance reminder is disabled - no hide action to take");
-        }*/
-    }
-
-    public void hideAssistanceStimulateLevel1(EventHandler eventHandler)
+    /*public void hideAssistanceStimulateLevel1(EventHandler eventHandler)
     { // We manage all the animations and the reset of the object here, as it is a simple cube, i.e. it does not have an attached customized component.
         m_assistanceStimulateLevel1Controller.hide(eventHandler);
-    }
+    }*/
 
-    public void setAssistanceStimulateLevel1ToOriginalPosition()
+    /*public void setAssistanceStimulateLevel1ToOriginalPosition()
     {
         m_assistanceStimulateLevel1Controller.setPositionToOriginalLocation();
     }
@@ -179,9 +162,9 @@ public class MouseTable : MonoBehaviour
     public void setGradationAssistanceStimulateLevel1ToMinimum()
     {
         m_assistanceStimulateLevel1Controller.setGradationToMinimum();
-    }
+    }*/
 
-    public bool increaseGradationAssistanceReminder()
+    /*public bool increaseGradationAssistanceReminder()
     {
         return m_assistanceReminderController.increaseGradation();
     }
@@ -189,9 +172,9 @@ public class MouseTable : MonoBehaviour
     public void setGradationAssistanceReminderToMinimum()
     {
         m_assistanceReminderController.setGradationToMinimum();
-    }
+    }*/
 
-    public void showAssistanceStimulateLevel1(EventHandler eventHandler)
+    /*public void showAssistanceStimulateLevel1(EventHandler eventHandler)
     {
         m_assistanceStimulateLevel1Controller.show(eventHandler);
     }
@@ -199,5 +182,5 @@ public class MouseTable : MonoBehaviour
     public void assistanceStimulateLevel1OpeningCube(EventHandler eventHandler)
     {
         m_assistanceStimulateLevel1Controller.openingCube(eventHandler);
-    }
+    }*/
 }

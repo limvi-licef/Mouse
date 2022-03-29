@@ -64,6 +64,15 @@ static class MouseUtilities
         t.position = new Vector3(t.position.x, Camera.main.transform.position.y + /*t.localPosition.y*/ originalLocalHeightPos, t.position.z);
     }
 
+    // This function keeps its local position relative to the new parent. I.e. if the current object local position is (0,0,0), it will remain (0,0,0) for the new parent
+    public static void setParentToObject(Transform o, Transform p)
+    {
+        Vector3 localPos = o.localPosition;
+
+        o.parent = p;
+        o.localPosition = localPos;
+    }
+
     // From https://forum.unity.com/threads/how-to-know-if-a-script-is-running-inside-unity-editor-when-using-device-simulator.921827/
     public static bool IsEditorSimulator()
     {

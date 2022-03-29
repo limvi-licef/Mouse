@@ -7,7 +7,8 @@ using System;
 public class MouseLineToObject : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
-    public GameObject m_HologramTarget;
+    public GameObject m_hologramTarget;
+    public GameObject m_hologramOrigin;
     public int m_numPoints = 1000;
 
     LineRenderer m_line;
@@ -79,16 +80,16 @@ public class MouseLineToObject : MonoBehaviour
             if (gameObject.activeSelf == false)
             {
 
-                Vector3 endPoint = gameObject.transform.position;
-                Vector3 startPoint = m_HologramTarget.transform.position;
+                /*Vector3 endPoint = gameObject.transform.position;
+                Vector3 startPoint = m_hologramTarget.transform.position;*/
+                Vector3 startPoint = m_hologramOrigin.transform.position;
+                Vector3 endPoint = m_hologramTarget.transform.position;
                 Vector3 midPoint = (startPoint + endPoint) / 2;
                 midPoint.y += 2.0f;
 
                 gameObject.SetActive(true);
 
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Drawing line with animation - Starting point: " + startPoint.ToString() + " Mid point: " + midPoint.ToString() + " End point: " + endPoint.ToString());
-
-
 
                 m_drawWithAnimationT = 0.0f;
                 m_drawWithAnimationStartingPoint = startPoint;

@@ -11,16 +11,23 @@ public class MouseCueing : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
 
-    public event EventHandler m_eventHelpButtonClicked; 
+    public event EventHandler m_eventHelpButtonClicked;
 
+    public Transform m_text;
+    Transform m_button;
     Transform m_hologramButtonClicked;
+
+    private void Awake()
+    {
+        // Children
+        m_text = gameObject.transform.Find("Text");
+        m_button = gameObject.transform.Find("WindowMenu");
+        m_hologramButtonClicked = m_button.Find("ButtonHelp");
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        // Children
-        m_hologramButtonClicked = gameObject.transform.Find("WindowMenu").Find("ButtonHelp");
-
         // Callback
         MouseUtilities.mouseUtilitiesAddTouchCallback(m_debug, m_hologramButtonClicked, callbackButtonHelpClicked);
     }
@@ -33,7 +40,7 @@ public class MouseCueing : MonoBehaviour
     }
 
     bool m_mutexShow = false;
-    public void show (bool withAnimation, EventHandler eventHandler)
+    public void show (EventHandler eventHandler)
     {
         if (m_mutexShow == false)
         {
@@ -41,7 +48,7 @@ public class MouseCueing : MonoBehaviour
 
             MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform);
 
-            if (withAnimation)
+            /*if (withAnimation)
             {
                 EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
                 Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
@@ -54,20 +61,39 @@ public class MouseCueing : MonoBehaviour
             {
                 gameObject.SetActive(true);
                 m_mutexShow = false;
-            }
+            }*/
+            m_text.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e) {
+                EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object oo, EventArgs ee) {
+                    Destroy(m_button.gameObject.GetComponent<MouseUtilitiesAnimation>());
+                    m_mutexShow = false;
+            }), eventHandler };
+
+                m_button.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, temp);
+
+                Destroy(m_text.gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+                // m_mutexShow = false;
+            }));
+
         }
 
         
     }
 
+    // With animation, compatible with the gradation manager
+    /*public void show(EventHandler e)
+    {
+        show(true, e);
+    }*/
+
     bool m_mutexHide = false;
-    public void hide (bool withAnimation, EventHandler eventHandler)
+    public void hide (EventHandler eventHandler)
     {
         if (m_mutexHide == false)
         {
             m_mutexHide = true;
 
-            if (withAnimation)
+            /*if (withAnimation)
             {
                 EventHandler[] temp = new EventHandler[] {eventHandler, new EventHandler(delegate (System.Object o, EventArgs e) {
                 gameObject.transform.localScale = new Vector3(1,1,1);
@@ -86,10 +112,21 @@ public class MouseCueing : MonoBehaviour
             {
                 gameObject.SetActive(false);
                 m_mutexHide = false;
-            }
-        }
+            }*/
 
-        
+            m_text.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e) {
+                EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object oo, EventArgs ee) {
+                    Destroy(m_button.gameObject.GetComponent<MouseUtilitiesAnimation>());
+                    m_mutexHide = false;
+            }), eventHandler };
+
+                m_button.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+
+                Destroy(m_text.gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+                // m_mutexShow = false;
+            }));
+        }
     }
 
     // Update is called once per frame
