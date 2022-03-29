@@ -1,3 +1,17 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +20,11 @@ using Microsoft.MixedReality.Toolkit.Utilities;
 using System;
 using System.Linq;
 
+/**
+ * Kind of obsolete try for a post-wimp interaction. 
+ * Displays a cube with 4 cubes around it. Then the idea is to grab the middle cube and move to one of the surrounding cube to trigger en event.
+ * Maybe interesting: manages transparency, i.e. if the user is far away, the cube will have a high alpha, that will reduce linearly as the user comes closer. 
+ * */
 public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -183,7 +202,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
             }
             else if (Vector3.Distance(gameObject.transform.position, Camera.main.transform.position) < m_distanceToDisplayInteractionsHolograms && m_hologramsAlreadyDisplayed) // Update transparency of the holograms according to the distance of the user, in order to have a fading effect
             {
-                //float t = -0.9f * Vector3.Distance(gameObject.transform.position, Camera.main.transform.position) + 2.35f; // Equation of type y = ax+b so that when the distance is 2.5, transparency is equal to 0.1, and gradually goes to 1 at a distance of 1.
+                // Equation of type y = ax+b so that when the distance is 2.5, transparency is equal to 0.1, and gradually goes to 1 at a distance of 1.
                 float t = m_transparencyManagementLinearFunctionCoefficientA * Vector3.Distance(gameObject.transform.position, Camera.main.transform.position) + m_transparencyManagementLinearFunctionCoefficientB;
 
                 interactionHologramsTransparency(t);
@@ -195,7 +214,6 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
                 interactionHologramsDisplay(m_hologramsAlreadyDisplayed);
             }
 
-            //Vector3 parentPosition = gameObject.transform.transform.position;
             m_ParentOrigin = gameObject.transform.position;
 
             setBillboardToGameObject(true);
@@ -226,43 +244,13 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
                 }
             }
 
-            /*if (parentPosition.x <= m_ParentOrigin.x - 0.5f)
-            {
-                parentPosition.x = m_ParentOrigin.x - 0.5f;
-            }
-
-            if (parentPosition.x >= m_ParentOrigin.x + 0.5f)
-            {
-                parentPosition.x = m_ParentOrigin.x + 0.5f;
-            }
-
-            if (parentPosition.y <= m_ParentOrigin.y - 0.5f)
-            {
-                parentPosition.y = m_ParentOrigin.y - 0.5f;
-            }
-
-            if (parentPosition.y >= m_ParentOrigin.y + 0.5f)
-            {
-                parentPosition.y = m_ParentOrigin.y + 0.5f;
-            }
-
-            if (parentPosition.z <= m_ParentOrigin.z - 0.5f)
-            {
-                parentPosition.z = m_ParentOrigin.z - 0.5f;
-            }
-
-            if (parentPosition.z >= m_ParentOrigin.z + 0.5f)
-            {
-                parentPosition.z = m_ParentOrigin.z + 0.5f;
-            }*/
-
             gameObject.transform.position = parentPosition;
 
             // Second: the surrounding cubes are kept in their original position and rotation.
             interactionHologramsUpdatePositionOriginWorld();
             interactionHologramUpdateRotation();
         }
-        else if (m_objectStatus == InteractionState.InteractionStateParentMoveEnd) //m_hologramParentMoveEnd == true)
+        else if (m_objectStatus == InteractionState.InteractionStateParentMoveEnd) 
         {
             // If one of the following three conditions is true, no animation: the whole hologram disapears. If the else condition is reached, that means no interaction occured, and thus the animation can run
             if (Vector3.Distance(gameObject.transform.position, m_hologramNok.getPositionWorld()) < 0.15f)
@@ -341,17 +329,17 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
             }
             else if (m_objectStatus == InteractionState.InteractionStateParentHitOk)
             {
-                animatorParent.m_positionEnd = m_hologramOk.getPositionWorld();//.hologram.transform.position;
+                animatorParent.m_positionEnd = m_hologramOk.getPositionWorld();
                 m_hologramOk.setTouched(true);
             }
             else if (m_objectStatus == InteractionState.InteractionStateParentHitHelp)
             {
-                animatorParent.m_positionEnd = m_hologramHelp.getPositionWorld();//.hologram.transform.position;
+                animatorParent.m_positionEnd = m_hologramHelp.getPositionWorld();
                 m_hologramHelp.setTouched(true);
             }
             else if (m_objectStatus == InteractionState.InteractionStateParentHitReminder)
             {
-                animatorParent.m_positionEnd = m_hologramReminder.getPositionWorld();//.hologram.transform.position;
+                animatorParent.m_positionEnd = m_hologramReminder.getPositionWorld();
                 m_hologramReminder.setTouched(true);
             }
 

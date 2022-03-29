@@ -1,3 +1,17 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +21,9 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System.Reflection;
 using System;
 
+/**
+ * Assistance to show a message with a "I don't understand" button
+ * */
 public class MouseCueing : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -48,20 +65,6 @@ public class MouseCueing : MonoBehaviour
 
             MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform);
 
-            /*if (withAnimation)
-            {
-                EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
-                Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
-                    m_mutexShow = false;
-            }), eventHandler };
-
-                gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, temp);
-            }
-            else
-            {
-                gameObject.SetActive(true);
-                m_mutexShow = false;
-            }*/
             m_text.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e) {
                 EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object oo, EventArgs ee) {
                     Destroy(m_button.gameObject.GetComponent<MouseUtilitiesAnimation>());
@@ -71,48 +74,17 @@ public class MouseCueing : MonoBehaviour
                 m_button.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, temp);
 
                 Destroy(m_text.gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                // m_mutexShow = false;
             }));
-
         }
-
-        
     }
 
     // With animation, compatible with the gradation manager
-    /*public void show(EventHandler e)
-    {
-        show(true, e);
-    }*/
-
     bool m_mutexHide = false;
     public void hide (EventHandler eventHandler)
     {
         if (m_mutexHide == false)
         {
             m_mutexHide = true;
-
-            /*if (withAnimation)
-            {
-                EventHandler[] temp = new EventHandler[] {eventHandler, new EventHandler(delegate (System.Object o, EventArgs e) {
-                gameObject.transform.localScale = new Vector3(1,1,1);
-                gameObject.SetActive(false);
-
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-                Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                    m_mutexHide = false;
-            })};
-
-                gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
-            }
-            else
-            {
-                gameObject.SetActive(false);
-                m_mutexHide = false;
-            }*/
 
             m_text.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e) {
                 EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object oo, EventArgs ee) {
@@ -123,8 +95,6 @@ public class MouseCueing : MonoBehaviour
                 m_button.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
 
                 Destroy(m_text.gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                // m_mutexShow = false;
             }));
         }
     }

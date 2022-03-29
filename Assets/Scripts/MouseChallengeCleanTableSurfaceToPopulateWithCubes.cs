@@ -1,3 +1,17 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +19,10 @@ using System.Reflection;
 using System;
 using System.Linq;
 
+/**
+ * Display a virtual surface to be "cleaned". Covers the surface of the given input gameobject m_hologramToUseToPopulateSurface. The surface is split in m_numberOfCubesToAddInRow * m_numberOfCubesToAddInColumn areas (number of elements per row and by column)
+ * Emits a signal when the surface is fully cleaned
+ * */
 public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -57,15 +75,6 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
         {
             populateTable = true;
         }
-        
-        /*if (m_hologramToUseToPopulateSurface.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>() == null)
-        {
-            
-        }
-        else
-        {
-           
-        }*/
 
         if (populateTable)
         {
@@ -80,8 +89,6 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
             float incrementX = goScaleX / m_numberOfCubesToAddInColumn;
             float incrementZ = goScaleZ / m_numberOfCubesToAddInRow;
 
-            //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Table panel position x=" + gameObject.transform.position.x.ToString() + " z=" + gameObject.transform.position.z.ToString() + " increment: x = " + incrementX.ToString() + " z = " + incrementZ.ToString());
-
             for (posX = 0.0f; posX < goScaleX; posX += incrementX)
             {
                 for (posZ = 0.0f; posZ < goScaleZ; posZ += incrementZ)
@@ -92,8 +99,6 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
                     temp.transform.localScale = new Vector3(incrementX, 0.01f, incrementZ);
                     float posXP = posX - goScaleX / 2.0f + temp.transform.localScale.x / 2.0f;
                     float posZP = posZ - goScaleZ / 2.0f + temp.transform.localScale.z / 2.0f;
-
-                    //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Position of the cube in x=" + posXP.ToString() + " z=" + posZP.ToString() + " | Size of the cube: x= " + temp.transform.localScale.x.ToString() + " z=" + temp.transform.localScale.z.ToString());
 
                     temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 3.0f, posZP);
 
@@ -147,43 +152,9 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
 
     public void resetCubesStates(EventHandler eventHandler)
     {
-        /*bool hideCubes = false;
-
-        if (m_cubesTouched.Count > 0)
-        {
-            KeyValuePair<Tuple<float, float>, Tuple<GameObject, bool>> cube = m_cubesTouched.First();
-            if (cube.Value.Item1.activeSelf == true)
-            {
-                hideCubes = true;
-            }
-            else
-            {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "At least one cube is already hidden, so nothing to do");
-                hideCubes = false;
-            }
-        }
-        else
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No cubes to delete - nothing to do");
-            hideCubes = false;
-        }
-
-        if (hideCubes == true)
-        {
-            // Here we will remove the cubes from the table and display an hologram in the center of the table
-            foreach (KeyValuePair<Tuple<float, float>, Tuple<GameObject, bool>> tempKeyValue in m_cubesTouched)
-            {
-                //tempKeyValue.Value.Item1.SetActive(false);
-                Destroy(tempKeyValue.Value.Item1);
-            }
-
-            eventHandler?.Invoke(this, EventArgs.Empty);
-        }*/
-
         // Here we will remove the cubes from the table and display an hologram in the center of the table
         foreach (KeyValuePair<Tuple<float, float>, Tuple<GameObject, bool>> tempKeyValue in m_cubesTouched)
         {
-            //tempKeyValue.Value.Item1.SetActive(false);
             Destroy(tempKeyValue.Value.Item1);
         }
 

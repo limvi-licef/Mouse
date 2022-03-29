@@ -1,9 +1,26 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Reflection;
 
+/**
+ * Generic component to handle animations. For now show and hide are supported, in place, to a given position and at a certain scaling.
+ * */
 public class MouseUtilitiesAnimation : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -156,7 +173,7 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     public void animateAppearFromPosition (Vector3 pos, MouseDebugMessagesManager debug, EventHandler e)
     {
         m_debug = debug;
-        m_positionEnd = gameObject.transform.position;//gameObject.transform.TransformPoint(new Vector3(0, 0.6f, 0));
+        m_positionEnd = gameObject.transform.position;
         m_scalingEnd = new Vector3(1.0f, 1.0f, 1.0f);
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
         m_eventAnimationFinished += e;
@@ -165,7 +182,6 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         gameObject.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f); // Set scaling to 0 before starting
 
         gameObject.SetActive(true);
-        //MouseUtilities.show(transform);
 
         startAnimation();
     }
@@ -190,16 +206,12 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     public void animateMoveToPosition(Vector3 posDest, MouseDebugMessagesManager debug, EventHandler e)
     {
         m_debug = debug;
-        m_positionEnd = posDest;//gameObject.transform.TransformPoint(new Vector3(0, 0.6f, 0));
+        m_positionEnd = posDest;
         m_scalingEnd = gameObject.transform.localScale;
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnPositioning;
         m_eventAnimationFinished += e;
 
-        //gameObject.transform.position = pos; // Moving the object to the starting position
-        //gameObject.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f); // Set scaling to 0 before starting
-
         gameObject.SetActive(true);
-        //MouseUtilities.show(transform);
 
         startAnimation();
     }

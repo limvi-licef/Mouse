@@ -1,9 +1,26 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Reflection;
 
+/**
+ * Assistance showing an arch between two objects, with a text at the beginning, and a help cube at the end.
+ * */
 public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -59,8 +76,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         m_hologramHelp.localScale = new Vector3(0.1f, 0.1f, 0.1f);
 
         Destroy(m_hologramHelp.GetComponent<MouseUtilitiesAnimation>());
-
-        //gameObject.SetActive(false);
     }
 
     bool m_mutexShow = false;
@@ -69,32 +84,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         if (m_mutexShow == false)
         {
             m_mutexShow = true;
-
-            // Showing button
-            /* if (m_hologramHelp.gameObject.activeSelf)
-             {
-                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Help button already displayed, so no animation to run");
-
-                 m_mutexShow = false;
-             }
-             else
-             {
-                 //gameObject.SetActive(true);
-
-                 EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
-             {
-                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-                 Destroy(m_hologramText.gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                 m_mutexShow = false;
-             }), eventHandler };
-
-                 m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), m_debug, temp);
-             }*/
-
-            // Showing text
-            //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing text to scaling: " + m_textOriginalScaling.ToString());
 
             m_hologramText.position = m_hologramLineController.m_hologramOrigin.transform.position;
             MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_hologramText);
@@ -115,8 +104,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             }), eventHandler };
 
                 m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), m_debug, temp);
-
-                // m_mutexShow = false;
             }));
 
             // Showing line
@@ -133,8 +120,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
         }
-
-        
     }
 
     bool m_mutexHide = false;
@@ -144,23 +129,10 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         {
             m_mutexHide = true;
 
-            /*// Hiding button
-            if (m_hologramHelp.gameObject.activeSelf == false)
-            {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Help button is already hidden, so no animation will be started");
-                m_mutexHide = false;
-            }
-            else
-            {
-                
-            }*/
-
             // Hiding text
             m_hologramText.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_hologramText.gameObject.SetActive(false);
-
-                //m_hologramText.localScale = new Vector3(0.1f,0.1f,0.1f);
 
                 Destroy(m_hologramText.gameObject.GetComponent<MouseUtilitiesAnimation>());
 
@@ -169,8 +141,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
                 m_hologramHelp.gameObject.SetActive(false);
 
                 m_hologramHelp.localScale = new Vector3(0.1f,0.1f,0.1f);
-
-                //gameObject.SetActive(false); // When the cube is hidden, as there is no animation to hide the line, the complete object can be hidden
 
 			    Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
 
@@ -183,13 +153,12 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             // Hiding line
             if (m_hologramLineView.gameObject.activeSelf)
             {
-                m_hologramLineView.GetComponent<MouseLineToObject>().hide(/*eventHandler*/ MouseUtilities.getEventHandlerEmpty()); // The eventhandler being already called above, we do not want it to be called twice, as this could create strange behaviors.
+                m_hologramLineView.GetComponent<MouseLineToObject>().hide(MouseUtilities.getEventHandlerEmpty()); // The eventhandler being already called above, we do not want it to be called twice, as this could create strange behaviors.
             }
             else
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already hidden: nothing to do");
             }
-
         }
         else
         {

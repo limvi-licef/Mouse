@@ -1,3 +1,17 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
@@ -8,6 +22,9 @@ using System.Timers;
 using System.Reflection;
 using System.Linq;
 
+/**
+ * Assistance to who a cube, that has 3 gradation level: fix with discrete colors, vivid colors, and that follows the user
+ * */
 public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -159,10 +176,8 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_hologramController.updateMaterials("Mouse_Clean_Bottom", "Mouse_Clean_Top-Left", "Mouse_Clean_Top-Right");
         m_lightView.gameObject.SetActive(false);
         m_hologramController.GetComponent<Billboard>().enabled = true;
-        //m_hologramView.gameObject.GetComponent<RadialView>().enabled = false;
         GetComponent<RadialView>().enabled = false;
         m_hologramController.setScalingToOriginal();
-        //m_hologramView.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramView.localPosition.y, m_hologramView.localPosition.z - 0.25f);// Removing the offset
 
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing default gradation");
     }
@@ -172,10 +187,8 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_hologramController.updateMaterials("Mouse_Clean_Bottom_Vivid", "Mouse_Clean_Top-Left_Vivid", "Mouse_Clean_Top-Right_Vivid");
         m_lightView.gameObject.SetActive(true);
         m_hologramController.GetComponent<Billboard>().enabled = true;
-        //m_hologramView.gameObject.GetComponent<RadialView>().enabled = false;
         GetComponent<RadialView>().enabled = false;
         m_hologramController.setScalingToOriginal(); // setting back the scaling to the original one.
-        //m_hologramView.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramView.localPosition.y, m_hologramView.localPosition.z - 0.25f);// Removing the offset
 
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing low vivid gradation");
     }
@@ -183,9 +196,6 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
     void callbackGradationHighFollow(System.Object o, EventArgs e)
     {
         // Add an offset in y to the cube to avoid that they remain too much "in front" of the user
-        //m_hologramView.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramView.localPosition.y, m_hologramView.localPosition.z+0.25f);
-
-        //m_hologramView.gameObject.GetComponent<RadialView>().enabled = true;
         GetComponent<RadialView>().enabled = true;
         m_hologramView.gameObject.GetComponent<Billboard>().enabled = false; // The billboard is present on the parent object so that the cube can be shifted to avoid that it is too much in front of the user.
         m_lightView.gameObject.SetActive(false);

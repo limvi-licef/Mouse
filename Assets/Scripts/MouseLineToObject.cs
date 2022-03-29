@@ -1,9 +1,26 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection;
 using System;
 
+/**
+ * Draw an arch between two given objects. Uses a Bézier quadratic curve to draw the line.
+ * */
 public class MouseLineToObject : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -79,9 +96,6 @@ public class MouseLineToObject : MonoBehaviour
 
             if (gameObject.activeSelf == false)
             {
-
-                /*Vector3 endPoint = gameObject.transform.position;
-                Vector3 startPoint = m_hologramTarget.transform.position;*/
                 Vector3 startPoint = m_hologramOrigin.transform.position;
                 Vector3 endPoint = m_hologramTarget.transform.position;
                 Vector3 midPoint = (startPoint + endPoint) / 2;
@@ -112,9 +126,6 @@ public class MouseLineToObject : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
         }
-
-        
-
     }
 
     void drawQuadraticCurve(Vector3 startPoint, Vector3 midPoint, Vector3 endPoint)

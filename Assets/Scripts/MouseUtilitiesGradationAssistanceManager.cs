@@ -1,3 +1,17 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
@@ -8,6 +22,14 @@ using System.Timers;
 using System.Reflection;
 using System.Linq;
 
+/**
+ * State machine to handle the assistance gradation that contains more advanced functionalities that the basic one (who said that sounds logic? You won a candy).
+ * The basic idea behing this is that each assistance as a life that start from a moment where it is "showed", and ends when it is "hidden". 
+ * So first you create states with the addNewAssistanceGradation function.
+ * Then, for each state, you have to add a pointer to one or several functions that should be called when the state is enabled and disabled. See the class below "MouseUtilitiesGradationAssistance" for more details. 
+ * The state changes are done asynchrounously. In other words, you do not call the functions to move the states yourself. Rather, for a given state, you attach each next possible states to an event. This is not managed by this class but by the "MouseUtilitiesGradationAssistance" class below. See there for more information. This class registers automatically to each state change so that it knows when to trigger the hide / show functions. The hide function of the current state is first called. When it is finished, it calls all the show functions sequencially. It does not wait for a show function to finish to call the next one.
+ * Handles a one level undo.
+ * */
 public class MouseUtilitiesGradationAssistanceManager
 {
     public MouseDebugMessagesManager m_debug;
@@ -18,25 +40,6 @@ public class MouseUtilitiesGradationAssistanceManager
     string m_gradationCurrent;
     string m_gradationNext;
     string m_gradationInitial;
-
-    //int m_assistanceGradationIndexCurrent;
-
-    private void Awake()
-    {
-       
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public string getGradationCurrent()
     {
@@ -55,27 +58,18 @@ public class MouseUtilitiesGradationAssistanceManager
 
     public MouseUtilitiesGradationAssistanceManager()
     {
-        //m_assistanceGradationIndexCurrent = -1; // i.e. no assistance in the list.
         m_assistanceGradation = new Dictionary<string, MouseUtilitiesGradationAssistance>();
         m_gradationPrevious = "";
         m_gradationCurrent = "";
         m_gradationNext = "";
     }
 
-    public MouseUtilitiesGradationAssistance addNewAssistanceGradation(string id/*, MouseUtilitiesGradationAssistance previous , MouseUtilitiesGradationAssistance next*/)
+    public MouseUtilitiesGradationAssistance addNewAssistanceGradation(string id)
     {
         MouseUtilitiesGradationAssistance newItem = new MouseUtilitiesGradationAssistance(id);
         newItem.m_debug = m_debug;
-        //newItem.addHideShowsPair(pairs);
-        //newItem.setGradationNext(next);
-        //newItem.setGradationPrevious(previous);
 
         m_assistanceGradation.Add(newItem.getId(), newItem);
-
-        /*if (m_assistanceGradationIndexCurrent == -1)
-        { // If this is the first gradation, then select it as the current one
-            m_assistanceGradationIndexCurrent = 0;
-        }*/
 
         if (m_gradationCurrent == "")
         {
@@ -92,7 +86,7 @@ public class MouseUtilitiesGradationAssistanceManager
 
 
             m_gradationPrevious = m_gradationCurrent;
-            m_gradationCurrent = m_gradationNext; // nextGradation.getNextGradationState().getId();//.Item1.getId();
+            m_gradationCurrent = m_gradationNext;
         });
 
         List<EventHandler> actionsEventHandler = newItem.getFunctionsShowEventHandlers();
@@ -119,58 +113,21 @@ public class MouseUtilitiesGradationAssistanceManager
         {
             MouseUtilitiesGradationAssistance caller = (MouseUtilitiesGradationAssistance)o;
 
-            //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Caller: " + caller.getId() + " | going to previous state: " + m_gradationPrevious);
-
-            //goToNextState(m_gradationPrevious);
             goToPreviousState();
         });
 
         return newItem;
     }
 
-    /*public void addPairToAssistanceGradationNextState(string idAssistance, string idAssistanceNextState, MouseUtilitiesGradationAssistance next, List<MouseUtilitiesGradationAssistanceHideShowPair> pairs)
-    {
-        m_assistanceGradation[idAssistance].addGradationNext(idAssistanceNextState, next, pairs);
-    }
-
-    public void setPairsToAssistanceGradationPreviousState(string idAssistance, MouseUtilitiesGradationAssistance previous, List<MouseUtilitiesGradationAssistanceHideShowPair> pairs)
-    {
-        m_assistanceGradation[idAssistance].setGradationPrevious(previous, pairs);
-    }*/
-
-
-
     /*
      * Return true if max gradation is reached, false otherwise
      * */
-    public bool goToNextState(string idNext)
+    bool goToNextState(string idNext)
     {
         bool toReturn = false;
 
-        /*int nbGradations = m_assistanceGradation.Count;
-
-        if (m_assistanceGradationIndexCurrent < nbGradations)
-        {
-            m_assistanceGradationIndexCurrent++;
-
-            m_assistanceGradation[m_assistanceGradationIndexCurrent].callback?.Invoke(this, EventArgs.Empty);
-        }
-
-
-        if (m_assistanceGradationIndexCurrent == nbGradations - 1)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Maximum gradation level reached");
-            toReturn = true;
-        }*/
-
-        // 
-
-        //Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>> nextGradation = m_assistanceGradation[m_gradationCurrent].getGradationNext(idNext);
-        //MouseUtilitiesGradationAssistanceNextState nextGradation = m_assistanceGradation[m_gradationCurrent].getGradationNext(idNext);
         MouseUtilitiesGradationAssistance stateCurrent = m_assistanceGradation[m_gradationCurrent];
         MouseUtilitiesGradationAssistance stateNext = m_assistanceGradation[m_gradationCurrent].getGradationNext(idNext);
-
-        
 
         if (stateNext == null)
         { // Means we have reached the last state of the state machine. So nothing to do excepted informing the user
@@ -181,37 +138,16 @@ public class MouseUtilitiesGradationAssistanceManager
         else
         {
             m_gradationNext = stateNext.getId();
-            //MouseUtilitiesGradationAssistance stateNext = stateCurrent.getGradationNext(idNext);
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + stateCurrent.getId() + " to " + stateNext.getId() + ". Number of show functions to call: " + stateNext.getFunctionsShow().Count);
 
             goToState(stateCurrent, stateNext);
 
-            //raiseEventsGradation(stateCurrent.getFunctionHide(), stateCurrent.getFunctionHideEventHandler(), stateNext.getFunctionsShow(), stateNext.getFunctionsShowEventHandlers());
-
-            //m_assistanceGradation[m_gradationCurrent].
-
-            /*foreach (MouseUtilitiesGradationAssistanceHideShowPair pair in nextGradation.getTransitions())
-            {
-                List<Action<EventHandler>> actions = pair.getFunctionsShow();
-                actions.Add(delegate (EventHandler e)
-                {
-                    m_gradationCurrent = nextGradation.getNextGradationState().getId();//.Item1.getId();
-                });
-
-                List<EventHandler> actionsEventHandler = pair.getFunctionsShowEventHandlers();
-                actionsEventHandler.Add(MouseUtilities.getEventHandlerEmpty());
-
-                // Adding internal function to swtch to next state once this is all finished
-                raiseEventsGradation(pair.getFunctionHide(), pair.getFunctionHideEventHandler(), actions, actionsEventHandler);
-            }*/
         }
-
-        
 
         return toReturn;
     }
 
-    public void goToPreviousState()
+    void goToPreviousState()
     { // No arguments as previous state is known internally
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + m_assistanceGradation[m_gradationCurrent].getId() + " to " + m_assistanceGradation[m_gradationPrevious].getId());
 
@@ -220,7 +156,7 @@ public class MouseUtilitiesGradationAssistanceManager
         goToState(m_assistanceGradation[m_gradationCurrent], m_assistanceGradation[m_gradationPrevious]);
     }
 
-    // Don't make this function public! Should not be called if you do not know what your are doing.
+    // Be careful with this function ! Should not be called directly if you do not know what your are doing. It is a short function but can mess up many things.
     void goToState(MouseUtilitiesGradationAssistance current, MouseUtilitiesGradationAssistance next)
     { // Current: will call hide function; Next: will call show functions
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. Going from " + current.getId() + " to " + next.getId());
@@ -228,58 +164,9 @@ public class MouseUtilitiesGradationAssistanceManager
         raiseEventsGradation(current.getFunctionHide(), current.getFunctionHideEventHandler(), next.getFunctionsShow(), next.getFunctionsShowEventHandlers());
     }
 
-    /*
-     * Return true if min gradation is reached, false otherwise
+    /**
+     * Reponsible to call the hide event of the current state, and the shows functions of the next state.
      * */
-    /*public bool decreaseGradation()
-    {
-        bool toReturn = false;*/
-
-        /*if (m_assistanceGradationIndexCurrent > 0) // 0 being the first element of the list, i.e. the minimal one
-        {
-            m_assistanceGradationIndexCurrent--;
-
-            m_assistanceGradation[m_assistanceGradationIndexCurrent].callback?.Invoke(this, EventArgs.Empty);
-        }
-
-        if (m_assistanceGradationIndexCurrent == 0)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Minimum gradation level reached");
-
-            toReturn = true;
-        }*/
-
-        //Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>> previousGradation = m_assistanceGradation[m_gradationCurrent].getGradationPrevious();
-        //m_assistanceGradation[m_gradationCurrent].getGradationNext(idNext).Item2
-        /*MouseUtilitiesGradationAssistance previousGradation = m_assistanceGradation[m_gradationCurrent].getGradationPrevious();
-
-        if (previousGradation == null)
-        { // Means we are already at the first state, so nothing to do, excepted informing the caller.
-            toReturn = true;
-        }
-        else
-        {
-            foreach (MouseUtilitiesGradationAssistanceHideShowPair pair in m_assistanceGradation[m_gradationCurrent].getGradationPrevious().Item2)
-            {
-                List<Action<EventHandler>> actions = pair.getFunctionsShow();
-                actions.Add(delegate (EventHandler e)
-                {
-                    m_gradationCurrent = previousGradation.Item1.getId();
-                });
-
-                List<EventHandler> actionsEventHandlers = pair.getFunctionsShowEventHandlers();
-                actionsEventHandlers.Add(MouseUtilities.getEventHandlerEmpty());
-
-                // Adding internal function to swtch to next state once this is all finished
-                raiseEventsGradation(pair.getFunctionHide(), pair.getFunctionHideEventHandler(), actions, actionsEventHandlers);
-            }
-        }
-
-        
-        */
-    /*    return toReturn;
-    }*/
-
     void raiseEventsGradation(Action<EventHandler> fHide, EventHandler fHideEventHandler, List<Action<EventHandler>> fShows, List<EventHandler> fShowsEventHandler)
     {
         fHide(new EventHandler(delegate (System.Object o, EventArgs e)
@@ -291,53 +178,21 @@ public class MouseUtilitiesGradationAssistanceManager
                 fShows[i](fShowsEventHandler[i]);
             }
 
-            /*foreach (Action<EventHandler> fShow in fShows)
-            {
-                fShow(MouseUtilities.getEventHandlerEmpty());
-            }*/
-
             fHideEventHandler?.Invoke(this, EventArgs.Empty);
         }));
     }
-
-    // This might be optimized by having a pointer to the original state, that updates each time a new state is added.
-    /*public void setGradationToMinimum()
-    {*/
-        /*m_assistanceGradationIndexCurrent = 0;
-
-        m_assistanceGradation[m_assistanceGradationIndexCurrent].callback?.Invoke(this, EventArgs.Empty);*/
-
-        //m_gradationCurrent = 
-
-        // From the current state, going back to the starting state
-        //Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>> previousGradation = m_assistanceGradation[m_gradationCurrent].getGradationPrevious();
-        /*MouseUtilitiesGradationAssistance previousGradation = m_assistanceGradation[m_gradationCurrent].getGradationPrevious();
-
-        while (previousGradation != null)
-        {
-            //m_gradationCurrent = previousGradation.Item1.getId();
-            m_gradationCurrent = previousGradation.getId();
-            previousGradation = m_assistanceGradation[m_gradationCurrent].getGradationPrevious();
-        }*/
-
-        //m_gradationCurrent = m_gradationInitial;
-        //goToNextState(m_gradationInitial);
-    //}
 }
 
+/*
+ * This class managed the states for the above state machine manager. 
+ * Once you have created a state with the constructor, you have to add a pointer to one or several functions that should be called when the state is enabled, thanks to the "addFunctionShow" function. The only requirement of these functions is to have a EvantHandler as input parameter. If your function does not have such parameter, you can easily encapsulate it in a delegate. The "show" functions are called sequentially.
+ * Then do a similar process by setting a hide function using the "setHideFunction" parameter. As you can notice, you can set several "show" function and only one "hide" function. The reason is that it can happen that a "show" is composed of several steps, whereas the "hide" concerns only the object targeted by the state. Moreover, the "hide" function is used as a entry point to call the show functions. But you can also use a delegate to encapsulate this and do several processes. I would not advice that, because my feeling would be that something should be changed in the architecture of the code. However, if you do that, DO NOT FORGET to invoke the EventHandler given as input parameter at the end of your delegate. The reason is that due to the internal process, it won't be called automatically called.
+ * */
 public class MouseUtilitiesGradationAssistance
 {
     string m_id;
 
-    //Dictionary<string, Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>>> m_nextStates; // Id of the state, <next state corresponding to this ID, list of hide / show pair>. Use of this way because a same state can go to different next states following the provided interaction
-    //Dictionary<string, MouseUtilitiesGradationAssistanceNextState> m_nextStates; // Id of the state, <next state corresponding to this ID, list of hide / show pair>. Use of this way because a same state can go to different next states following the provided interaction
     Dictionary<string, MouseUtilitiesGradationAssistance> m_nextStates; // Id of the state, <next state corresponding to this ID, list of hide / show pair>. Use of this way because a same state can go to different next states following the provided interaction
-
-    //Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>> m_gradationPrevious; // One tuple here with the previous state and the list of hide/show pair. Only one here compared to the "m_nextStates" variable as a state can only have one previous state.
-    //MouseUtilitiesGradationAssistance m_gradationPrevious;
-
-    //MouseUtilitiesGradationAssistance m_gradationNext;
-    //List<MouseUtilitiesGradationAssistanceHideShowPair> m_hideShowsPairs;
 
     List<Action<EventHandler>> m_functionsShow;
     List<EventHandler> m_functionsShowEventHandlers;
@@ -352,11 +207,6 @@ public class MouseUtilitiesGradationAssistance
     public MouseUtilitiesGradationAssistance(string id)
     {
         m_id = id;
-        //m_hideShowsPairs = new List<MouseUtilitiesGradationAssistanceHideShowPair>();
-        //m_gradationPrevious = null;
-        //m_gradationNext = null;
-        //m_nextStates = new Dictionary<string, Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>>>();
-        //m_nextStates = new Dictionary<string, MouseUtilitiesGradationAssistanceNextState>();
         m_nextStates = new Dictionary<string, MouseUtilitiesGradationAssistance>();
 
         m_functionsShow = new List<Action<EventHandler>>();
@@ -370,61 +220,17 @@ public class MouseUtilitiesGradationAssistance
         return m_id;
     }
 
-    /*public void setGradationPrevious(MouseUtilitiesGradationAssistance previous, List<MouseUtilitiesGradationAssistanceHideShowPair> pairs)
+    public EventHandler setGradationPrevious()
     {
-        m_gradationPrevious = new Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>>(previous, pairs);
-    }
-
-    public Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>> getGradationPrevious()
-    {
-        return m_gradationPrevious;
-    }*/
-
-    public EventHandler setGradationPrevious(/*MouseUtilitiesGradationAssistance previous*/)
-    {
-        //m_gradationPrevious = previous;
-
         return new EventHandler(delegate (System.Object o, EventArgs e)
         {
-            //MouseUtilisiesGradationAssistanceArgs temp = new MouseUtilisiesGradationAssistanceArgs();
-            //temp.m_nextState = nextState.getId();
-
             m_triggerPrevious?.Invoke(this, EventArgs.Empty);
         });
     }
 
-    /*public MouseUtilitiesGradationAssistance getGradationPrevious()
-    {
-        return m_gradationPrevious;
-    }*/
-
-    /*public void addGradationNext(string id, MouseUtilitiesGradationAssistance next, List<MouseUtilitiesGradationAssistanceHideShowPair> pairs)
-    {
-        //m_gradationNext = next;
-        MouseUtilitiesGradationAssistanceNextState temp = new MouseUtilitiesGradationAssistanceNextState();
-        temp.setNextGradationState(next);
-        //MouseUtilitiesGradationAssistanceHideShowPair  temp.addTransitionNextState();
-        temp.setTransitionsNextState(pairs);
-
-        //m_nextStates.Add(id, new Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>>(next, pairs));
-        m_nextStates.Add(id, temp);
-
-    }*/
-
-    /*public MouseUtilitiesGradationAssistanceNextState addGradationNext(string id)
-    {
-        //m_nextStates.Add(id, new Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>>());
-        m_nextStates.Add(id, new MouseUtilitiesGradationAssistanceNextState());
-        return m_nextStates[id];
-    }*/
-
     public EventHandler addGradationNext(MouseUtilitiesGradationAssistance nextState)
     {
-        //m_nextStates.Add(id, new Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>>());
         m_nextStates.Add(nextState.getId(), nextState);
-        //return m_nextStates[id];
-
-        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Next state added: " + nextState.getId());
 
         return new EventHandler(delegate (System.Object o, EventArgs e)
         {
@@ -436,37 +242,17 @@ public class MouseUtilitiesGradationAssistance
     }
 
     // Returns null if key does not exist. Most likely means that you have reached the last state of the state machine. So sad.
-    public /*Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>>*/ /*MouseUtilitiesGradationAssistanceNextState*/ MouseUtilitiesGradationAssistance getGradationNext(string id)
+    public MouseUtilitiesGradationAssistance getGradationNext(string id)
     {
-        //Tuple<MouseUtilitiesGradationAssistance, List<MouseUtilitiesGradationAssistanceHideShowPair>> toReturn = null;
-        //MouseUtilitiesGradationAssistanceNextState toReturn = null;
         MouseUtilitiesGradationAssistance toReturn = null;
-
-        /*m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. List of states for " + m_id + ": ");
-
-        foreach (string s in m_nextStates.Keys)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "- " + s);
-        }*/
-
 
         if (m_nextStates.ContainsKey(id))
         {
             toReturn = m_nextStates[id];
         }
-        //return m_gradationNext;
+
         return toReturn;
     }
-
-    /*public void addHideShowsPair(MouseUtilitiesGradationAssistanceHideShowPair pair)
-    {
-        m_hideShowsPairs.Add(pair);
-    }
-
-    public List<MouseUtilitiesGradationAssistanceHideShowPair> getPairs()
-    {
-        return m_hideShowsPairs;
-    }*/
 
     public void addFunctionShow(Action<EventHandler> fShow, EventHandler handler)
     {
@@ -501,108 +287,10 @@ public class MouseUtilitiesGradationAssistance
     }
 }
 
+/**
+ * Simple encapsulation to inform the main class about the ID of the next state
+ * */
 public class MouseUtilisiesGradationAssistanceArgs : EventArgs
 {
     public string m_nextState;
-}
-
-
-public class MouseUtilitiesGradationAssistanceHideShowPair
-{
-    Action<EventHandler> m_functionHide;
-    EventHandler m_functionHideEventHandler;
-    List<Action<EventHandler>> m_functionsShow;
-    List<EventHandler> m_functionsShowEventHandlers;
-
-    public MouseUtilitiesGradationAssistanceHideShowPair()
-    {
-        m_functionHide = null;
-        m_functionsShow = new List<Action<EventHandler>>();
-        m_functionsShowEventHandlers = new List<EventHandler>();
-    }
-
-    public void setFunctionHide(Action<EventHandler> f)
-    {
-        setFunctionHide(f, MouseUtilities.getEventHandlerEmpty());
-    }
-
-    public void setFunctionHide(Action<EventHandler> f, EventHandler arg)
-    {
-        m_functionHide = f;
-        m_functionHideEventHandler = arg;
-    }
-
-    public void addFunctionShow(Action<EventHandler> f)
-    {
-        addFunctionShow(f, MouseUtilities.getEventHandlerEmpty());
-    }
-
-    public void addFunctionShow(Action<EventHandler> f, EventHandler arg)
-    {
-        m_functionsShow.Add(f);
-        m_functionsShowEventHandlers.Add(arg);
-    }
-
-    public Action<EventHandler> getFunctionHide()
-    {
-        return m_functionHide;
-    }
-
-    public EventHandler getFunctionHideEventHandler()
-    {
-        return m_functionHideEventHandler;
-    }
-
-    public List<Action<EventHandler>> getFunctionsShow()
-    {
-        return m_functionsShow;
-    }
-
-    public List<EventHandler> getFunctionsShowEventHandlers()
-    {
-        return m_functionsShowEventHandlers;
-    }
-}
-
-
-
-public class MouseUtilitiesGradationAssistanceNextState
-{
-    MouseUtilitiesGradationAssistance m_nextGradationState;
-    List<MouseUtilitiesGradationAssistanceHideShowPair> m_transitionsToNextState;
-
-    public MouseUtilitiesGradationAssistanceNextState()
-    {
-        m_nextGradationState = null;
-
-        m_transitionsToNextState = new List<MouseUtilitiesGradationAssistanceHideShowPair>();
-    }
-
-    public void setNextGradationState(MouseUtilitiesGradationAssistance nextState)
-    {
-        m_nextGradationState = nextState;
-    }
-
-    public MouseUtilitiesGradationAssistanceHideShowPair addTransitionNextState()
-    {
-        m_transitionsToNextState.Add(new MouseUtilitiesGradationAssistanceHideShowPair());
-
-        return m_transitionsToNextState.Last();
-    }
-
-    // Be careful: replaces the current list of transitions.
-    public void setTransitionsNextState(List<MouseUtilitiesGradationAssistanceHideShowPair> transitions)
-    {
-        m_transitionsToNextState = transitions;
-    }
-
-    public List<MouseUtilitiesGradationAssistanceHideShowPair> getTransitions()
-    {
-        return m_transitionsToNextState;
-    }
-
-    public MouseUtilitiesGradationAssistance getNextGradationState()
-    {
-        return m_nextGradationState;
-    }
 }

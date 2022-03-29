@@ -1,3 +1,17 @@
+/*Copyright 2022 Guillaume Spalla
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.*/
+
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
@@ -8,6 +22,7 @@ using System.Timers;
 
 // Todo: Make this class more generic, i.e. by using the normal of the surface, and rotating the cube to use to populate the surface by the normal.
 // This class relies on the "Interactable MRTK component to catch a touch event. Other classes implement the interface, as they need the details of the event. Interactable does not provide such details, but is easier to implement. Here we do not need those information, so that is why we use this Interactable component.
+// Old version of the clean table challenge. Will most likely diseappear one of these days.
 public class MouseChallengeCleanTableV1 : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
@@ -117,7 +132,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
     void callbackHologramAssistanceStimulateAbstractOk(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackInviteChallengeHologramOk", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        //m_hologramAssistanceStimulateAbstract.SetActive(false);
 
         updateChallenge(ChallengeCleanTableStates.Challenge);
     }
@@ -125,8 +139,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
     void callbackHologramAssistanceStimulateAbstractNok(object sender, EventArgs e)
     { // This function just relays the message by calling the appropriate function. Maybe all the code could be there.
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackInviteChallengeHologramNok", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        /*m_hologramAssistanceStimulateAbstract.SetActive(false);
-        m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.*/
 
         updateChallenge(ChallengeCleanTableStates.StandBy);
     }
@@ -134,8 +146,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
     void callbackHologramAssistanceStimulateAbstractReminder(object sender, EventArgs e)
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "callbackHologramAssistanceStimulateAbstractReminder", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        /*m_hologramAssistanceStimulateAbstract.SetActive(false);
-        m_surfaceTouched = false; // Reset challenge status, so that if the person touche the table surface again, it will restart it.*/
 
         updateChallenge(ChallengeCleanTableStates.AssistanceReminder);
     }
@@ -304,7 +314,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
 
     public void callbackHandPalmFacingUser()
     {
-        /*m_debug.displayMessage("MouseHandInteractions", "callbackHandPalmFacingUser", MouseDebugMessagesManager.MessageLevel.Info, "Hand palm detected");*/
         m_palmOpened = true;
         if (m_messageDetailedFocused)
         {
@@ -318,7 +327,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
 
     public void callbackHandPalmNotFacinUserAnymore()
     {
-        //m_debug.displayMessage("MouseHandInteractions", "callbackHandPalmFacingUser", MouseDebugMessagesManager.MessageLevel.Info, "Hand palm not detected anymore");
         m_palmOpened = false;
         if (m_messageDetailedFocused)
         {
@@ -332,19 +340,17 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
 
     public void callbackMessageDetailingChallengeOnFocus()
     {
-        /*m_debug.displayMessage("MouseHandInteractions", "callbackMessageDetailingChallengeOnFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message focused (has m_messageDetailedFocused = true)");*/
         m_messageDetailedFocused = true;
         updateMessageDetailedMenu();
     }
 
     public void callbackMessageDetailingChallengeOnLosingFocus()
     {
-        /*m_debug.displayMessage("MouseHandInteractions", "callbackMessageDetailingChallengeOnLosingFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message not focused anymore");*/
+
     }
 
     public void callbackReminderWindowOnFocus()
     {
-        /*m_debug.displayMessage("MouseHandInteractions", "callbackReminderWindowOnFocus", MouseDebugMessagesManager.MessageLevel.Info, "Message focused");*/
         m_messageReminderFocused = true;
         updateMessageReminderMenu();
     }
@@ -353,14 +359,8 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
     {
         m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-        // Bring specific components to the center of the interaction surface
-        //m_hologramInviteChallenge.transform.localPosition = new Vector3(m_hologramInteractionSurface.transform.localPosition.x, m_hologramInteractionSurface.transform.localPosition.y+50, m_hologramInteractionSurface.transform.localPosition.z);
-
         gameObject.transform.position = m_hologramInteractionSurface.transform.position;
-        //gameObject.transform. = m_hologramInteractionSurface.transform.localScale;
         m_hologramInteractionSurface.transform.localPosition = new Vector3(0, 0f, 0);
-        //m_hologramInteractionSurface.transform.localScale = new Vector3(1, 1, 1);
-
     }
 
     // This function can run properly only if the gameobject managing the display of the detailed message contains the script MouseChallengeCleanTableDetailsChallenge
@@ -375,17 +375,14 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
         }
         if (m_messageDetailedFocused && m_palmOpened)
         {
-            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageDetailedMenu", MouseDebugMessagesManager.MessageLevel.Info, "Display palm menu");*/
             cleanTableDetailsChallenge.displayMenus(false, true);
         }
         else if (m_messageDetailedFocused && m_palmOpened == false)
         {
-            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageDetailedMenu", MouseDebugMessagesManager.MessageLevel.Info, "Display window menu");*/
             cleanTableDetailsChallenge.displayMenus(true, false);
         }
         else if ( m_messageDetailedFocused == false)
         {
-            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageDetailedMenu", MouseDebugMessagesManager.MessageLevel.Info, "Closing menus");*/
             cleanTableDetailsChallenge.displayMenus(false, false);
         }
     }
@@ -402,17 +399,14 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
 
         if (m_messageReminderFocused && m_palmOpened)
         {
-            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageReminderMenu", MouseDebugMessagesManager.MessageLevel.Info, "Display palm menu");*/
             cleanTableDetailsChallenge.displayMenus(false, true);
         }
         else if (m_messageReminderFocused && m_palmOpened == false)
         {
-            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageReminderMenu", MouseDebugMessagesManager.MessageLevel.Info, "Display window menu");*/
             cleanTableDetailsChallenge.displayMenus(true, false);
         }
         else if (m_messageReminderFocused == false)
         {
-            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "updateMessageReminderMenu", MouseDebugMessagesManager.MessageLevel.Info, "Closing menus");*/
             cleanTableDetailsChallenge.displayMenus(false, false);
         }
     }
@@ -427,28 +421,11 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
         {
             Vector3 goLocalPosition = gameObject.transform.localPosition;
 
-            /*m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Size of table panel: x=" + gameObject.GetComponent<Renderer>().bounds.size.x.ToString() + " y=" + gameObject.GetComponent<Renderer>().bounds.size.y.ToString());
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Local position of table panel: x =" + goLocalPosition.x.ToString() + " y =" + goLocalPosition.y.ToString() + " z =" + goLocalPosition.z.ToString());
-            m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "populateTablePanel", MouseDebugMessagesManager.MessageLevel.Info, "Position of table panel: x =" + gameObject.transform.position.x.ToString() + " y =" + gameObject.transform.position.y.ToString() + " z =" + gameObject.transform.position.z.ToString());*/
-
-            /*float goScaleX = gameObject.transform.localScale.x;
-            float goScaleY = gameObject.transform.localScale.y;
-            float goScaleZ = gameObject.transform.localScale.z;*/
-
             float goScaleX = 1.0f;
             float goScaleZ = 1.0f;
 
-            /*float goScaleX = m_hologramInteractionSurface.transform.localScale.x;
-            float goScaleZ = m_hologramInteractionSurface.transform.localScale.z;*/
-
             float posX = 0.0f;
             float posZ = 0.0f;
-
-            /*float incrementX = goScaleX / m_numberOfCubesToAddInColumn;
-            float incrementZ = goScaleZ / m_numberOfCubesToAddInRow;*/
-
-            /*float incrementX = 1.0f / m_numberOfCubesToAddInColumn;
-            float incrementZ = 1.0f / m_numberOfCubesToAddInRow;*/
 
             float incrementX = goScaleX / m_numberOfCubesToAddInColumn;
             float incrementZ = goScaleZ / m_numberOfCubesToAddInRow;
@@ -460,7 +437,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
                 for (posZ = 0.0f; posZ < goScaleZ; posZ += incrementZ)
                 {
                     GameObject temp = Instantiate(m_hologramToUseToPopulateSurface);
-                    //temp.transform.SetParent(gameObject.transform, false);
                     temp.transform.SetParent(m_hologramInteractionSurface.transform, false);
                     temp.transform.localPosition = Vector3.zero;
                     temp.transform.localScale = new Vector3(incrementX, 0.01f, incrementZ);
@@ -483,15 +459,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*if (transform.hasChanged)
-        {
-            m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Transform has changed");
-            transform.hasChanged = false;
-        }*/
-        // trying to show the holograms at eye's height
-        //m_positionLocalReferenceForHolograms.y = gameObject.transform.InverseTransformPoint(Camera.main.transform.position).y+0.2f;
-        //m_debug.displayMessage("MouseChallengecleanTable", "Update", MouseDebugMessagesManager.MessageLevel.Info, "New local reference point y: " + m_positionLocalReferenceForHolograms.y.ToString());
-
         if (m_timerAssistanceStimulateAbstractStart)
         {
             m_timerAssistanceStimulateAbstractCountdown -= 1;
@@ -592,8 +559,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
         {
             if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
             {
-                //m_hologramAssistanceReminder.SetActive(false);
-                //m_hologramAssistanceStimulateAbstract.SetActive(true);
                 MouseUtilitiesAnimation animator = m_hologramAssistanceStimulateAbstract.AddComponent<MouseUtilitiesAnimation>();
                 animator.animateAppearInPlaceToScaling(new Vector3(0.3f, 0.3f, 0.3f), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -603,12 +568,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
             else if (m_surfaceTouched == false) // Surface can be touched only once
             {
                 m_debug.displayMessage("MouseSurfaceToPopulateWithCubes", "onClick", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-                //m_hologramAssistanceStimulateAbstract.SetActive(true);
-                /*MouseUtilitiesHologramInteractionSwipes cubeInteractions = m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>();
-                cubeInteractions.m_utilitiesInteractionSwipesEventHelp += callbackHologramAssistanceStimulateAbstractHelp; // Subsribe to the event so that the object is aware with the invite challenge hologram has been touched
-                cubeInteractions.m_utilitiesInteractionSwipesEventOk += callbackHologramAssistanceStimulateAbstractOk;
-                cubeInteractions.m_utilitiesInteractionSwipesEventNok += callbackHologramAssistanceStimulateAbstractNok;
-                cubeInteractions.m_utilitiesInteractionSwipesEventReminder += callbackHologramAssistanceStimulateAbstractReminder;*/
 
                 MouseUtilitiesAnimation animator = m_hologramAssistanceStimulateAbstract.AddComponent<MouseUtilitiesAnimation>();
                 animator.animateAppearInPlaceToScaling(new Vector3(0.3f, 0.3f, 0.3f), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
@@ -629,9 +588,6 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
         else if (m_stateCurrent == ChallengeCleanTableStates.Challenge)
         {
             // First we not go in for subtleties, i.e. we just hide all assistance windows without looking which one is currently displayed.
-            //m_hologramAssistanceStimulateAbstract.SetActive(false);
-            //m_hologramAssistanceStimulate.SetActive(false);
-            //m_hologramAssistanceSolution.SetActive(false);
 
             if (m_statePrevious == ChallengeCleanTableStates.AssistanceSolution)
             {
@@ -670,27 +626,12 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
                 m_hologramAssistanceStimulateAbstract.SetActive(false);
 
                 // Animate the next window to display
-                //m_hologramAssistanceStimulate.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                //m_hologramAssistanceStimulate.transform.position = m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramHelp.getPositionWorld();//.hologram.transform.position;
-
-                //m_hologramAssistanceStimulate.SetActive(true);
-
-                //m_startAnimationDisplayMessageGradationLevel1 = true;
-
                 MouseUtilitiesAnimation animator = m_hologramAssistanceStimulate.AddComponent<MouseUtilitiesAnimation>();
                 animator.animateAppearFromPosition(m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramHelp.getPositionWorld(), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
                 {
                     m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
                     //m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
                 }));
-
-                /*animator.m_debug = m_debug;
-                animator.m_animationSpeed = 1.0f;
-                animator.m_scalingstep = 0.01f;
-                animator.m_positionEnd = gameObject.transform.TransformPoint(new Vector3(0, 0.6f, 0));
-                animator.m_scalingEnd = new Vector3(1.0f, 1.0f, 1.0f);
-                animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-                animator.startAnimation();*/
             }
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
             {
@@ -700,11 +641,8 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
                     m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
                 }));
 
-                //m_hologramAssistanceReminder.SetActive(false);
                 m_messageReminderFocused = false;
                 updateMessageReminderMenu();
-
-                //m_hologramAssistanceStimulate.SetActive(true);
             }
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceReminder)
@@ -716,85 +654,27 @@ public class MouseChallengeCleanTableV1 : MonoBehaviour
                 {
                     m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
                 }));
-
-                //m_hologramAssistanceStimulate.SetActive(false);
             }
-            /*else if (m_statePrevious == ChallengeCleanTableStates.AssistanceSolution)
-            {
-                //m_hologramAssistanceSolution.SetActive(false);
-
-                m_messageDetailedFocused = false;
-                updateMessageDetailedMenu();
-            }*/
             else if (m_statePrevious == ChallengeCleanTableStates.AssistanceStimulateAbstract)
             {
                 m_hologramAssistanceStimulateAbstract.SetActive(false);
-
-                /*m_hologramAssistanceReminder.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                m_hologramAssistanceReminder.transform.position = m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramHelp.getPositionWorld();
-
-                m_hologramAssistanceReminder.SetActive(true);
-
-                MouseUtilitiesAnimation animator = m_hologramAssistanceReminder.AddComponent<MouseUtilitiesAnimation>();
-                animator.m_debug = m_debug;
-                animator.m_animationSpeed = 1.0f;
-                animator.m_scalingstep = 0.01f;
-                animator.m_positionEnd = gameObject.transform.TransformPoint(new Vector3(0, 1.0f, 0));
-                animator.m_scalingEnd = new Vector3(1.0f, 1.0f, 1.0f);
-                animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-                animator.startAnimation();*/
 
                 MouseUtilitiesAnimation animator = m_hologramAssistanceReminder.AddComponent<MouseUtilitiesAnimation>();
                 animator.animateAppearFromPosition(m_hologramAssistanceStimulateAbstract.GetComponent<MouseUtilitiesHologramInteractionSwipes>().m_hologramReminder.getPositionWorld(), m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
                 {
                     m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-                    //m_hologramAssistanceStimulate.GetComponent<MouseUtilities>().resetHologram(m_positionLocalReferenceForHolograms);
                 }));
             }
-            //m_hologramAssistanceReminder.SetActive(true);
             m_messageReminderFocused = true;
             updateMessageReminderMenu();
         }
         else if (m_stateCurrent == ChallengeCleanTableStates.AssistanceSolution)
         {
-
             MouseUtilitiesAnimation animator = m_hologramAssistanceSolution.AddComponent<MouseUtilitiesAnimation>();
             animator.animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_debug.displayMessage("MouseChallengeCleanTable", "updateChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
             }));
-
-            /*if (m_statePrevious == ChallengeCleanTableStates.AssistanceReminder)
-            {
-                m_hologramAssistanceReminder.SetActive(false);
-                m_hologramAssistanceSolution.SetActive(true);
-            }
-            else
-            {
-                // Making this window diseappearing
-                MouseUtilitiesAnimation animator = m_hologramAssistanceStimulate.AddComponent<MouseUtilitiesAnimation>();
-                animator.m_debug = m_debug;
-                animator.m_scalingstep = 0.1f;
-                animator.m_positionEnd = m_hologramAssistanceStimulate.transform.TransformPoint(m_hologramAssistanceStimulate.transform.position);
-                animator.m_scalingEnd = new Vector3(0f, 0f, 0f);
-                animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-                animator.m_eventAnimationFinished += new EventHandler(delegate (System.Object o, EventArgs e)
-                {
-                    m_hologramAssistanceStimulate.SetActive(false);
-                });
-                animator.startAnimation();
-
-                // Animate the next window to display
-                m_hologramAssistanceSolution.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                m_hologramAssistanceSolution.SetActive(true);
-                animator = m_hologramAssistanceSolution.AddComponent<MouseUtilitiesAnimation>();
-                animator.m_debug = m_debug;
-                animator.m_scalingstep = 0.1f;
-                animator.m_positionEnd = m_hologramAssistanceSolution.transform.TransformPoint(m_hologramAssistanceSolution.transform.position);
-                animator.m_scalingEnd = new Vector3(1.0f, 1.0f, 1.0f);
-                animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-                animator.startAnimation();
-            }*/
         }
     }
 
