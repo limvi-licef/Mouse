@@ -38,13 +38,18 @@ public class MouseCubeOpening : MonoBehaviour
     Vector3 m_scalingOriginal;
     Vector3 m_scalingReduced;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         // Children
         m_cubeTopRightPartView = gameObject.transform.Find("TopRightPart");
         m_cubeTopLeftPartView = gameObject.transform.Find("TopLeftPart");
         m_cubeBottomPartView = gameObject.transform.Find("BottomPart");
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
 
         m_mutexClosingOngoing = false;
 

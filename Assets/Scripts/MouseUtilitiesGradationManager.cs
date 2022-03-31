@@ -73,6 +73,21 @@ public class MouseUtilitiesGradationManager : MonoBehaviour
         }
     }
 
+    /**
+     * Returns true if max gradation reached, false otherwise
+     * */
+    public bool isGradationMax()
+    {
+        int nbGradations = m_assistanceGradation.Count;
+        bool toReturn = false;
+
+        if (m_assistanceGradationIndexCurrent == nbGradations - 1)
+        {
+            toReturn = true;
+        }
+        return toReturn;
+    }
+
     /*
      * Return true if max gradation is reached, false otherwise
      * */

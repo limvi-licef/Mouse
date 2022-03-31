@@ -28,7 +28,7 @@ public class MouseTable : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
     public Transform m_interactionSurfaceTableView;
-    MouseChallengeCleanTableSurfaceToPopulateWithCubes m_interactionSurfaceTableController;
+    public MouseChallengeCleanTableSurfaceToPopulateWithCubes m_interactionSurfaceTableController;
     Transform m_assistanceStimulateLevel1View;
     MouseAssistanceChallengeSuccess m_assistanceChallengeSuccessController;
 
@@ -49,7 +49,7 @@ public class MouseTable : MonoBehaviour
         }
 
         // Connect the callbacks
-        m_interactionSurfaceTableView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished);
+        //m_interactionSurfaceTableView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished);
         m_interactionSurfaceTableView.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished); // Use the same callback than for taptoplace as the process to do is the same
         m_interactionSurfaceTableView.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(delegate()
         {

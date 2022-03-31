@@ -151,21 +151,28 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
 
     void callbackOnObjectFocus(System.Object sender, EventArgs e)
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - Sender type: " + sender.GetType());
-        
+        if (m_gradationManager.isGradationMax() == false)
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - Sender type: " + sender.GetType());
 
-        if ( m_newObjectToFocusTransform == null || (m_newObjectToFocusTransform.name != ((GameObject) sender).name))
-        { // To avoid doing unnecessary processes if the situation did not change
-            string currentObjectName = "not initialized yet";
 
-            if (m_newObjectToFocusTransform != null)
-            {
-                currentObjectName = ((UnityEngine.GameObject)sender).name;
+            if (m_newObjectToFocusTransform == null || (m_newObjectToFocusTransform.name != ((GameObject)sender).name))
+            { // To avoid doing unnecessary processes if the situation did not change
+                string currentObjectName = "not initialized yet";
+
+                if (m_newObjectToFocusTransform != null)
+                {
+                    currentObjectName = ((UnityEngine.GameObject)sender).name;
+                }
+
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Seems to work - Currently focused object: " + currentObjectName + "| New one: " + ((GameObject)sender).name + ". If the 2 names are different, this is good news");
+                m_newObjectToFocusTransform = ((GameObject)sender).transform;
+                m_newObjectToFocus = true;
             }
-
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Seems to work - Currently focused object: " + currentObjectName + "| New one: " + ((GameObject)sender).name + ". If the 2 names are different, this is good news");
-            m_newObjectToFocusTransform = ((GameObject)sender).transform;
-            m_newObjectToFocus = true;
+        }
+        else
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Maximum gradation reached - no focus process are performed");
         }
     }
 

@@ -130,17 +130,11 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             else
             { // Means we have reached the last level
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Last gradation level reached for stimulate assistance level 1 - no timer will be started anymore");
+
+                // Increasing reminder assistance gradation
+                m_reminderController.increaseGradation();
             }
         });
-
-        if (MouseUtilities.IsEditorSimulator() || MouseUtilities.IsEditorGameView())
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Editor simulator");
-        }
-        else
-        { // Means running in the Hololens, so adjusting some parameters
-            m_debug.m_displayOnConsole = false;
-        }
 
         m_assistanceGradationManager = new MouseUtilitiesGradationAssistanceManager();
         m_assistanceGradationManager.m_debug = m_debug;
@@ -162,7 +156,7 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_surfaceTableTouched = false;
         m_surfaceRagTouched = false;
 
-        m_assistancePicturalController.hide(MouseUtilities.getEventHandlerEmpty());
+        /*m_assistancePicturalController.hide(MouseUtilities.getEventHandlerEmpty());
         m_assistancePicturalController.setPositionToOriginalLocation();
         m_assistancePicturalController.setGradationToMinimum();
         m_reminderController.setGradationToMinimum();
@@ -172,9 +166,13 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         m_assistanceCueingController.hide(MouseUtilities.getEventHandlerEmpty());
         m_assistanceSolutionController.hide(MouseUtilities.getEventHandlerEmpty());
         m_assistanceConnectWithArchController.hide(MouseUtilities.getEventHandlerEmpty());
-        m_successController.hide(MouseUtilities.getEventHandlerEmpty());
+        m_successController.hide(MouseUtilities.getEventHandlerEmpty());*/
 
         m_timer.stopTimer();
+
+        m_assistanceGradationManager.goBackToOriginalState();
+
+        //m_assistanceGradationManager.
     }
 
     void initializeScenario1()
@@ -185,9 +183,13 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         MouseUtilities.setParentToObject(m_assistanceSolutionView, m_containerRagView);
         MouseUtilities.setParentToObject(m_successView, m_containerTableView);
 
+        m_assistancePicturalController.m_surfaceWithStarsViewTarget = m_containerTableController.m_interactionSurfaceTableView;
+
         m_assistanceConnectWithArchController.setArchStartAndEndPoint(m_assistanceCueingView, m_containerRagView);
         m_reminderController.addObjectToBeClose(m_containerRagView);
         m_reminderController.addObjectToBeClose(m_assistancePicturalController.m_hologramView);
+        m_reminderController.addObjectToBeClose(m_assistancePicturalController.m_surfaceWithStarsView);
+        m_reminderController.addObjectToBeClose(m_assistancePicturalController.m_help);
         m_reminderController.addObjectToBeClose(m_assistanceCueingController.m_text);
         m_reminderController.addObjectToBeClose(m_assistanceConnectWithArchController.m_hologramHelp);
         m_reminderController.addObjectToBeClose(m_assistanceConnectWithArchController.m_hologramText);
@@ -213,6 +215,9 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         setRagInteractionSurfaceTransitions(sSurfaceToClean);
         MouseUtilitiesGradationAssistance sSuccess = m_assistanceGradationManager.addNewAssistanceGradation("Success");
         setSuccessTransitions(sSuccess);
+
+        // Setting the initial state (so that the reset object can work)
+        m_assistanceGradationManager.setGradationInitial("StandBy");
 
         // States changing
         m_containerTableController.m_eventInteractionSurfaceTableTouched += sStandBy.addGradationNext(sCubeRagTable);
@@ -274,7 +279,13 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
             e?.Invoke(this, EventArgs.Empty);
         }, MouseUtilities.getEventHandlerEmpty());
 
-        state.setFunctionHide(m_assistancePicturalController.hide, MouseUtilities.getEventHandlerEmpty());
+        state.setFunctionHide(delegate (EventHandler e)
+        {
+            m_assistancePicturalController.hide(MouseUtilities.getEventHandlerEmpty());
+            m_timer.stopTimer();
+
+            e?.Invoke(this, EventArgs.Empty);
+        }, MouseUtilities.getEventHandlerEmpty());
     }
 
     void setReminderTableTransitions(MouseUtilitiesGradationAssistance state)
@@ -283,8 +294,9 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-            m_timer.stopTimer();
-            m_assistancePicturalController.setGradationToMinimum();
+            //m_timer.stopTimer();
+            //m_assistancePicturalController.setGradationToMinimum();
+            m_reminderController.setGradationToMinimum();
         }, MouseUtilities.getEventHandlerEmpty());
 
         state.setFunctionHide(m_reminderController.hide, MouseUtilities.getEventHandlerEmpty());
@@ -294,7 +306,8 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     {
         state.addFunctionShow(delegate (EventHandler e)
         {
-            m_timer.stopTimer();
+            //m_timer.stopTimer();
+            m_reminderController.setGradationToMinimum();
         }, MouseUtilities.getEventHandlerEmpty());
 
         state.addFunctionShow(m_assistanceCueingController.show, MouseUtilities.getEventHandlerEmpty());
@@ -307,14 +320,25 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     {
         state.addFunctionShow(m_assistanceConnectWithArchController.show, MouseUtilities.getEventHandlerEmpty());
         state.addFunctionShow(m_reminderController.show, MouseUtilities.getEventHandlerEmpty());
+        state.addFunctionShow(delegate (EventHandler e)
+        {
+            //m_timer.stopTimer();
+            m_reminderController.setGradationToMinimum();
+        }, MouseUtilities.getEventHandlerEmpty());
 
-       state.setFunctionHide(m_assistanceConnectWithArchController.hide, MouseUtilities.getEventHandlerEmpty());
+
+        state.setFunctionHide(m_assistanceConnectWithArchController.hide, MouseUtilities.getEventHandlerEmpty());
     }
 
     void setSolutionTransitions(MouseUtilitiesGradationAssistance state)
     {
         state.addFunctionShow(m_assistanceSolutionController.show, MouseUtilities.getEventHandlerEmpty());
         state.addFunctionShow(m_reminderController.show, MouseUtilities.getEventHandlerEmpty());
+        state.addFunctionShow(delegate (EventHandler e)
+        {
+            //m_timer.stopTimer();
+            m_reminderController.setGradationToMinimum();
+        }, MouseUtilities.getEventHandlerEmpty());
 
         state.setFunctionHide(m_assistanceSolutionController.hide, MouseUtilities.getEventHandlerEmpty());
     }
@@ -323,10 +347,17 @@ public class MouseChallengeCleanTableV2 : MonoBehaviour
     {
         state.addFunctionShow(delegate (EventHandler e)
         {
+            //m_timer.stopTimer();
+            m_reminderController.setGradationToMinimum();
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        state.addFunctionShow(delegate (EventHandler e)
+        {
             m_containerTableController.showInteractionSurfaceTable(MouseUtilities.getEventHandlerEmpty());
             m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
         }, MouseUtilities.getEventHandlerEmpty());
 
+        
         state.addFunctionShow(m_reminderController.show, MouseUtilities.getEventHandlerEmpty());
 
         state.setFunctionHide(m_containerTableController.hideInteractionSurfaceTable, MouseUtilities.getEventHandlerEmpty());

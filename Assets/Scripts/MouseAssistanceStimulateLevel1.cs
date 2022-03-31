@@ -32,9 +32,16 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
     public Transform m_hologramView;
     MouseCubeOpening m_hologramController;
     Vector3 m_hologramOriginalLocalPos;
+
     Transform m_lightView;
     MouseUtilitiesLight m_lightController;
+
     MouseUtilitiesGradationManager m_gradationManager;
+
+    public Transform m_surfaceWithStarsView;
+    public Transform m_surfaceWithStarsViewTarget; // If provided, allows to adjust the size of the stars to the size of this surface
+
+    public Transform m_help;
 
     public EventHandler m_eventHologramStimulateLevel1Gradation1Or2Touched;
 
@@ -55,6 +62,10 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
         m_lightView = transform.Find("Light");
         m_lightController = m_lightView.GetComponent<MouseUtilitiesLight>();
+
+        m_surfaceWithStarsView = transform.Find("SurfaceWithStars");
+
+        m_help = transform.Find("Help");
     }
 
     // Start is called before the first frame update
@@ -63,6 +74,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         // Setting up the gradation manger
         m_gradationManager = transform.GetComponent<MouseUtilitiesGradationManager>();
         m_gradationManager.addNewAssistanceGradation("Default", callbackGradationDefault);
+        m_gradationManager.addNewAssistanceGradation("Low", callbackGradationLow);
         m_gradationManager.addNewAssistanceGradation("LowVivid", callbackGradationLowVivid);
         m_gradationManager.addNewAssistanceGradation("HighFollow", callbackGradationHighFollow);
 
@@ -72,6 +84,25 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
             m_eventHologramStimulateLevel1Gradation1Or2Touched?.Invoke(this, EventArgs.Empty);
 
         });
+
+        MouseUtilitiesHologramInteractions interactions = m_help.GetComponent<MouseUtilitiesHologramInteractions>();
+        if (interactions == null)
+        {
+            interactions = m_help.gameObject.AddComponent<MouseUtilitiesHologramInteractions>();
+        }
+        interactions.s_touched += new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            m_eventHologramStimulateLevel1Gradation1Or2Touched?.Invoke(this, EventArgs.Empty);
+
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Help touched");
+
+        });
+        SolverHandler solver = m_help.GetComponent<SolverHandler>();
+        if (solver == null)
+        {
+            solver = m_help.gameObject.AddComponent<SolverHandler>();
+        }
+        solver.TrackedTargetType = Microsoft.MixedReality.Toolkit.Utilities.TrackedObjectType.Head;
     }
 
     public bool hasFocus()
@@ -92,29 +123,48 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         {
             m_mutexShow = true;
 
-            if (m_hologramView.gameObject.activeSelf == false)
-            {
-                MouseUtilitiesAnimation animator = m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>();
+            MouseUtilitiesAnimation animator = m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>();
 
-                MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform, m_hologramOriginalLocalPos.y);
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_help);
+            m_hologramController.backupScaling();
 
-                EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
-                    {
-                        Destroy(animator);
-                        m_hologramController.backupScaling();
-                        m_mutexShow = false;
+            if (m_surfaceWithStarsViewTarget != null)
+            { // Then adjusting the size of the stars to the size of this object
+                Vector3 newScale = new Vector3();
+                newScale.x = m_surfaceWithStarsViewTarget.localScale.x;
+                newScale.y = m_surfaceWithStarsView.localScale.y; // Important not to change the height scale
+                newScale.z = m_surfaceWithStarsViewTarget.localScale.z;
 
-                        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "(animation finished) Scale: " + m_hologramView.transform.localScale.ToString() + " Local position: " + m_hologramView.transform.localPosition.ToString());
-                    }), eventHandler };
-
-                animator.animateAppearInPlaceToScaling(m_hologramView.transform.localScale, m_debug, eventHandlers);
+                m_surfaceWithStarsView.localScale = newScale;
             }
-            else
-            {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is enabled - no hide action to take");
 
-                m_mutexShow = false;
-            }
+            m_help.gameObject.SetActive(true);
+            m_surfaceWithStarsView.gameObject.SetActive(true);
+            m_mutexShow = false;
+
+            /* if (m_hologramView.gameObject.activeSelf == false)
+             {
+                 MouseUtilitiesAnimation animator = m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>();
+
+                 MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform, m_hologramOriginalLocalPos.y);
+
+                 EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
+                     {
+                         Destroy(animator);
+                         m_hologramController.backupScaling();
+                         m_mutexShow = false;
+
+                         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "(animation finished) Scale: " + m_hologramView.transform.localScale.ToString() + " Local position: " + m_hologramView.transform.localPosition.ToString());
+                     }), eventHandler };
+
+                 animator.animateAppearInPlaceToScaling(m_hologramView.transform.localScale, m_debug, eventHandlers);
+             }
+             else
+             {
+                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is enabled - no hide action to take");
+
+                 m_mutexShow = false;
+             }*/
         }
         else
         {
@@ -129,6 +179,8 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
     public void hide(EventHandler eventHandler)
     {
+        setGradationToMinimum();
+
         if (m_hologramView.gameObject.activeSelf)
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube is going to be hidden");
@@ -150,6 +202,12 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
             }));
             m_lightView.gameObject.SetActive(false);
         }
+        else if (m_surfaceWithStarsView.gameObject.activeSelf)
+        {
+            m_surfaceWithStarsView.gameObject.SetActive(false);
+            m_help.gameObject.SetActive(false);
+            eventHandler?.Invoke(this, EventArgs.Empty);
+        }
         else
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is disabled - no hide action to take");
@@ -168,18 +226,39 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
     public void setGradationToMinimum()
     {
+        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Gradation set to minimum");
+
         m_gradationManager.setGradationToMinimum();
     }
 
     void callbackGradationDefault(System.Object o, EventArgs e)
     {
-        m_hologramController.updateMaterials("Mouse_Clean_Bottom", "Mouse_Clean_Top-Left", "Mouse_Clean_Top-Right");
+        m_surfaceWithStarsView.gameObject.SetActive(true);
+        m_help.gameObject.SetActive(true);
+        MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_help);
+        m_hologramView.gameObject.SetActive(false);
+
         m_lightView.gameObject.SetActive(false);
         m_hologramController.GetComponent<Billboard>().enabled = true;
         GetComponent<RadialView>().enabled = false;
         m_hologramController.setScalingToOriginal();
 
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing default gradation");
+    }
+
+    void callbackGradationLow (System.Object o, EventArgs e)
+    {
+        m_surfaceWithStarsView.gameObject.SetActive(false);
+        m_help.gameObject.SetActive(false);
+
+        MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_hologramView, m_hologramOriginalLocalPos.y);
+        m_hologramView.gameObject.SetActive(true);
+
+        m_hologramController.updateMaterials("Mouse_Clean_Bottom", "Mouse_Clean_Top-Left", "Mouse_Clean_Top-Right");
+        m_lightView.gameObject.SetActive(false);
+        m_hologramController.GetComponent<Billboard>().enabled = true;
+        GetComponent<RadialView>().enabled = false;
+        m_hologramController.setScalingToOriginal();
     }
 
     void callbackGradationLowVivid(System.Object o, EventArgs e)

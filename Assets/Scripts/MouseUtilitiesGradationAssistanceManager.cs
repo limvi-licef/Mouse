@@ -62,6 +62,7 @@ public class MouseUtilitiesGradationAssistanceManager
         m_gradationPrevious = "";
         m_gradationCurrent = "";
         m_gradationNext = "";
+        m_gradationInitial = "";
     }
 
     public MouseUtilitiesGradationAssistance addNewAssistanceGradation(string id)
@@ -180,6 +181,20 @@ public class MouseUtilitiesGradationAssistanceManager
 
             fHideEventHandler?.Invoke(this, EventArgs.Empty);
         }));
+    }
+
+    public void goBackToOriginalState()
+    {
+        if (m_gradationInitial == "")
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Initial state not set - however required. So nothing will happen.");
+        }
+        else
+        {
+            m_gradationNext = m_gradationInitial;
+
+            goToState(m_assistanceGradation[m_gradationCurrent], m_assistanceGradation[m_gradationNext]);
+        }
     }
 }
 

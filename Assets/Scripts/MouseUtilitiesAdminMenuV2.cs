@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using Microsoft.MixedReality.Toolkit.SpatialAwareness;
@@ -29,7 +30,8 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
     bool m_menuShown;
     public MouseChallengeCleanTableV2 m_challengeCleanTable;
     public MouseDebugMessagesManager m_debug;
-    public GameObject m_hologramInteractionSurface;
+    //public GameObject m_hologramInteractionSurface;
+    public MouseTable m_tableController;
     public GameObject m_hologramRagInteractionSurface;
     bool m_positioningInteractionSurfaceEnabled;
     bool m_positioningRagInteractionSurfaceEnabled;
@@ -54,11 +56,6 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
 
         // Check if the occlusion is enabled
         MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
-
-        if (MouseUtilities.IsEditorSimulator() == false && MouseUtilities.IsEditorGameView() == false)
-        { // Means running in the Hololens, so adjusting some parameters
-            m_menuStatic = false;
-        }
 
         switchStaticOrMovingMenu();
     }
@@ -100,10 +97,11 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
             materialName = "Mouse_Cyan_Glowing";
         }
 
-        m_hologramInteractionSurface.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
+        /*m_hologramInteractionSurface*//*m_tableController.m_interactionSurfaceTableController.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
         m_hologramInteractionSurface.GetComponent<BoundsControl>().enabled = m_positioningInteractionSurfaceEnabled;
-        m_hologramInteractionSurface.GetComponent<TapToPlace>().enabled = m_positioningInteractionSurfaceEnabled;
-        m_hologramInteractionSurface.GetComponent<MeshRenderer>().enabled = m_positioningInteractionSurfaceEnabled;
+        m_hologramInteractionSurface.GetComponent<TapToPlace>().enabled = m_positioningInteractionSurfaceEnabled;*/
+        /*m_hologramInteractionSurface*/m_tableController.m_interactionSurfaceTableController.GetComponent<MeshRenderer>().enabled = m_positioningInteractionSurfaceEnabled;
+        m_tableController.GetComponent<ObjectManipulator>().enabled = m_positioningInteractionSurfaceEnabled;
     }
 
     public void callbackSwitchPositioningRagInteractionSurface()
@@ -131,7 +129,7 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
     public void callbackBringInteractionSurface()
     {
         m_debug.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+        /*m_hologramInteractionSurface*/m_tableController.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
     }
 
     public void callbackBringRagInteractionSurface()

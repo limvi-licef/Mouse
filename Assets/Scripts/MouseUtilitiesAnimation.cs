@@ -191,11 +191,21 @@ public class MouseUtilitiesAnimation : MonoBehaviour
  **/
     public void animateDiseappearToPosition(Vector3 pos, MouseDebugMessagesManager debug, EventHandler e)
     {
+        EventHandler[] ee = new EventHandler[] { e };
+        animateDiseappearToPosition(pos, debug, ee);
+    }
+
+    public void animateDiseappearToPosition(Vector3 pos, MouseDebugMessagesManager debug, EventHandler[] eventHandlers)
+    {
         m_debug = debug;
         m_positionEnd = pos;
         m_scalingEnd = new Vector3(0f, 0f, 0f);
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-        m_eventAnimationFinished += e;
+        
+        foreach (EventHandler e in eventHandlers)
+        {
+            m_eventAnimationFinished += e;
+        }
 
         startAnimation();
     }

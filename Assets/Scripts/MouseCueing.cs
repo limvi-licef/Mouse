@@ -92,7 +92,8 @@ public class MouseCueing : MonoBehaviour
                     m_mutexHide = false;
             }), eventHandler };
 
-                m_button.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+                //m_button.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+                m_button.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearToPosition(m_button.position, m_debug, temp);
 
                 Destroy(m_text.gameObject.GetComponent<MouseUtilitiesAnimation>());
             }));
