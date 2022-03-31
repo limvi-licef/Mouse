@@ -135,7 +135,10 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 0.1
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: 0}
+  - {fileID: 90203277254032435, guid: df4cca82861b19e41a92187da6690b8f, type: 2}
+  - {fileID: -994415969749172565, guid: 4a453b6d1529b234d8631f9a85b88ba7, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -589,7 +592,8 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    14: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -611,11 +615,11 @@ PlayerSettings:
   m_MobileRenderingPath: 1
   metroPackageName: MouseOpenXR2020Hololens2
   metroPackageVersion: 1.0.0.0
-  metroCertificatePath: 
+  metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
+  metroCertificateSubject: DefaultCompany
+  metroCertificateIssuer: DefaultCompany
+  metroCertificateNotAfter: 009512748736d901
   metroApplicationDescription: Template_3D
   wsaImages: {}
   metroTileShortName: Mouse_OpenXR_2020
@@ -635,6 +639,7 @@ PlayerSettings:
       GazeInput: True
       SpatialPerception: True
       InternetClient: True
+      WebCam: True
       Microphone: True
   metroTargetDeviceFamilies: {}
   metroFTAName: 
