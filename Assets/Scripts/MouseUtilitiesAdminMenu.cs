@@ -25,10 +25,10 @@ using Microsoft.MixedReality.Toolkit.Diagnostics;
 using TMPro;
 using System.Reflection;
 
-public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
+public class MouseUtilitiesAdminMenu : MonoBehaviour
 {
     bool m_menuShown;
-    public MouseChallengeCleanTableV2 m_challengeCleanTable;
+    public MouseChallengeCleanTable m_challengeCleanTable;
     public MouseDebugMessagesManager m_debug;
     //public GameObject m_hologramInteractionSurface;
     public MouseTable m_tableController;
@@ -184,5 +184,10 @@ public class MouseUtilitiesAdminMenuV2 : MonoBehaviour
         }
 
         gameObject.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
+    }
+
+    public void debugSwitchDisplayMessages()
+    {
+        m_debug.m_displayMessages = !m_debug.m_displayMessages;
     }
 }

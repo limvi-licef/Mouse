@@ -28,7 +28,7 @@ using System.Linq;
 public class MouseUtilitiesGlobalInitializer : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
-    public MouseUtilitiesAdminMenuV2 m_adminMenu;
+    public MouseUtilitiesAdminMenu m_adminMenu;
 
     // Start is called before the first frame update
     void Start()

@@ -23,7 +23,7 @@ using System.Reflection;
 using System.Linq;
 
 
-public class MouseChallengeCleanTableV2 : MonoBehaviour
+public class MouseChallengeCleanTable : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
     public int m_numberOfCubesToAddInRow;
