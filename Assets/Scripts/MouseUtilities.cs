@@ -90,6 +90,75 @@ static class MouseUtilities
         o.localPosition = localPos;
     }
 
+    /*
+     * Add the animate component to the object, animate the object, and then destroy the component.
+     * */
+    public static void animateDisappearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scalingOriginal, EventHandler eventHandler)
+    {
+        gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(debug, new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            UnityEngine.Object.Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+            gameObject.SetActive(false);
+            gameObject.transform.localScale = scalingOriginal;
+
+            eventHandler?.Invoke(gameObject, EventArgs.Empty);
+        }));
+    }
+    public static void animateDisappearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scalingOriginal)
+    {
+        animateDisappearInPlace(debug, gameObject, scalingOriginal, getEventHandlerEmpty());
+    }
+
+    public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, EventHandler eventHandler)
+    {
+        gameObject.SetActive(true);
+        gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(debug, new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            UnityEngine.Object.Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+            eventHandler?.Invoke(gameObject, EventArgs.Empty);
+        }));
+    }
+    public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject)
+    {
+        animateAppearInPlace(debug, gameObject, getEventHandlerEmpty());
+    }
+
+   public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scaling, EventHandler eventHandler)
+    {
+        gameObject.SetActive(true);
+
+        MouseUtilitiesAnimation animator = gameObject.AddComponent<MouseUtilitiesAnimation>();
+
+        animator.m_scalingstep.x = scaling.x / 50.0f;
+        animator.m_scalingstep.y = scaling.y / 50.0f;
+        animator.m_scalingstep.z = scaling.z / 50.0f;
+
+        animator.animateAppearInPlaceToScaling(scaling, debug, new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            UnityEngine.Object.Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+            eventHandler?.Invoke(gameObject, EventArgs.Empty);
+        }));
+    }
+    public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scaling)
+    {
+        animateAppearInPlace(debug, gameObject, scaling, getEventHandlerEmpty());
+    }
+
+    /**
+     * Convert a BitArray to int.
+     * Be careful: the least significant bit is the first element of the array
+     * */
+    public static int convertBitArrayToInt(BitArray array)
+    {
+        int[] arrayInt = new int[1];
+        array.CopyTo(arrayInt, 0);
+
+        return arrayInt[0];
+    }
+
     // From https://forum.unity.com/threads/how-to-know-if-a-script-is-running-inside-unity-editor-when-using-device-simulator.921827/
     public static bool IsEditorSimulator()
     {

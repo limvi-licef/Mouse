@@ -76,7 +76,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_gradationManager.addNewAssistanceGradation("Default", callbackGradationDefault);
         m_gradationManager.addNewAssistanceGradation("Low", callbackGradationLow);
         m_gradationManager.addNewAssistanceGradation("LowVivid", callbackGradationLowVivid);
-        m_gradationManager.addNewAssistanceGradation("HighFollow", callbackGradationHighFollow);
+        //m_gradationManager.addNewAssistanceGradation("HighFollow", callbackGradationHighFollow);
 
         // Callbacks
         m_hologramController.m_eventCubetouched += new EventHandler(delegate (System.Object o, EventArgs e)
@@ -187,7 +187,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
             EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
         {
-                   
+            
 
             m_hologramView.gameObject.SetActive(false);
             m_hologramView.localScale = new Vector3(0.2f, 0.2f, 0.2f);
@@ -281,6 +281,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
         // reducing the scale of the cube to have it less intrusive
         m_hologramController.setScalingReduced();
+        m_hologramView.transform.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramOriginalLocalPos.y, m_hologramView.localPosition.z);
 
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing high gradation");
     }

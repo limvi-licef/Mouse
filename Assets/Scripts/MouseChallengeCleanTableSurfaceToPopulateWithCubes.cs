@@ -18,6 +18,8 @@ using UnityEngine;
 using System.Reflection;
 using System;
 using System.Linq;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+using Microsoft.MixedReality.Toolkit.UI;
 
 /**
  * Display a virtual surface to be "cleaned". Covers the surface of the given input gameobject m_hologramToUseToPopulateSurface. The surface is split in m_numberOfCubesToAddInRow * m_numberOfCubesToAddInColumn areas (number of elements per row and by column)
@@ -100,7 +102,11 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
                     float posXP = posX - goScaleX / 2.0f + temp.transform.localScale.x / 2.0f;
                     float posZP = posZ - goScaleZ / 2.0f + temp.transform.localScale.z / 2.0f;
 
-                    temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 3.0f, posZP);
+                    temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 1.0f, posZP);
+
+                    BoxCollider box = temp.GetComponent<BoxCollider>();
+                    //box.center = new Vector3(box.center.x, 250, box.center.z);
+                    box.size = new Vector3(box.size.x, 1000, box.size.z);
 
                     MouseChallengeCleanTableHologramForSurfaceToClean cubeInteractions = temp.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>();
                     cubeInteractions.CubeTouchedEvent += cubeTouched;
@@ -148,6 +154,25 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Still some work to do ...");
         }
+    }
+
+    public void enableLocationControls(bool status)
+    {
+        string materialName = "";
+
+        if (status)
+        {
+            materialName = "Mouse_White_Transparent";
+        }
+        else
+        {
+            materialName = "Mouse_Cyan_Glowing";
+        }
+
+        GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
+        GetComponent<MeshRenderer>().enabled = status;
+        GetComponent<ObjectManipulator>().enabled = status;
+        GetComponent<BoundsControl>().enabled = status;
     }
 
     public void resetCubesStates(EventHandler eventHandler)

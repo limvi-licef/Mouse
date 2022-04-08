@@ -28,7 +28,7 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     public Vector3 m_positionEnd;
     public Vector3 m_scalingEnd;
     public float m_animationSpeed = 4.0f;
-    public float m_scalingstep = 0.05f;
+    public Vector3 m_scalingstep;
 
     event EventHandler m_eventAnimationFinished;
 
@@ -44,6 +44,18 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     }
 
     public ConditionStopAnimation m_triggerStopAnimation = ConditionStopAnimation.OnPositioning;
+
+    BitArray m_scalingFinished;
+
+    private void Awake()
+    {
+        // Initialization of the variables
+        m_scalingFinished = new BitArray(3);
+        
+        m_scalingstep.x = 0.05f;
+        m_scalingstep.y = 0.05f;
+        m_scalingstep.z = 0.05f;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -71,13 +83,53 @@ public class MouseUtilitiesAnimation : MonoBehaviour
                 gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, m_positionEnd, step);
             }
 
-            if ( m_scalingGrow && gameObject.transform.localScale.x < m_scalingEnd.x )
+            /*if ( m_scalingGrow && gameObject.transform.localScale.x < m_scalingEnd.x )
             {
                 gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x + m_scalingstep, gameObject.transform.localScale.y + m_scalingstep, gameObject.transform.localScale.z + m_scalingstep);
             }
             else if (m_scalingGrow == false && gameObject.transform.localScale.x > m_scalingEnd.x)
             {
                 gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x - m_scalingstep, gameObject.transform.localScale.y - m_scalingstep, gameObject.transform.localScale.z - m_scalingstep);
+            }*/
+
+            if ( m_scalingGrow && MouseUtilities.convertBitArrayToInt(m_scalingFinished) < 7 ) // < 7 because if the value is 7, that means the three bits (corresponding to x, y, z respectively) are set to 1, i.e. scaling is finished in the 3 directions.
+            {
+                Vector3 newScaling = gameObject.transform.localScale; // current value by default, and changed below if necessary
+
+                for ( int i = 0; i < 3; i ++)
+                {
+                    if (gameObject.transform.localScale[i] < m_scalingEnd[i])
+                    {
+                        newScaling[i] = gameObject.transform.localScale[i] + m_scalingstep[i];
+                    }
+                    else if(m_scalingFinished[i] == false)
+                    {
+                        m_scalingFinished[i] = true;
+                    }
+                }
+
+                gameObject.transform.localScale = newScaling;
+            }
+            else if (m_scalingGrow == false && MouseUtilities.convertBitArrayToInt(m_scalingFinished) < 7)
+            {
+                /*gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x - m_scalingstep, gameObject.transform.localScale.y - m_scalingstep, gameObject.transform.localScale.z - m_scalingstep);*/
+
+                Vector3 newScaling = gameObject.transform.localScale; // current value by default, and changed below if necessary
+
+                for (int i = 0; i < 3; i++)
+                {
+                    if (gameObject.transform.localScale[i] < m_scalingEnd[i])
+                    {
+                        newScaling[i] = gameObject.transform.localScale[i] - m_scalingstep[i];
+                    }
+                    else if (m_scalingFinished[i] == false)
+                    {
+                        m_scalingFinished[i] = true;
+                    }
+                }
+
+                gameObject.transform.localScale = newScaling;
+
             }
 
             if ( m_triggerStopAnimation == ConditionStopAnimation.OnPositioning )
@@ -92,8 +144,15 @@ public class MouseUtilitiesAnimation : MonoBehaviour
             }
             else if (m_triggerStopAnimation == ConditionStopAnimation.OnScaling)
             {
-                if ((m_scalingGrow && gameObject.transform.localScale.x >= m_scalingEnd.x) ||
+                /*if ((m_scalingGrow && gameObject.transform.localScale.x >= m_scalingEnd.x) ||
                     m_scalingGrow == false && gameObject.transform.localScale.x <= m_scalingEnd.x)
+                {
+                    // Animation is finished: trigger event
+                    m_eventAnimationFinished?.Invoke(this, EventArgs.Empty);
+
+                    m_startAnimation = false;
+                }*/
+                if (MouseUtilities.convertBitArrayToInt(m_scalingFinished) == 7 )
                 {
                     // Animation is finished: trigger event
                     m_eventAnimationFinished?.Invoke(this, EventArgs.Empty);

@@ -28,18 +28,23 @@ public class MouseRag : MonoBehaviour
 {
     public MouseDebugMessagesManager m_debug;
 
-    Transform m_interactionSurfaceRagView;
+    public Transform m_interactionSurfaceRagView;
     
     public event EventHandler m_eventHologramInteractionSurfaceTouched;
+
+    private void Awake()
+    {
+        // Get reference of the children
+        m_interactionSurfaceRagView = gameObject.transform.Find("InteractionSurfaceRag");
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        // Get reference of the children
-        m_interactionSurfaceRagView = gameObject.transform.Find("InteractionSurfaceRag");
+        
 
         // Connect the callbacks
-        m_interactionSurfaceRagView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramRagInteractionSurfaceMovedFinished);
+        //m_interactionSurfaceRagView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramRagInteractionSurfaceMovedFinished);
         m_interactionSurfaceRagView.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackHologramRagInteractionSurfaceMovedFinished);
         MouseUtilities.mouseUtilitiesAddTouchCallback(m_debug, m_interactionSurfaceRagView, delegate ()
         {

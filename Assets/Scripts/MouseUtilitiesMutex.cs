@@ -51,4 +51,16 @@ public class MouseUtilitiesMutex
     {
         return m_mutex;
     }
+
+    /*
+     * Returns a handler unlocking the mutex when invoked
+     * */
+    EventHandler unlockMutexHandler()
+    {
+        return new EventHandler(delegate (System.Object o, EventArgs e)
+       {
+           m_mutex = false;
+           m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - from handler");
+       });
+    }
 }

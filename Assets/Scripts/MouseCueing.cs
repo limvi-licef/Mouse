@@ -24,11 +24,11 @@ using System;
 /**
  * Assistance to show a message with a "I don't understand" button
  * */
-public class MouseCueing : MonoBehaviour
+public class MouseCueing : MouseAssistanceButtonAbstract
 {
-    public MouseDebugMessagesManager m_debug;
+    
 
-    public event EventHandler m_eventHelpButtonClicked;
+    //public event EventHandler m_eventHelpButtonClicked;
 
     public Transform m_text;
     Transform m_button;
@@ -51,13 +51,14 @@ public class MouseCueing : MonoBehaviour
 
     void callbackButtonHelpClicked()
     {
-        m_eventHelpButtonClicked?.Invoke(this, EventArgs.Empty);
+        //s_buttonClicked?.Invoke(this, EventArgs.Empty);
+        onButtonClicked();
 
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clicked");
     }
 
     bool m_mutexShow = false;
-    public void show (EventHandler eventHandler)
+    public override void show (EventHandler eventHandler)
     {
         if (m_mutexShow == false)
         {
@@ -80,7 +81,7 @@ public class MouseCueing : MonoBehaviour
 
     // With animation, compatible with the gradation manager
     bool m_mutexHide = false;
-    public void hide (EventHandler eventHandler)
+    public override void hide (EventHandler eventHandler)
     {
         if (m_mutexHide == false)
         {

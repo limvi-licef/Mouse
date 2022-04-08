@@ -32,6 +32,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public AudioClip m_audioClipToPlayOnTouchInteractionSurface;
     public AudioListener m_audioListener;
 
+    public GameObject m_refAssistanceDialog;
+
     Transform m_containerTableView;
     MouseTable m_containerTableController;
     Transform m_containerRagView;
@@ -55,12 +57,15 @@ public class MouseChallengeCleanTable : MonoBehaviour
     Transform m_successView;
     MouseAssistanceBasic m_successController;
 
-    bool m_surfaceTableTouched; // Bool to detect the touch trigerring the challenge only once.
-    bool m_surfaceRagTouched;
+    //EventHandler m_initialCueingButtonCalled;
+    EventHandler s_defaultCalled;
+
+    //bool m_surfaceTableTouched; // Bool to detect the touch trigerring the challenge only once.
+    //bool m_surfaceRagTouched;
 
     public MouseUtilitiesTimer m_timer;
 
-    enum ChallengeCleanTableStates
+    /*enum ChallengeCleanTableStates
     {
         StandBy = 0,
         AssistanceStimulateLevel1 = 1,
@@ -73,7 +78,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
     }
 
     ChallengeCleanTableStates m_stateCurrent;
-    ChallengeCleanTableStates m_statePrevious;
+    ChallengeCleanTableStates m_statePrevious;*/
 
     Vector3 m_positionLocalReferenceForHolograms = new Vector3(0.0f, 0.6f, 0.0f);
 
@@ -83,11 +88,11 @@ public class MouseChallengeCleanTable : MonoBehaviour
     void Start()
     {
         // Variables
-        m_surfaceTableTouched = false;
-        m_surfaceRagTouched = true; // True by default, as we do not want the table to be populated if the user grabs the rag without having the challenge starting first. Indeed, in this situation, that means the users does not need any assistance.
+        //m_surfaceTableTouched = false;
+        //m_surfaceRagTouched = true; // True by default, as we do not want the table to be populated if the user grabs the rag without having the challenge starting first. Indeed, in this situation, that means the users does not need any assistance.
 
-        m_stateCurrent = ChallengeCleanTableStates.StandBy;
-        m_statePrevious = ChallengeCleanTableStates.StandBy;
+        //m_stateCurrent = ChallengeCleanTableStates.StandBy;
+        //m_statePrevious = ChallengeCleanTableStates.StandBy;
 
         m_timer.m_timerDuration = 20;
 
@@ -140,7 +145,9 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_assistanceGradationManager.m_debug = m_debug;
 
         // Initialization of the scenario
-        initializeScenario1();
+        // initializeScenario1();
+        //initializeScenario2();
+        initializeScenario1bis();
     }
 
     // Update is called once per frame
@@ -153,8 +160,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
     {
         m_debug.displayMessage("MouseChallengeCleanTable", "resetChallenge", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-        m_surfaceTableTouched = false;
-        m_surfaceRagTouched = false;
+        //m_surfaceTableTouched = false;
+        //m_surfaceRagTouched = false;
 
         /*m_assistancePicturalController.hide(MouseUtilities.getEventHandlerEmpty());
         m_assistancePicturalController.setPositionToOriginalLocation();
@@ -175,6 +182,51 @@ public class MouseChallengeCleanTable : MonoBehaviour
         //m_assistanceGradationManager.
     }
 
+    void initializeScenario2()
+    {
+        // Initializing the assistances we will be needing
+        //m_refAssistanceDialog.
+        m_refAssistanceDialog.GetComponent<MouseAssistanceDialog>().m_debug = m_debug;
+        
+        GameObject initialCueingView = Instantiate(m_refAssistanceDialog, m_containerTableView);
+        MouseAssistanceDialog initialCueingController = initialCueingView.GetComponent<MouseAssistanceDialog>();
+        //initialCueingView.SetActive(true);
+        initialCueingController.setDescription("Que faites-vous typiquement après manger?", 0.2f);
+        initialCueingController.addButton("Je ne sais pas", /*new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+
+            m_initialCueingButtonCalled?.Invoke(this, EventArgs.Empty);
+        }),*/ 0.2f);
+        initialCueingController.show(MouseUtilities.getEventHandlerEmpty());
+
+        // Gradations
+        //MouseUtilitiesGradationAssistance def = m_assistanceGradationManager.addNewAssistanceGradation("Default");
+        MouseUtilitiesGradationAssistance cueing = m_assistanceGradationManager.addNewAssistanceGradation("Cueing");
+        MouseUtilitiesGradationAssistance later = m_assistanceGradationManager.addNewAssistanceGradation("Later");
+
+        /*def.addFunctionShow(delegate (EventHandler e)
+        {
+
+        }, MouseUtilities.getEventHandlerEmpty());
+        def.setFunctionHide(delegate (EventHandler e)
+        {
+
+        }, MouseUtilities.getEventHandlerEmpty());*/
+
+        cueing.setFunctionHide(initialCueingController.hide, MouseUtilities.getEventHandlerEmpty());
+        cueing.addFunctionShow(initialCueingController.show, MouseUtilities.getEventHandlerEmpty());
+
+        // Links
+        //s_defaultCalled += def.addGradationNext(cueing);
+        /*m_initialCueingButtonCalled*/ initialCueingController.m_buttonsController[0].s_buttonClicked += cueing.addGradationNext(later);
+
+        m_assistanceGradationManager.setGradationInitial("Cueing");
+
+        s_defaultCalled?.Invoke(this, EventArgs.Empty);
+    }
+
     void initializeScenario1()
     {
         // Setting the parents, the connections for the objects briding other objects etc. (the idea being to leave that to a software dedicated to configure the scenarios)
@@ -182,6 +234,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         MouseUtilities.setParentToObject(m_assistanceCueingView, m_containerTableView);
         MouseUtilities.setParentToObject(m_assistanceSolutionView, m_containerRagView);
         MouseUtilities.setParentToObject(m_successView, m_containerTableView);
+        MouseUtilities.setParentToObject(m_assistanceStimulateLevel2View, m_containerRagView);
 
         m_assistancePicturalController.m_surfaceWithStarsViewTarget = m_containerTableController.m_interactionSurfaceTableView;
 
@@ -192,7 +245,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_reminderController.addObjectToBeClose(m_assistancePicturalController.m_help);
         m_reminderController.addObjectToBeClose(m_assistanceCueingController.m_text);
         m_reminderController.addObjectToBeClose(m_assistanceConnectWithArchController.m_hologramHelp);
-        m_reminderController.addObjectToBeClose(m_assistanceConnectWithArchController.m_hologramText);
+        m_reminderController.addObjectToBeClose(m_assistanceConnectWithArchController.m_textView);
         m_reminderController.addObjectToBeClose(m_assistanceSolutionController.m_childView);
         m_reminderController.addObjectToBeClose(m_containerTableController.m_interactionSurfaceTableView);
 
@@ -222,7 +275,93 @@ public class MouseChallengeCleanTable : MonoBehaviour
         // States changing
         m_containerTableController.m_eventInteractionSurfaceTableTouched += sStandBy.addGradationNext(sCubeRagTable);
         m_assistancePicturalController.m_eventHologramStimulateLevel1Gradation1Or2Touched += sCubeRagTable.addGradationNext(sMessageCue);
-        m_assistanceCueingController.m_eventHelpButtonClicked += sMessageCue.addGradationNext(sArchToRag);
+        m_assistanceCueingController.s_buttonClicked/*m_eventHelpButtonClicked*/ += sMessageCue.addGradationNext(sArchToRag);
+        m_assistanceConnectWithArchController.m_eventHologramHelpTouched += sArchToRag.addGradationNext(sSolution);
+        m_containerRagController.m_eventHologramInteractionSurfaceTouched += sCubeRagTable.addGradationNext(sSurfaceToClean);
+        m_containerRagController.m_eventHologramInteractionSurfaceTouched += sMessageCue.addGradationNext(sSurfaceToClean);
+        m_containerRagController.m_eventHologramInteractionSurfaceTouched += sArchToRag.addGradationNext(sSurfaceToClean);
+        m_containerRagController.m_eventHologramInteractionSurfaceTouched += sSolution.addGradationNext(sSurfaceToClean);
+        m_containerTableController.m_eventInteractionSurfaceCleaned += sSurfaceToClean.addGradationNext(sSuccess);
+        m_successController.s_touched += sSuccess.addGradationNext(sStandBy);
+
+        m_reminderController.m_eventHologramClockTouched += sCubeRagTable.addGradationNext(sReminder);
+        m_reminderController.m_eventHologramClockTouched += sMessageCue.addGradationNext(sReminder);
+        m_reminderController.m_eventHologramClockTouched += sArchToRag.addGradationNext(sReminder);
+        m_reminderController.m_eventHologramClockTouched += sSolution.addGradationNext(sReminder);
+        m_reminderController.m_eventHologramClockTouched += sSurfaceToClean.addGradationNext(sReminder);
+        m_reminderController.m_eventHologramWindowButtonBackTouched += sReminder.setGradationPrevious();
+        m_reminderController.m_eventHologramWindowButtonOkTouched += sReminder.addGradationNext(sStandBy);
+    }
+
+    void initializeScenario1bis()
+    {
+        // Initializing the assistances we will be needing
+        m_refAssistanceDialog.GetComponent<MouseAssistanceDialog>().m_debug = m_debug;
+
+        GameObject initialCueingView = Instantiate(m_refAssistanceDialog, m_containerTableView);
+        MouseAssistanceDialog initialCueingController = initialCueingView.GetComponent<MouseAssistanceDialog>();
+        initialCueingController.setDescription("Que faites-vous typiquement après manger?", 0.2f);
+        initialCueingController.addButton("Je ne sais pas", 0.2f);
+
+        GameObject solutionView = Instantiate(m_refAssistanceDialog, m_containerRagView);
+        MouseAssistanceDialog solutionController = solutionView.GetComponent<MouseAssistanceDialog>();
+        solutionController.setDescription("Ne serait-ce pas un bon moment pour nettoyer la table? \n Vous avez pour cela besoin du chiffon ci - dessous.", 0.15f);
+        solutionController.enableBillboard(true);
+
+        // Setting the parents, the connections for the objects briding other objects etc. (the idea being to leave that to a software dedicated to configure the scenarios)
+        MouseUtilities.setParentToObject(m_assisTancePicturalView, m_containerTableView);
+        MouseUtilities.setParentToObject(m_assistanceCueingView, m_containerTableView);
+        MouseUtilities.setParentToObject(m_assistanceSolutionView, m_containerRagView);
+        MouseUtilities.setParentToObject(m_successView, m_containerTableView);
+        MouseUtilities.setParentToObject(m_assistanceStimulateLevel2View, m_containerRagView);
+
+        m_assistancePicturalController.m_surfaceWithStarsViewTarget = m_containerTableController.m_interactionSurfaceTableView;
+
+        m_assistanceConnectWithArchController.setArchStartAndEndPoint(m_assistanceCueingView, m_containerRagView);
+        m_reminderController.addObjectToBeClose(m_containerRagView);
+        m_reminderController.addObjectToBeClose(m_assistancePicturalController.m_hologramView);
+        m_reminderController.addObjectToBeClose(m_assistancePicturalController.m_surfaceWithStarsView);
+        m_reminderController.addObjectToBeClose(m_assistancePicturalController.m_help);
+        m_reminderController.addObjectToBeClose(m_assistanceCueingController.m_text);
+        m_reminderController.addObjectToBeClose(m_assistanceConnectWithArchController.m_hologramHelp);
+        m_reminderController.addObjectToBeClose(m_assistanceConnectWithArchController.m_textView);
+        m_reminderController.addObjectToBeClose(m_assistanceSolutionController.m_childView);
+        m_reminderController.addObjectToBeClose(m_containerTableController.m_interactionSurfaceTableView);
+        m_reminderController.addObjectToBeClose(initialCueingView.transform);
+        m_reminderController.addObjectToBeClose(solutionView.transform);
+
+        // Settings the states
+        MouseUtilitiesGradationAssistance sStandBy = m_assistanceGradationManager.addNewAssistanceGradation("StandBy");
+        setStandByTransitions(sStandBy);
+        MouseUtilitiesGradationAssistance sCubeRagTable = m_assistanceGradationManager.addNewAssistanceGradation("CubeRagTable");
+        setCubeRagTransitions(sCubeRagTable);
+        MouseUtilitiesGradationAssistance sReminder = m_assistanceGradationManager.addNewAssistanceGradation("ReminderCubeRagTable");
+        setReminderTableTransitions(sReminder);
+        MouseUtilitiesGradationAssistance sMessageCue = m_assistanceGradationManager.addNewAssistanceGradation("MessageCue");
+        //setMessageCueTransitions(sMessageCue);
+        sMessageCue.setFunctionHide(initialCueingController.hide, MouseUtilities.getEventHandlerEmpty());
+        sMessageCue.addFunctionShow(initialCueingController.show, MouseUtilities.getEventHandlerEmpty());
+        MouseUtilitiesGradationAssistance sReminderCueTable = m_assistanceGradationManager.addNewAssistanceGradation("ReminderCueTable");
+        setReminderTableTransitions(sReminderCueTable);
+        MouseUtilitiesGradationAssistance sArchToRag = m_assistanceGradationManager.addNewAssistanceGradation("ArchToRag");
+        setConnectWithArchTransitions(sArchToRag);
+        MouseUtilitiesGradationAssistance sSolution = m_assistanceGradationManager.addNewAssistanceGradation("Solution");
+        //setSolutionTransitions(sSolution);
+        sSolution.setFunctionHide(solutionController.hide, MouseUtilities.getEventHandlerEmpty());
+        sSolution.addFunctionShow(solutionController.show, MouseUtilities.getEventHandlerEmpty());
+        MouseUtilitiesGradationAssistance sSurfaceToClean = m_assistanceGradationManager.addNewAssistanceGradation("CleaningSurface");
+        setRagInteractionSurfaceTransitions(sSurfaceToClean);
+        MouseUtilitiesGradationAssistance sSuccess = m_assistanceGradationManager.addNewAssistanceGradation("Success");
+        setSuccessTransitions(sSuccess);
+
+        // Setting the initial state (so that the reset object can work)
+        m_assistanceGradationManager.setGradationInitial("StandBy");
+
+        // States changing
+        m_containerTableController.m_eventInteractionSurfaceTableTouched += sStandBy.addGradationNext(sCubeRagTable);
+        m_assistancePicturalController.m_eventHologramStimulateLevel1Gradation1Or2Touched += sCubeRagTable.addGradationNext(sMessageCue);
+        //m_assistanceCueingController.s_buttonClicked += sMessageCue.addGradationNext(sArchToRag);
+        /*m_initialCueingButtonCalled*/ initialCueingController.m_buttonsController[0].s_buttonClicked += sMessageCue.addGradationNext(sArchToRag);
         m_assistanceConnectWithArchController.m_eventHologramHelpTouched += sArchToRag.addGradationNext(sSolution);
         m_containerRagController.m_eventHologramInteractionSurfaceTouched += sCubeRagTable.addGradationNext(sSurfaceToClean);
         m_containerRagController.m_eventHologramInteractionSurfaceTouched += sMessageCue.addGradationNext(sSurfaceToClean);
@@ -246,8 +385,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Table surface should be touchable again");
 
-            m_surfaceTableTouched = false; // Giving the possibility for the user to touch the surface again
-            m_surfaceRagTouched = true;
+            //m_surfaceTableTouched = false; // Giving the possibility for the user to touch the surface again
+            //m_surfaceRagTouched = true;
             m_timer.stopTimer();
             m_assistancePicturalController.setGradationToMinimum();
             m_reminderController.setGradationToMinimum();
@@ -257,8 +396,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
         {
             m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Hide function called for StandBy state");
 
-            m_surfaceTableTouched = true;
-            m_surfaceRagTouched = false; // From now on, if the user touches the rag, the surface will be populated (at least the callback supposed to trigger it will be fired.
+            //m_surfaceTableTouched = true;
+            //m_surfaceRagTouched = false; // From now on, if the user touches the rag, the surface will be populated (at least the callback supposed to trigger it will be fired.
 
             // Play sound to get the user's attention from audio on top of visually
             m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);

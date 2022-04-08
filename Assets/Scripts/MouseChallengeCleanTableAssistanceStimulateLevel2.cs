@@ -29,7 +29,8 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
 
     public Transform m_hologramHelp;
     Transform m_hologramLineView;
-    public Transform m_hologramText;
+    public Transform m_textView;
+    MouseAssistanceDialog m_textController;
 
     MouseLineToObject m_hologramLineController;
 
@@ -41,9 +42,10 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         m_hologramLineView = gameObject.transform.Find("Line");
         m_hologramLineController = m_hologramLineView.GetComponent<MouseLineToObject>();
         m_hologramHelp = MouseUtilities.mouseUtilitiesFindChild(gameObject, "Help");
-        m_hologramText = gameObject.transform.Find("Text");
+        m_textView = gameObject.transform.Find("TextNew");
+        m_textController = m_textView.GetComponent<MouseAssistanceDialog>();
 
-        m_textOriginalScaling = m_hologramText.localScale;
+        m_textOriginalScaling = m_textView.localScale;
     }
 
     // Start is called before the first frame update
@@ -85,14 +87,17 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         {
             m_mutexShow = true;
 
-            m_hologramText.position = m_hologramLineController.m_hologramOrigin.transform.position;
-            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_hologramText);
+            m_textView.position = m_hologramLineController.m_hologramOrigin.transform.position;
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_textView);
+            // Trick to start the line to the text position, i.e. to start at user's head's position
+            m_hologramLineController.m_hologramOrigin.transform.position = m_textView.position;
+            
 
-            m_hologramText.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_textOriginalScaling, m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
+            /*m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_textOriginalScaling, m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-                Destroy(m_hologramText.gameObject.GetComponent<MouseUtilitiesAnimation>());
+                Destroy(m_textView.gameObject.GetComponent<MouseUtilitiesAnimation>());
 
                 EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object oo, EventArgs ee)
             {
@@ -104,17 +109,39 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             }), eventHandler };
 
                 m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), m_debug, temp);
+            }));*/
+            /*MouseUtilities.animateAppearInPlace(m_debug, m_textView.gameObject, m_textOriginalScaling, new EventHandler(delegate (System.Object o, EventArgs e)
+            {
+                m_mutexShow = false;
+            }));*/
+            m_textController.show(new EventHandler(delegate (System.Object o, EventArgs e)
+            {
+                m_mutexShow = false;
             }));
 
             // Showing line
-            if (m_hologramLineView.gameObject.activeSelf == false)
+           /* if (m_hologramLineView.gameObject.activeSelf == false)
+            {*/
+                m_hologramLineView.GetComponent<MouseLineToObject>().show(new EventHandler(delegate (System.Object oo, EventArgs ee) {
+                    EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object ooo, EventArgs eee)
             {
-                m_hologramLineView.GetComponent<MouseLineToObject>().show(eventHandler);
-            }
-            else
+                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+                Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
+
+                m_mutexShow = false;
+            }), eventHandler };
+
+                    MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_hologramHelp);
+
+                    m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), m_debug, temp);
+                    //eventHandler?.Invoke(this, EventArgs.Empty);
+                }));
+            //}
+            /*else
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already shown: nothing to do");
-            }
+            }*/
         }
         else
         {
@@ -130,11 +157,11 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             m_mutexHide = true;
 
             // Hiding text
-            m_hologramText.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
+            m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
             {
-                m_hologramText.gameObject.SetActive(false);
+                m_textView.gameObject.SetActive(false);
 
-                Destroy(m_hologramText.gameObject.GetComponent<MouseUtilitiesAnimation>());
+                Destroy(m_textView.gameObject.GetComponent<MouseUtilitiesAnimation>());
 
                 EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object oo, EventArgs ee)
             {

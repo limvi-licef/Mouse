@@ -120,6 +120,7 @@ public class MouseLineToObject : MonoBehaviour
             {
                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already shown - nothing to do");
                 m_mutexShow = false;
+                eventHandler?.Invoke(this, EventArgs.Empty);
             }
         }
         else

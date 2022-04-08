@@ -46,6 +46,7 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
     // As the clock does not have an attached script, storing the required information here
     Vector3 m_clockScalingOriginal;
     Vector3 m_clockScalingReduced;
+    Vector3 m_clockOriginalPosition;
 
     //bool m_mutexHiding = false;
     MouseUtilitiesMutex m_mutexHide;
@@ -71,6 +72,7 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
         m_mutexHide = new MouseUtilitiesMutex(m_debug);
         m_mutexShow = new MouseUtilitiesMutex(m_debug);
 
+        m_clockOriginalPosition = m_clockView.localPosition;
         m_positionLocalOrigin = transform.localPosition;
         m_yOffsetOrigin = transform.localPosition.y;
 
@@ -269,6 +271,7 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
         GetComponent<RadialView>().enabled = true;
 
         m_clockView.transform.localScale = m_clockScalingReduced;
+        m_clockView.localPosition = new Vector3(-0.1f, 0.2f, 0);
     }
 
     public bool increaseGradation()

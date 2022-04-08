@@ -32,7 +32,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public MouseDebugMessagesManager m_debug;
     //public GameObject m_hologramInteractionSurface;
     public MouseTable m_tableController;
-    public GameObject m_hologramRagInteractionSurface;
+    public MouseRag m_ragController;
+    Transform m_ragInteractionSurfaceView;
     bool m_positioningInteractionSurfaceEnabled;
     bool m_positioningRagInteractionSurfaceEnabled;
     public GameObject m_hologramDebug;
@@ -50,7 +51,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_positioningInteractionSurfaceEnabled = true; // Enabled by default
         m_positioningRagInteractionSurfaceEnabled = true;
 
-        m_hologramRagInteractionSurfaceMaterialName = m_hologramRagInteractionSurface.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");
+        m_ragInteractionSurfaceView = m_ragController.m_interactionSurfaceRagView;//.transform.Find("InteractionSurfaceRag");
+        m_hologramRagInteractionSurfaceMaterialName = m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");
 
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
 
@@ -84,24 +86,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackSwitchPositioningInteractionSurface()
     {
-        string materialName = "";
-
-        if (m_positioningInteractionSurfaceEnabled)
-        {
-            m_positioningInteractionSurfaceEnabled = false;
-            materialName = "Mouse_White_Transparent";
-        }
-        else
-        {
-            m_positioningInteractionSurfaceEnabled = true;
-            materialName = "Mouse_Cyan_Glowing";
-        }
-
-        /*m_hologramInteractionSurface*//*m_tableController.m_interactionSurfaceTableController.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
-        m_hologramInteractionSurface.GetComponent<BoundsControl>().enabled = m_positioningInteractionSurfaceEnabled;
-        m_hologramInteractionSurface.GetComponent<TapToPlace>().enabled = m_positioningInteractionSurfaceEnabled;*/
-        /*m_hologramInteractionSurface*/m_tableController.m_interactionSurfaceTableController.GetComponent<MeshRenderer>().enabled = m_positioningInteractionSurfaceEnabled;
-        m_tableController.GetComponent<ObjectManipulator>().enabled = m_positioningInteractionSurfaceEnabled;
+        m_positioningInteractionSurfaceEnabled = !m_positioningInteractionSurfaceEnabled;
+        m_tableController.m_interactionSurfaceTableController.enableLocationControls(m_positioningInteractionSurfaceEnabled);
     }
 
     public void callbackSwitchPositioningRagInteractionSurface()
@@ -116,14 +102,13 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         else
         {
             m_positioningRagInteractionSurfaceEnabled = true;
-            materialName = m_hologramRagInteractionSurfaceMaterialName; //"Mouse_Orange_Glowing";
-            
+            materialName = m_hologramRagInteractionSurfaceMaterialName;
         }
 
-        m_hologramRagInteractionSurface.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
-        m_hologramRagInteractionSurface.GetComponent<BoundsControl>().enabled = m_positioningRagInteractionSurfaceEnabled;
-        m_hologramRagInteractionSurface.GetComponent<TapToPlace>().enabled = m_positioningRagInteractionSurfaceEnabled;
-        m_hologramRagInteractionSurface.GetComponent<MeshRenderer>().enabled = m_positioningRagInteractionSurfaceEnabled;
+        m_ragInteractionSurfaceView.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
+        m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().enabled = m_positioningRagInteractionSurfaceEnabled;
+        m_ragInteractionSurfaceView.GetComponent<ObjectManipulator>().enabled = m_positioningRagInteractionSurfaceEnabled;
+        m_ragInteractionSurfaceView.GetComponent<BoundsControl>().enabled = m_positioningRagInteractionSurfaceEnabled;
     }
 
     public void callbackBringInteractionSurface()
@@ -135,7 +120,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public void callbackBringRagInteractionSurface()
     {
         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_hologramRagInteractionSurface.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+        /*m_hologramRagInteractionSurface*//*m_ragInteractionSurfaceView*/m_ragController.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
     }
 
     public void callbackSwitchStaticOrMovingMenu()

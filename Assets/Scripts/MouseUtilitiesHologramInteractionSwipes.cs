@@ -316,7 +316,9 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
             animatorParent.m_debug = m_debug;
             animatorParent.m_scalingEnd = new Vector3(0.001f, 0.001f, 0.001f);
             animatorParent.m_animationSpeed = 3.0f;
-            animatorParent.m_scalingstep = 0.01f;
+            animatorParent.m_scalingstep.x = 0.01f;
+            animatorParent.m_scalingstep.y = 0.01f;
+            animatorParent.m_scalingstep.z = 0.01f;
 
             // Start the animations
             interactionHologramStartAnimation();
@@ -854,7 +856,9 @@ public class MouseUtilitiesInteractionHologram
         animator.m_debug = m_debug;
         animator.m_scalingEnd = scalingEnd;
         animator.m_animationSpeed = animationSpeed;
-        animator.m_scalingstep = scalingStep;
+        animator.m_scalingstep.x = scalingStep;
+        animator.m_scalingstep.y = scalingStep;
+        animator.m_scalingstep.z = scalingStep;
     }
 
     /*
