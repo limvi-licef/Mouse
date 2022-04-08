@@ -33,8 +33,6 @@ public class MouseUtilitiesHolograms : MonoBehaviour
 
     bool m_headHeightAdjusted;
 
-    public MouseDebugMessagesManager m_debug;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -59,11 +57,11 @@ public class MouseUtilitiesHolograms : MonoBehaviour
             {
                 m_headHeightAdjusted = true;
 
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Height adjusted for height of the head disabled for now. Here are some debug information: " + " Camera y position in world space: " + Camera.main.transform.position.y.ToString() + "  | object local position: " + gameObject.transform.localPosition.y.ToString());
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Height adjusted for height of the head disabled for now. Here are some debug information: " + " Camera y position in world space: " + Camera.main.transform.position.y.ToString() + "  | object local position: " + gameObject.transform.localPosition.y.ToString());
 
                 gameObject.transform.position = new Vector3(gameObject.transform.position.x, Camera.main.transform.position.y+gameObject.transform.localPosition.y, gameObject.transform.position.z);
 
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "New y position: " + gameObject.transform.position.y.ToString());
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "New y position: " + gameObject.transform.position.y.ToString());
             }
             else if (gameObject.activeSelf == false && m_headHeightAdjusted == true)
             {

@@ -32,8 +32,6 @@ using System.Linq;
  * */
 public class MouseUtilitiesGradationAssistanceManager
 {
-    public MouseDebugMessagesManager m_debug;
-
     Dictionary<string, MouseUtilitiesGradationAssistance> m_assistanceGradation; // id of the gradation, actual assistance.
 
     string m_gradationPrevious;
@@ -68,7 +66,6 @@ public class MouseUtilitiesGradationAssistanceManager
     public MouseUtilitiesGradationAssistance addNewAssistanceGradation(string id)
     {
         MouseUtilitiesGradationAssistance newItem = new MouseUtilitiesGradationAssistance(id);
-        newItem.m_debug = m_debug;
 
         m_assistanceGradation.Add(newItem.getId(), newItem);
 
@@ -83,7 +80,7 @@ public class MouseUtilitiesGradationAssistanceManager
 
         fShows.Add(delegate (EventHandler e)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Setting the new current: current>previous: " + m_gradationCurrent + " next>current: " + m_gradationNext);
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Setting the new current: current>previous: " + m_gradationCurrent + " next>current: " + m_gradationNext);
 
 
             m_gradationPrevious = m_gradationCurrent;
@@ -100,13 +97,13 @@ public class MouseUtilitiesGradationAssistanceManager
 
             if (caller.getId() == m_gradationCurrent)
             { // A same trigger can call several time the same event for different objects (typically, the reminder one for instance, which is present at different stages of the scenario). So here we take into account only the trigger sent from the current gradation level.
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Caller: " + caller.getId() + " | next state: " + args.m_nextState);
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Caller: " + caller.getId() + " | next state: " + args.m_nextState);
 
                 goToNextState(args.m_nextState);
             }
             else
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Caller: " + caller.getId() + " is different from current state (" + m_gradationCurrent + ") so nothing will happen. This is labelled as a warning, by most likely this is a good safety thing.");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Caller: " + caller.getId() + " is different from current state (" + m_gradationCurrent + ") so nothing will happen. This is labelled as a warning, by most likely this is a good safety thing.");
             }
         });
 
@@ -132,14 +129,14 @@ public class MouseUtilitiesGradationAssistanceManager
 
         if (stateNext == null)
         { // Means we have reached the last state of the state machine. So nothing to do excepted informing the user
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "The required next state " + idNext + " is not defined as a potentiel next state for the current state " + stateCurrent.getId() + ". Nothing will happen. This can be a normal behavior.");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "The required next state " + idNext + " is not defined as a potentiel next state for the current state " + stateCurrent.getId() + ". Nothing will happen. This can be a normal behavior.");
 
             toReturn = true;
         }
         else
         {
             m_gradationNext = stateNext.getId();
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + stateCurrent.getId() + " to " + stateNext.getId() + ". Number of show functions to call: " + stateNext.getFunctionsShow().Count);
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + stateCurrent.getId() + " to " + stateNext.getId() + ". Number of show functions to call: " + stateNext.getFunctionsShow().Count);
 
             goToState(stateCurrent, stateNext);
 
@@ -150,7 +147,7 @@ public class MouseUtilitiesGradationAssistanceManager
 
     void goToPreviousState()
     { // No arguments as previous state is known internally
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + m_assistanceGradation[m_gradationCurrent].getId() + " to " + m_assistanceGradation[m_gradationPrevious].getId());
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + m_assistanceGradation[m_gradationCurrent].getId() + " to " + m_assistanceGradation[m_gradationPrevious].getId());
 
         m_gradationNext = m_gradationPrevious; // Little trick to handle correctly the transition to the previous state, as next becomes current and current becomes previous.
 
@@ -160,7 +157,7 @@ public class MouseUtilitiesGradationAssistanceManager
     // Be careful with this function ! Should not be called directly if you do not know what your are doing. It is a short function but can mess up many things.
     void goToState(MouseUtilitiesGradationAssistance current, MouseUtilitiesGradationAssistance next)
     { // Current: will call hide function; Next: will call show functions
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. Going from " + current.getId() + " to " + next.getId());
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. Going from " + current.getId() + " to " + next.getId());
 
         raiseEventsGradation(current.getFunctionHide(), current.getFunctionHideEventHandler(), next.getFunctionsShow(), next.getFunctionsShowEventHandlers());
     }
@@ -174,7 +171,7 @@ public class MouseUtilitiesGradationAssistanceManager
         {
             for (int i = 0; i < fShows.Count; i ++)
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Function show " + i + " is going to be called");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Function show " + i + " is going to be called");
 
                 fShows[i](fShowsEventHandler[i]);
             }
@@ -187,7 +184,7 @@ public class MouseUtilitiesGradationAssistanceManager
     {
         if (m_gradationInitial == "")
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Initial state not set - however required. So nothing will happen.");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Initial state not set - however required. So nothing will happen.");
         }
         else
         {
@@ -216,8 +213,6 @@ public class MouseUtilitiesGradationAssistance
 
     public event EventHandler m_triggerNext;
     public event EventHandler m_triggerPrevious;
-
-    public MouseDebugMessagesManager m_debug;
 
     public MouseUtilitiesGradationAssistance(string id)
     {

@@ -29,7 +29,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 {
     bool m_menuShown;
     public MouseChallengeCleanTable m_challengeCleanTable;
-    public MouseDebugMessagesManager m_debug;
     //public GameObject m_hologramInteractionSurface;
     public MouseTable m_tableController;
     public MouseRag m_ragController;
@@ -54,7 +53,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_ragInteractionSurfaceView = m_ragController.m_interactionSurfaceRagView;//.transform.Find("InteractionSurfaceRag");
         m_hologramRagInteractionSurfaceMaterialName = m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
 
         // Check if the occlusion is enabled
         MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
@@ -70,7 +69,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackCubeTouched()
     {
-        m_debug.displayMessage("MouseUtilitiesAdminMenu", "callbackCubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
+        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackCubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
         m_menuShown = !m_menuShown;
 
        for (int i = 0; i < gameObject.transform.childCount; i ++)
@@ -113,13 +112,13 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackBringInteractionSurface()
     {
-        m_debug.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
         /*m_hologramInteractionSurface*/m_tableController.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
     }
 
     public void callbackBringRagInteractionSurface()
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
         /*m_hologramRagInteractionSurface*//*m_ragInteractionSurfaceView*/m_ragController.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
     }
 
@@ -173,6 +172,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void debugSwitchDisplayMessages()
     {
-        m_debug.m_displayMessages = !m_debug.m_displayMessages;
+        MouseDebugMessagesManager.Instance.m_displayMessages = !MouseDebugMessagesManager.Instance.m_displayMessages;
     }
 }

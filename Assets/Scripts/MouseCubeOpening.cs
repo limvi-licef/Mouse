@@ -26,7 +26,6 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
  * */
 public class MouseCubeOpening : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
     Transform m_cubeTopLeftPartView;
     Transform m_cubeTopRightPartView;
     Transform m_cubeBottomPartView;
@@ -68,7 +67,7 @@ public class MouseCubeOpening : MonoBehaviour
 
     void callbackCubeTouched()
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
 
         openCube(m_eventCubetouched);
 
@@ -92,21 +91,21 @@ public class MouseCubeOpening : MonoBehaviour
         animatorRightPart.m_animationSpeed = 0.5f;
 
 
-        animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, m_debug, MouseUtilities.getEventHandlerEmpty());
-        animatorRightPart.animateMoveToPosition(worldDestPosRightPart, m_debug, new EventHandler(delegate (System.Object o, EventArgs e) { callback?.Invoke(this, EventArgs.Empty); }));
+        animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, MouseUtilities.getEventHandlerEmpty());
+        animatorRightPart.animateMoveToPosition(worldDestPosRightPart, new EventHandler(delegate (System.Object o, EventArgs e) { callback?.Invoke(this, EventArgs.Empty); }));
     }
 
     public void closeCube(EventHandler callback)
     {
         if (m_mutexClosingOngoing)
         { // Do not accept a new request if the process of the current one is not yet finished
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "A request to close the cube is currently being processed. This one is ignored.");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "A request to close the cube is currently being processed. This one is ignored.");
         }
         else
         {
             m_mutexClosingOngoing = true; // Locking the mutex
 
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Closing cube ...");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Closing cube ...");
 
             // Moving the parts
             Vector3 worldDestPosLeftPart = gameObject.transform.TransformPoint(new Vector3(0.25f, 0.5f, 0f));
@@ -117,9 +116,9 @@ public class MouseCubeOpening : MonoBehaviour
             animatorRightPart.m_animationSpeed = 0.5f;
 
 
-            animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, m_debug, MouseUtilities.getEventHandlerEmpty());
-            animatorRightPart.animateMoveToPosition(worldDestPosRightPart, m_debug, new EventHandler(delegate (System.Object o, EventArgs e) {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube closed ");
+            animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, MouseUtilities.getEventHandlerEmpty());
+            animatorRightPart.animateMoveToPosition(worldDestPosRightPart, new EventHandler(delegate (System.Object o, EventArgs e) {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube closed ");
                 callback?.Invoke(this, EventArgs.Empty);
                 m_mutexClosingOngoing = false; // Process finished: unlocking the mutex
             }));
@@ -130,7 +129,7 @@ public class MouseCubeOpening : MonoBehaviour
     {
         transform.localScale = m_scalingOriginal;
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Set scaling to original: " + transform.localScale.ToString());
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Set scaling to original: " + transform.localScale.ToString());
     }
 
     public void backupScaling()
@@ -143,6 +142,6 @@ public class MouseCubeOpening : MonoBehaviour
     {
         transform.localScale = m_scalingReduced;
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reducing scale to: " + m_scalingReduced.ToString());
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reducing scale to: " + m_scalingReduced.ToString());
     }
 }

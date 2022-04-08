@@ -21,8 +21,6 @@ using Microsoft.MixedReality.Toolkit.Utilities;
 
 public class MouseHandInteractions : MonoBehaviour {
 
-    public MouseDebugMessagesManager m_debug;
-
     // Start is called before the first frame update
     void Start()
     {

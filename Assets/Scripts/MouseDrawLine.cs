@@ -20,8 +20,6 @@ using System.Linq;
 
 public class MouseDrawLine : MonoBehaviour, IMixedRealityTouchHandler
 {
-    public MouseDebugMessagesManager m_debugMessages;
-
     public GameObject m_linePrefab;
 
     List<GameObject> m_lines;
@@ -66,7 +64,7 @@ public class MouseDrawLine : MonoBehaviour, IMixedRealityTouchHandler
         lineRenderer.SetPosition(0, posLine);
         lineRenderer.SetPosition(1, posLine);
 
-        m_debugMessages.displayMessage("MouseDrawLine", "createLine", MouseDebugMessagesManager.MessageLevel.Info, "Number of lines in the list: " + m_lines.Count.ToString() + " Index position: " + lineRenderer.positionCount.ToString());
+        MouseDebugMessagesManager.Instance.displayMessage("MouseDrawLine", "createLine", MouseDebugMessagesManager.MessageLevel.Info, "Number of lines in the list: " + m_lines.Count.ToString() + " Index position: " + lineRenderer.positionCount.ToString());
 
     }
 
@@ -76,7 +74,7 @@ public class MouseDrawLine : MonoBehaviour, IMixedRealityTouchHandler
         lineRenderer.positionCount++;
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, new Vector3(posx, gameObject.transform.position.y + m_lineYOffset, posz));
 
-        m_debugMessages.displayMessage("MouseDrawLine", "addPointToCurrentLine", MouseDebugMessagesManager.MessageLevel.Info, "Number of lines in the list: " + m_lines.Count.ToString() + " Index position: " + lineRenderer.positionCount.ToString());
+        MouseDebugMessagesManager.Instance.displayMessage("MouseDrawLine", "addPointToCurrentLine", MouseDebugMessagesManager.MessageLevel.Info, "Number of lines in the list: " + m_lines.Count.ToString() + " Index position: " + lineRenderer.positionCount.ToString());
     }
 
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
@@ -93,7 +91,7 @@ public class MouseDrawLine : MonoBehaviour, IMixedRealityTouchHandler
 
     void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
     {
-        m_debugMessages.displayMessage("MouseDrawLine", "IMixedRealityTouchHandler.OnTouchCompleted", MouseDebugMessagesManager.MessageLevel.Info, "");
+        MouseDebugMessagesManager.Instance.displayMessage("MouseDrawLine", "IMixedRealityTouchHandler.OnTouchCompleted", MouseDebugMessagesManager.MessageLevel.Info, "");
     }
 
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData eventData)

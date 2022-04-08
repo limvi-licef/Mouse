@@ -27,8 +27,6 @@ using System.Reflection;
  * */
 public class MouseUtilitiesRefuseChallenge : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     int m_layerBitMask = 1 << 9; // I.e. only the object in the "Mouse" layer will be considered by the raycast.
 
     public event EventHandler m_eventChallengeRefused;
@@ -46,12 +44,12 @@ public class MouseUtilitiesRefuseChallenge : MonoBehaviour
         {
             m_palmFacingUser = true;
 
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Palm detected");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Palm detected");
         });
 
         gameObject.GetComponent<HandConstraintPalmUp>().OnLastHandLost.AddListener(delegate ()
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Palm not detected anymore");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Palm not detected anymore");
 
             m_palmFacingUser = false;
         });
@@ -75,7 +73,7 @@ public class MouseUtilitiesRefuseChallenge : MonoBehaviour
                 if (m_statusEventTriggered == false)
                 {
                     m_eventChallengeRefused?.Invoke(this, EventArgs.Empty);
-                    m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Event triggered, thanks to object: " + hitInfo.transform.gameObject.name);
+                    MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Event triggered, thanks to object: " + hitInfo.transform.gameObject.name);
                     m_statusEventTriggered = true;
                 }
             }

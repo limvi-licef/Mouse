@@ -23,7 +23,6 @@ using System.Reflection;
  * */
 public class MouseUtilitiesAnimation : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
 
     public Vector3 m_positionEnd;
     public Vector3 m_scalingEnd;
@@ -168,19 +167,17 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         m_startAnimation = true;
     }
 
-    public void animateDiseappearInPlace(MouseDebugMessagesManager debug, EventHandler eventHandler)
+    public void animateDiseappearInPlace(/*MouseDebugMessagesManager debug, */EventHandler eventHandler)
     {
         EventHandler[] temp = new EventHandler[1];
 
         temp[0] = eventHandler;
 
-        animateDiseappearInPlace(debug, temp);
+        animateDiseappearInPlace(temp);
     }
 
-    public void animateDiseappearInPlace(MouseDebugMessagesManager debug ,EventHandler[] eventHandlers)
+    public void animateDiseappearInPlace(/*MouseDebugMessagesManager debug ,*/EventHandler[] eventHandlers)
     {
-        m_debug = debug;
-
         m_positionEnd = gameObject.transform.position;
         m_scalingEnd = new Vector3(0f, 0f, 0f);
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
@@ -192,26 +189,25 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         startAnimation();
     }
 
-    public void animateAppearInPlace(MouseDebugMessagesManager debug, EventHandler e)
+    public void animateAppearInPlace(/*MouseDebugMessagesManager debug, */EventHandler e)
     {
         EventHandler[] eventHandlers = new EventHandler[] { e };
 
-        animateAppearInPlace(debug, eventHandlers);
+        animateAppearInPlace(eventHandlers);
     }
 
-    public void animateAppearInPlace(MouseDebugMessagesManager debug, EventHandler[] e)
+    public void animateAppearInPlace(/*MouseDebugMessagesManager debug, */EventHandler[] e)
     {
-        animateAppearInPlaceToScaling(new Vector3(1.0f, 1.0f, 1.0f), debug, e);
+        animateAppearInPlaceToScaling(new Vector3(1.0f, 1.0f, 1.0f), e);
     }
 
-    public void animateAppearInPlaceToScaling(Vector3 targetScaling, MouseDebugMessagesManager debug, EventHandler eventHandler)
+    public void animateAppearInPlaceToScaling(Vector3 targetScaling, EventHandler eventHandler)
     {
-        animateAppearInPlaceToScaling(targetScaling, debug, new EventHandler[] { eventHandler });
+        animateAppearInPlaceToScaling(targetScaling, new EventHandler[] { eventHandler });
     }
 
-    public void animateAppearInPlaceToScaling(Vector3 targetScaling, MouseDebugMessagesManager debug, EventHandler[] eventHandlers)
+    public void animateAppearInPlaceToScaling(Vector3 targetScaling, EventHandler[] eventHandlers)
     {
-        m_debug = debug;
         gameObject.transform.localScale = new Vector3(0, 0, 0);
         m_positionEnd = gameObject.transform.position;
         m_scalingEnd = targetScaling;
@@ -229,9 +225,8 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     /**
      * In this function, the animation will start from a given position, and will bring it to its current position
      **/
-    public void animateAppearFromPosition (Vector3 pos, MouseDebugMessagesManager debug, EventHandler e)
+    public void animateAppearFromPosition (Vector3 pos, EventHandler e)
     {
-        m_debug = debug;
         m_positionEnd = gameObject.transform.position;
         m_scalingEnd = new Vector3(1.0f, 1.0f, 1.0f);
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
@@ -248,15 +243,14 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     /**
  * In this function, the animation will start from the object's current position, and will diseppear gradually to the target position given as input parameter
  **/
-    public void animateDiseappearToPosition(Vector3 pos, MouseDebugMessagesManager debug, EventHandler e)
+    public void animateDiseappearToPosition(Vector3 pos, EventHandler e)
     {
         EventHandler[] ee = new EventHandler[] { e };
-        animateDiseappearToPosition(pos, debug, ee);
+        animateDiseappearToPosition(pos, ee);
     }
 
-    public void animateDiseappearToPosition(Vector3 pos, MouseDebugMessagesManager debug, EventHandler[] eventHandlers)
+    public void animateDiseappearToPosition(Vector3 pos, EventHandler[] eventHandlers)
     {
-        m_debug = debug;
         m_positionEnd = pos;
         m_scalingEnd = new Vector3(0f, 0f, 0f);
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
@@ -272,9 +266,8 @@ public class MouseUtilitiesAnimation : MonoBehaviour
     /**
     * In this function, the animation will start from the current position, and will bring it to the given position
     **/
-    public void animateMoveToPosition(Vector3 posDest, MouseDebugMessagesManager debug, EventHandler e)
+    public void animateMoveToPosition(Vector3 posDest, EventHandler e)
     {
-        m_debug = debug;
         m_positionEnd = posDest;
         m_scalingEnd = gameObject.transform.localScale;
         m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnPositioning;

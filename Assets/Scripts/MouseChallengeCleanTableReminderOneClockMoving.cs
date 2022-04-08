@@ -26,8 +26,6 @@ using System.Linq;
  * */
 public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     Transform m_clockView; // Because we can have multiple clocks
 
     Transform m_hologramWindowReminderButtonOkView;
@@ -69,8 +67,8 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
         m_hologramWindowReminderButtonOkView = m_hologramWindowReminderView.Find("WindowMenu").Find("ButtonOk");
         m_hologramWindowReminderButtonBackView = m_hologramWindowReminderView.Find("WindowMenu").Find("ButtonBack");
 
-        m_mutexHide = new MouseUtilitiesMutex(m_debug);
-        m_mutexShow = new MouseUtilitiesMutex(m_debug);
+        m_mutexHide = new MouseUtilitiesMutex();
+        m_mutexShow = new MouseUtilitiesMutex();
 
         m_clockOriginalPosition = m_clockView.localPosition;
         m_positionLocalOrigin = transform.localPosition;
@@ -93,7 +91,7 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
         m_gradationManager = transform.GetComponent<MouseUtilitiesGradationManager>();
         if (m_gradationManager == null)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "MouseUtilitiesGradationManager component not present in that gameobject, whereas it is required. The object will most likely not work properly");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "MouseUtilitiesGradationManager component not present in that gameobject, whereas it is required. The object will most likely not work properly");
         }
         m_gradationManager.addNewAssistanceGradation("Default", callbackGradationDefault);
         m_gradationManager.addNewAssistanceGradation("HighFollow", callbackGradationHighFollow);
@@ -134,28 +132,28 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
     {// If a clock is touched, all other clocks are hidden
 
         MouseUtilitiesAnimation animator = m_clockView.gameObject.AddComponent<MouseUtilitiesAnimation>();
-        animator.animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs ee)
+        animator.animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs ee)
         {
             m_clockView.gameObject.SetActive(false);
 
             // When the clock has diseappeared, make the text appearing, after moving it to the place of the hidden clock
             m_hologramWindowReminderView.position = m_clockView.position;
             MouseUtilitiesAnimation animatorText = m_hologramWindowReminderView.gameObject.AddComponent<MouseUtilitiesAnimation>();
-            animatorText.animateAppearInPlace(m_debug, MouseUtilities.getEventHandlerEmpty());
+            animatorText.animateAppearInPlace(MouseUtilities.getEventHandlerEmpty());
 
             Destroy(m_clockView.GetComponent<MouseUtilitiesAnimation>());
         }));
 
         m_eventHologramClockTouched?.Invoke(this, EventArgs.Empty); // Informing the world that a clock has been touched
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
     }
 
     void callbackOnObjectFocus(System.Object sender, EventArgs e)
     {
         if (m_gradationManager.isGradationMax() == false)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - Sender type: " + sender.GetType());
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - Sender type: " + sender.GetType());
 
 
             if (m_newObjectToFocusTransform == null || (m_newObjectToFocusTransform.name != ((GameObject)sender).name))
@@ -167,14 +165,14 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
                     currentObjectName = ((UnityEngine.GameObject)sender).name;
                 }
 
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Seems to work - Currently focused object: " + currentObjectName + "| New one: " + ((GameObject)sender).name + ". If the 2 names are different, this is good news");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Seems to work - Currently focused object: " + currentObjectName + "| New one: " + ((GameObject)sender).name + ". If the 2 names are different, this is good news");
                 m_newObjectToFocusTransform = ((GameObject)sender).transform;
                 m_newObjectToFocus = true;
             }
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Maximum gradation reached - no focus process are performed");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Maximum gradation reached - no focus process are performed");
         }
     }
 
@@ -190,11 +188,11 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
 
     public void hide(EventHandler e)
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         if (m_mutexHide.isLocked() == false)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
             m_mutexHide.lockMutex();
 
             GameObject temp;
@@ -202,43 +200,43 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
             if (m_clockView.gameObject.activeSelf)
             {
                 temp = m_clockView.gameObject;
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock is going to be hidden");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock is going to be hidden");
             }
             else
             { // Only two children for know so fine this way. But to be extended if it happens that more children are added in the future
                 temp = m_hologramWindowReminderView.gameObject;
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Text is going to be hidden");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Text is going to be hidden");
             }
 
             EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object oe, EventArgs ee)
             {
                 m_mutexHide.unlockMutex();
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - object hidden");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - object hidden");
 
                 Destroy(temp.GetComponent<MouseUtilitiesAnimation>());
                 resetObject();
             }), e };
 
             MouseUtilitiesAnimation animator = temp.AddComponent<MouseUtilitiesAnimation>();
-            animator.animateDiseappearInPlace(m_debug, eventHandlers);
+            animator.animateDiseappearInPlace(eventHandlers);
         }
     }
 
     public void show(EventHandler eventHandler)
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         if (m_mutexShow.isLocked() == false)
         {
             m_mutexShow.lockMutex();
 
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
 
-            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform, m_yOffsetOrigin);
+            MouseUtilities.adjustObjectHeightToHeadHeight(transform, m_yOffsetOrigin);
 
             EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e)
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock should be visible now");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock should be visible now");
 
                 Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
 
@@ -247,11 +245,11 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
             }), eventHandler };
 
             MouseUtilitiesAnimation animator = m_clockView.gameObject.AddComponent<MouseUtilitiesAnimation>();
-            animator.animateAppearInPlaceToScaling(m_clockScalingOriginal, m_debug, eventHandlers);
+            animator.animateAppearInPlaceToScaling(m_clockScalingOriginal, eventHandlers);
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex already locked - nothing to do");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex already locked - nothing to do");
         }
     }
 
@@ -300,7 +298,7 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
 
     public void setObjectToOriginalPosition()
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Changing position");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Changing position");
 
         transform.localPosition = m_positionLocalOrigin;
     }

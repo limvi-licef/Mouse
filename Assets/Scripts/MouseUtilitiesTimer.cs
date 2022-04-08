@@ -23,8 +23,6 @@ using System.Reflection;
 
 public class MouseUtilitiesTimer : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     public int m_timerDuration = 2; // in Seconds
     bool m_timerStart;
     int m_timerDurationInternal; // To convert the seconds in FPS, as the timer uses the Update function to run
@@ -46,8 +44,8 @@ public class MouseUtilitiesTimer : MonoBehaviour
             m_timerDurationInternal -= 1;
 
             if (m_timerDurationInternal <= 0)
-            { 
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Timer finished!");
+            {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Timer finished!");
                
                 m_timerStart = false;
                 m_timerDurationInternal = m_timerDuration * 60;
@@ -64,11 +62,11 @@ public class MouseUtilitiesTimer : MonoBehaviour
             m_timerStart = true;
             m_timerDurationInternal = m_timerDuration * 60;
 
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Timer started");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Timer started");
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Timer already running, so will not be started - please call again this function when this timer will be finished");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Timer already running, so will not be started - please call again this function when this timer will be finished");
         }
     }
 
@@ -81,7 +79,7 @@ public class MouseUtilitiesTimer : MonoBehaviour
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No timer currently running, so nothing to do");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No timer currently running, so nothing to do");
         }
     }
 }

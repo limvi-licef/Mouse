@@ -37,17 +37,36 @@ public class MouseDebugMessagesManager : MonoBehaviour
     public bool m_displayOnConsole;
     public bool m_displayMessages; // True: messages displayed; False otherwise
 
+    private static MouseDebugMessagesManager _instance;
+
+    public static MouseDebugMessagesManager Instance { get { return _instance; } }
+
     private void Awake()
     {
-        m_classNameFilter = new List<string>();
+        Debug.Log("!!!!! 1. Called");
 
-        // For now, filtering is hard coded
-        //m_classNameFilter.Add("MouseChallengeCleanTableReminder");
-        //m_classNameFilter.Add("MouseUtilitiesGradationAssistanceManager");
-        /*m_classNameFilter.Add("MouseUtilitiesHolograms");
-        m_classNameFilter.Add("MouseCueing");*/
+        if (_instance != null && _instance != this)
+        {
+            Debug.Log("!!!!! 3. If you see this message before the second one ... well ...");
 
-        m_displayMessages = true;
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Debug.Log("!!!!! 2. Mouse Debug intialized");
+
+            m_classNameFilter = new List<string>();
+
+            // For now, filtering is hard coded
+            //m_classNameFilter.Add("MouseChallengeCleanTableReminder");
+            //m_classNameFilter.Add("MouseUtilitiesGradationAssistanceManager");
+            /*m_classNameFilter.Add("MouseUtilitiesHolograms");
+            m_classNameFilter.Add("MouseCueing");*/
+
+            m_displayMessages = true;
+
+            _instance = this;
+        }
     }
 
     // Start is called before the first frame update

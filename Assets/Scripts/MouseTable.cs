@@ -26,7 +26,6 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
  * */
 public class MouseTable : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
     public Transform m_interactionSurfaceTableView;
     public MouseChallengeCleanTableSurfaceToPopulateWithCubes m_interactionSurfaceTableController;
     Transform m_assistanceStimulateLevel1View;
@@ -45,7 +44,7 @@ public class MouseTable : MonoBehaviour
         // Sanity check
         if (m_interactionSurfaceTableView.GetComponent<MouseChallengeCleanTableSurfaceToPopulateWithCubes>() == null)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "The m_hologramInteractionSurface object should have a MouseChallengeCleanTableSurfaceToPopulateWithCubes component");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "The m_hologramInteractionSurface object should have a MouseChallengeCleanTableSurfaceToPopulateWithCubes component");
         }
 
         // Connect the callbacks
@@ -66,7 +65,7 @@ public class MouseTable : MonoBehaviour
 
     void callbackHologramInteractionSurfaceMovedFinished()
     {
-        m_debug.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         // Bring specific components to the center of the interaction surface
         gameObject.transform.position = m_interactionSurfaceTableView.transform.position;

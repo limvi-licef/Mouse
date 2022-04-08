@@ -26,7 +26,6 @@ using System;
  * */
 public abstract class MouseAssistanceButtonAbstract : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
     public event EventHandler s_buttonClicked;
 
     // Start is called before the first frame update

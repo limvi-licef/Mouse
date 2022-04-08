@@ -27,8 +27,6 @@ using System.Linq;
  * */
 public class MouseUtilitiesGradationManager : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     List<AssistanceGradation> m_assistanceGradation;
 
     int m_assistanceGradationIndexCurrent;
@@ -105,7 +103,7 @@ public class MouseUtilitiesGradationManager : MonoBehaviour
 
         if (m_assistanceGradationIndexCurrent == nbGradations - 1)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Maximum gradation level reached");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Maximum gradation level reached");
             toReturn = true;
         }
         return toReturn;
@@ -127,7 +125,7 @@ public class MouseUtilitiesGradationManager : MonoBehaviour
 
         if (m_assistanceGradationIndexCurrent == 0)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Minimum gradation level reached");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Minimum gradation level reached");
 
             toReturn = true;
         }
@@ -139,7 +137,7 @@ public class MouseUtilitiesGradationManager : MonoBehaviour
     {
         if (m_assistanceGradationIndexCurrent == 0)
         { // If gradation is already to the minimum, then nothing to do
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Gradation already at minimal level - nothing to do");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Gradation already at minimal level - nothing to do");
         }
         else
         {

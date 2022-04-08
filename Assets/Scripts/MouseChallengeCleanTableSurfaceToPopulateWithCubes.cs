@@ -27,7 +27,6 @@ using Microsoft.MixedReality.Toolkit.UI;
  * */
 public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
     public int m_numberOfCubesToAddInRow = 5;
     public int m_numberOfCubesToAddInColumn = 4;
 
@@ -46,7 +45,7 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
         // Sanity checks
         if (m_hologramToUseToPopulateSurface.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>() == null)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "The m_hologramToUseToPopulateSurface object should have a MouseChallengeCleanTableHologramForSurfaceToClean component");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "The m_hologramToUseToPopulateSurface object should have a MouseChallengeCleanTableHologramForSurfaceToClean component");
         }
     }
 
@@ -69,7 +68,7 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
             }
             else
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "At leat one cube is already displayed, so nothing to do");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "At leat one cube is already displayed, so nothing to do");
                 populateTable = false;
             }
         }
@@ -123,7 +122,7 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
     {
         MouseChallengeCleanTableHologramForSurfaceToClean tempCube = (MouseChallengeCleanTableHologramForSurfaceToClean)sender;
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube touched. Position: " + tempCube.transform.localPosition.x.ToString() + " " + tempCube.transform.localPosition.z.ToString());
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube touched. Position: " + tempCube.transform.localPosition.x.ToString() + " " + tempCube.transform.localPosition.z.ToString());
 
         Tuple<float, float> tempTuple = new Tuple<float, float>(tempCube.transform.localPosition.x, tempCube.transform.localPosition.z);
 
@@ -146,13 +145,13 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
 
         if (allCubesTouched)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "All cubes touched !!!!");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "All cubes touched !!!!");
             m_eventSurfaceCleaned?.Invoke(this, EventArgs.Empty);
 
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Still some work to do ...");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Still some work to do ...");
         }
     }
 

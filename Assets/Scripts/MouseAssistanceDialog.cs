@@ -36,8 +36,6 @@ public class MouseAssistanceDialog : MonoBehaviour
     MouseUtilitiesMutex m_mutexShow;
     MouseUtilitiesMutex m_mutexHide;
 
-    public MouseDebugMessagesManager m_debug;
-
     Vector3 m_buttonsParentScalingOriginal;
     Vector3 m_backgoundScalingOriginal;
     Vector3 m_titleScalingOriginal;
@@ -46,8 +44,6 @@ public class MouseAssistanceDialog : MonoBehaviour
 
     private void Awake()
     {
-        //m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
         // Instantiate variables
         m_buttonsView = new List<Transform>();
         m_buttonsController = new List<MouseAssistanceButton>();
@@ -62,18 +58,7 @@ public class MouseAssistanceDialog : MonoBehaviour
         m_descriptionView = gameObject.transform.Find("DescriptionText");
         m_backgroundView = gameObject.transform.Find("ContentBackPlate");
 
-        /*if (m_descriptionView == null)
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Description object NOT found");
-        }
-        else
-        {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Description object found");
-        }*/
-
         // Initialize some values of the children
-        //setTitle("");
-        //setDescription("");
         m_buttonsParentScalingOriginal = m_buttonsParentView.localScale;
         m_backgoundScalingOriginal = m_backgroundView.localScale;
         m_titleScalingOriginal = m_titleView.localScale;
@@ -84,8 +69,8 @@ public class MouseAssistanceDialog : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_mutexShow = new MouseUtilitiesMutex(m_debug);
-        m_mutexHide = new MouseUtilitiesMutex(m_debug);
+        m_mutexShow = new MouseUtilitiesMutex();
+        m_mutexHide = new MouseUtilitiesMutex();
     }
 
     // Update is called once per frame
@@ -147,7 +132,6 @@ public class MouseAssistanceDialog : MonoBehaviour
         // Store the button
         m_buttonsView.Add(newButton);
         MouseAssistanceButton tempButtonController = newButton.GetComponent<MouseAssistanceButton>();
-        tempButtonController.m_debug = m_debug;
         m_buttonsController.Add(tempButtonController); // Only for the ease of use, nothing special here.
 
         // Locate button
@@ -189,71 +173,52 @@ public class MouseAssistanceDialog : MonoBehaviour
         {
             m_mutexHide.lockMutex();
 
-            MouseUtilities.animateDisappearInPlace(m_debug, m_titleView.gameObject, m_titleScalingOriginal, new EventHandler(delegate (System.Object o, EventArgs e)
+            MouseUtilities.animateDisappearInPlace(m_titleView.gameObject, m_titleScalingOriginal, new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_mutexHide.unlockMutex();
                 eventHandler?.Invoke(this, EventArgs.Empty);
             }));
 
-            /*m_titleView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                Destroy(m_titleView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-                m_mutexHide.unlockMutex();
-                eventHandler?.Invoke(this, EventArgs.Empty);
-            }));*/
+            MouseUtilities.animateDisappearInPlace(m_descriptionView.gameObject, m_descriptionScalingOriginal);
 
+            MouseUtilities.animateDisappearInPlace(m_buttonsParentView.gameObject, m_buttonsParentScalingOriginal);
 
-
-            /*m_descriptionView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-
-
-                Destroy(m_descriptionView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-            }));*/
-            MouseUtilities.animateDisappearInPlace(m_debug, m_descriptionView.gameObject, m_descriptionScalingOriginal);
-
-            /*m_buttonsParentView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                Destroy(m_buttonsParentView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-            }));*/
-            MouseUtilities.animateDisappearInPlace(m_debug, m_buttonsParentView.gameObject, m_buttonsParentScalingOriginal);
-
-            MouseUtilities.animateDisappearInPlace(m_debug, m_backgroundView.gameObject, m_backgoundScalingOriginal);
+            MouseUtilities.animateDisappearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal);
         }
     }
 
     public void show (EventHandler eventHandler)
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         if (m_mutexHide.isLocked() == false)
         {
             m_mutexHide.lockMutex();
 
-            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform);
+            MouseUtilities.adjustObjectHeightToHeadHeight(transform);
 
-            m_titleView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
+            m_titleView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Title view shown");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Title view shown");
 
 
                 Destroy(m_titleView.gameObject.GetComponent<MouseUtilitiesAnimation>());
                 m_mutexHide.unlockMutex();
                 eventHandler?.Invoke(this, EventArgs.Empty);
             }));
-            m_descriptionView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
+            m_descriptionView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 Destroy(m_descriptionView.gameObject.GetComponent<MouseUtilitiesAnimation>());
             }));
-            m_buttonsParentView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
+            m_buttonsParentView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 Destroy(m_buttonsParentView.gameObject.GetComponent<MouseUtilitiesAnimation>());
             }));
-            MouseUtilities.animateAppearInPlace(m_debug, m_backgroundView.gameObject, m_backgoundScalingOriginal);
+            MouseUtilities.animateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal);
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked, nothing will happen");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked, nothing will happen");
         }
     }
 

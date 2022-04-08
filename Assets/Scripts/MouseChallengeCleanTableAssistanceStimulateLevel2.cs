@@ -23,8 +23,6 @@ using System.Reflection;
  * */
 public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     public event EventHandler m_eventHologramHelpTouched;
 
     public Transform m_hologramHelp;
@@ -53,11 +51,11 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
     {
         if ( m_hologramLineView == null )
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "Line hologram not initialized properly");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "Line hologram not initialized properly");
         }
 
         // Callbacks
-        MouseUtilities.mouseUtilitiesAddTouchCallback(m_debug, m_hologramHelp, callbackHelpTouched);
+        MouseUtilities.mouseUtilitiesAddTouchCallback(m_hologramHelp, callbackHelpTouched);
     }
 
     // Update is called once per frame
@@ -68,7 +66,7 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
 
     void callbackHelpTouched()
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         m_eventHologramHelpTouched?.Invoke(this, EventArgs.Empty);
     }
@@ -88,64 +86,34 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             m_mutexShow = true;
 
             m_textView.position = m_hologramLineController.m_hologramOrigin.transform.position;
-            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_textView);
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_textView);
             // Trick to start the line to the text position, i.e. to start at user's head's position
             m_hologramLineController.m_hologramOrigin.transform.position = m_textView.position;
             
-
-            /*m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_textOriginalScaling, m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-                Destroy(m_textView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object oo, EventArgs ee)
-            {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-                Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                m_mutexShow = false;
-            }), eventHandler };
-
-                m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), m_debug, temp);
-            }));*/
-            /*MouseUtilities.animateAppearInPlace(m_debug, m_textView.gameObject, m_textOriginalScaling, new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                m_mutexShow = false;
-            }));*/
             m_textController.show(new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_mutexShow = false;
             }));
 
             // Showing line
-           /* if (m_hologramLineView.gameObject.activeSelf == false)
-            {*/
                 m_hologramLineView.GetComponent<MouseLineToObject>().show(new EventHandler(delegate (System.Object oo, EventArgs ee) {
                     EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object ooo, EventArgs eee)
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
                 Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
 
                 m_mutexShow = false;
             }), eventHandler };
 
-                    MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_hologramHelp);
+                    MouseUtilities.adjustObjectHeightToHeadHeight(m_hologramHelp);
 
-                    m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), m_debug, temp);
-                    //eventHandler?.Invoke(this, EventArgs.Empty);
+                    m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), temp);
                 }));
-            //}
-            /*else
-            {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already shown: nothing to do");
-            }*/
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
         }
     }
 
@@ -157,7 +125,7 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             m_mutexHide = true;
 
             // Hiding text
-            m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, new EventHandler(delegate (System.Object o, EventArgs e)
+            m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 m_textView.gameObject.SetActive(false);
 
@@ -174,7 +142,7 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
                 m_mutexHide = false;
             }), eventHandler };
 
-                m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+                m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(temp);
             }));
 
             // Hiding line
@@ -184,12 +152,12 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             }
             else
             {
-                m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already hidden: nothing to do");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Line already hidden: nothing to do");
             }
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - request ignored");
         }
     }
 

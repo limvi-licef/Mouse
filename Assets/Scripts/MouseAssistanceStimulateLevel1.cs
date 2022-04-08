@@ -27,8 +27,6 @@ using System.Linq;
  * */
 public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     public Transform m_hologramView;
     MouseCubeOpening m_hologramController;
     Vector3 m_hologramOriginalLocalPos;
@@ -94,7 +92,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         {
             m_eventHologramStimulateLevel1Gradation1Or2Touched?.Invoke(this, EventArgs.Empty);
 
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Help touched");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Help touched");
 
         });
         SolverHandler solver = m_help.GetComponent<SolverHandler>();
@@ -125,7 +123,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
             MouseUtilitiesAnimation animator = m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>();
 
-            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_help);
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_help);
             m_hologramController.backupScaling();
 
             if (m_surfaceWithStarsViewTarget != null)
@@ -141,34 +139,10 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
             m_help.gameObject.SetActive(true);
             m_surfaceWithStarsView.gameObject.SetActive(true);
             m_mutexShow = false;
-
-            /* if (m_hologramView.gameObject.activeSelf == false)
-             {
-                 MouseUtilitiesAnimation animator = m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>();
-
-                 MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform, m_hologramOriginalLocalPos.y);
-
-                 EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
-                     {
-                         Destroy(animator);
-                         m_hologramController.backupScaling();
-                         m_mutexShow = false;
-
-                         m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "(animation finished) Scale: " + m_hologramView.transform.localScale.ToString() + " Local position: " + m_hologramView.transform.localPosition.ToString());
-                     }), eventHandler };
-
-                 animator.animateAppearInPlaceToScaling(m_hologramView.transform.localScale, m_debug, eventHandlers);
-             }
-             else
-             {
-                 m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is enabled - no hide action to take");
-
-                 m_mutexShow = false;
-             }*/
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - Request ignored");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked - Request ignored");
         }   
     }
 
@@ -183,7 +157,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
         if (m_hologramView.gameObject.activeSelf)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube is going to be hidden");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube is going to be hidden");
 
             EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
         {
@@ -193,12 +167,12 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
             m_hologramView.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             Destroy(m_hologramView.GetComponent<MouseUtilitiesAnimation>());
 
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube should be hidden now. New local position:" + m_hologramView.localPosition.ToString());
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube should be hidden now. New local position:" + m_hologramView.localPosition.ToString());
         }), eventHandler };
 
             m_hologramController.closeCube(new EventHandler(delegate (System.Object o, EventArgs e)
             {
-                m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, eventHandlers);
+                m_hologramView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(eventHandlers);
             }));
             m_lightView.gameObject.SetActive(false);
         }
@@ -210,7 +184,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is disabled - no hide action to take");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Assistance stimulate level 1 is disabled - no hide action to take");
         }
     }
 
@@ -226,7 +200,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
     public void setGradationToMinimum()
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Gradation set to minimum");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Gradation set to minimum");
 
         m_gradationManager.setGradationToMinimum();
     }
@@ -235,7 +209,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
     {
         m_surfaceWithStarsView.gameObject.SetActive(true);
         m_help.gameObject.SetActive(true);
-        MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_help);
+        MouseUtilities.adjustObjectHeightToHeadHeight(m_help);
         m_hologramView.gameObject.SetActive(false);
 
         m_lightView.gameObject.SetActive(false);
@@ -243,7 +217,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         GetComponent<RadialView>().enabled = false;
         m_hologramController.setScalingToOriginal();
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing default gradation");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing default gradation");
     }
 
     void callbackGradationLow (System.Object o, EventArgs e)
@@ -251,7 +225,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_surfaceWithStarsView.gameObject.SetActive(false);
         m_help.gameObject.SetActive(false);
 
-        MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, m_hologramView, m_hologramOriginalLocalPos.y);
+        MouseUtilities.adjustObjectHeightToHeadHeight(m_hologramView, m_hologramOriginalLocalPos.y);
         m_hologramView.gameObject.SetActive(true);
 
         m_hologramController.updateMaterials("Mouse_Clean_Bottom", "Mouse_Clean_Top-Left", "Mouse_Clean_Top-Right");
@@ -269,7 +243,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         GetComponent<RadialView>().enabled = false;
         m_hologramController.setScalingToOriginal(); // setting back the scaling to the original one.
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing low vivid gradation");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing low vivid gradation");
     }
 
     void callbackGradationHighFollow(System.Object o, EventArgs e)
@@ -283,7 +257,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_hologramController.setScalingReduced();
         m_hologramView.transform.localPosition = new Vector3(m_hologramView.localPosition.x, m_hologramOriginalLocalPos.y, m_hologramView.localPosition.z);
 
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing high gradation");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Showing high gradation");
     }
 
     public void openingCube(EventHandler eventHandler)

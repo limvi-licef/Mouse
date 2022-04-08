@@ -27,24 +27,22 @@ using System.Linq;
 public class MouseUtilitiesMutex
 {
     bool m_mutex;
-    MouseDebugMessagesManager m_debug;
 
-    public MouseUtilitiesMutex (MouseDebugMessagesManager debug)
+    public MouseUtilitiesMutex ()
     {
-        m_debug = debug;
         m_mutex = false;
     }
 
     public void lockMutex()
     {
         m_mutex = true;
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
     }
 
     public void unlockMutex()
     {
         m_mutex = false;
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked");
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked");
     }
 
     public bool isLocked()
@@ -60,7 +58,7 @@ public class MouseUtilitiesMutex
         return new EventHandler(delegate (System.Object o, EventArgs e)
        {
            m_mutex = false;
-           m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - from handler");
+           MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - from handler");
        });
     }
 }

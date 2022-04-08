@@ -28,7 +28,7 @@ using System.Timers;
 static class MouseUtilities
 {
     // Utilities functions: to be moved to a dedicated namespace later?
-    public static void mouseUtilitiesAddTouchCallback(MouseDebugMessagesManager debug, Transform transform, UnityEngine.Events.UnityAction callback)
+    public static void mouseUtilitiesAddTouchCallback(/*MouseDebugMessagesManager debug,*/ Transform transform, UnityEngine.Events.UnityAction callback)
     {
         GameObject gameObject = transform.gameObject;
 
@@ -36,7 +36,7 @@ static class MouseUtilities
 
         if (interactable == null)
         {
-            debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No interactable component to the gameobject: adding one");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No interactable component to the gameobject: adding one");
 
             interactable = gameObject.AddComponent<Interactable>();
         }
@@ -45,7 +45,7 @@ static class MouseUtilities
 
         if (receiver == null)
         {
-            debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No touch receiver to the interactable gameobject: adding one");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No touch receiver to the interactable gameobject: adding one");
 
             receiver = interactable.AddReceiver<InteractableOnTouchReceiver>();
         }
@@ -66,17 +66,19 @@ static class MouseUtilities
         });
     }
 
-    public static EventHandler getEventHandlerWithDebugMessage(MouseDebugMessagesManager debug, string debugMessage)
+    public static EventHandler getEventHandlerWithDebugMessage(/*MouseDebugMessagesManager debug,*/ string debugMessage)
     {
         return new EventHandler(delegate (System.Object o, EventArgs e)
         {
-            debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, debugMessage);
+            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "!!!!!!!!!!!!!!!!!!!! CALLICALLEDDDDDDDDDDDDDDDDDDDD");
+            /*debug*/
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, debugMessage);
         });
     }
 
-    public static void adjustObjectHeightToHeadHeight(MouseDebugMessagesManager debug, Transform t, float originalLocalHeightPos=0.0f)
+    public static void adjustObjectHeightToHeadHeight(/*MouseDebugMessagesManager debug,*/ Transform t, float originalLocalHeightPos=0.0f)
     {
-        debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Adjusting object height to head position: x= " + t.position.x + " y= Camera position (" + Camera.main.transform.position.y + ") + local position (" + originalLocalHeightPos + ") z=" + t.position.z);
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Adjusting object height to head position: x= " + t.position.x + " y= Camera position (" + Camera.main.transform.position.y + ") + local position (" + originalLocalHeightPos + ") z=" + t.position.z);
 
         t.position = new Vector3(t.position.x, Camera.main.transform.position.y + /*t.localPosition.y*/ originalLocalHeightPos-0.2f, t.position.z); // The -0.2 is to be more aligned with the hololens.
     }
@@ -93,9 +95,9 @@ static class MouseUtilities
     /*
      * Add the animate component to the object, animate the object, and then destroy the component.
      * */
-    public static void animateDisappearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scalingOriginal, EventHandler eventHandler)
+    public static void animateDisappearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scalingOriginal, EventHandler eventHandler)
     {
-        gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(debug, new EventHandler(delegate (System.Object o, EventArgs e)
+        gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
         {
             UnityEngine.Object.Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
 
@@ -105,27 +107,27 @@ static class MouseUtilities
             eventHandler?.Invoke(gameObject, EventArgs.Empty);
         }));
     }
-    public static void animateDisappearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scalingOriginal)
+    public static void animateDisappearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scalingOriginal)
     {
-        animateDisappearInPlace(debug, gameObject, scalingOriginal, getEventHandlerEmpty());
+        animateDisappearInPlace(gameObject, scalingOriginal, getEventHandlerEmpty());
     }
 
-    public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, EventHandler eventHandler)
+    public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, EventHandler eventHandler)
     {
         gameObject.SetActive(true);
-        gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(debug, new EventHandler(delegate (System.Object o, EventArgs e)
+        gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
         {
             UnityEngine.Object.Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
 
             eventHandler?.Invoke(gameObject, EventArgs.Empty);
         }));
     }
-    public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject)
+    public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject)
     {
-        animateAppearInPlace(debug, gameObject, getEventHandlerEmpty());
+        animateAppearInPlace(gameObject, getEventHandlerEmpty());
     }
 
-   public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scaling, EventHandler eventHandler)
+   public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scaling, EventHandler eventHandler)
     {
         gameObject.SetActive(true);
 
@@ -135,16 +137,16 @@ static class MouseUtilities
         animator.m_scalingstep.y = scaling.y / 50.0f;
         animator.m_scalingstep.z = scaling.z / 50.0f;
 
-        animator.animateAppearInPlaceToScaling(scaling, debug, new EventHandler(delegate (System.Object o, EventArgs e)
+        animator.animateAppearInPlaceToScaling(scaling, new EventHandler(delegate (System.Object o, EventArgs e)
         {
             UnityEngine.Object.Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
 
             eventHandler?.Invoke(gameObject, EventArgs.Empty);
         }));
     }
-    public static void animateAppearInPlace(MouseDebugMessagesManager debug, GameObject gameObject, Vector3 scaling)
+    public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scaling)
     {
-        animateAppearInPlace(debug, gameObject, scaling, getEventHandlerEmpty());
+        animateAppearInPlace(gameObject, scaling, getEventHandlerEmpty());
     }
 
     /**

@@ -27,8 +27,6 @@ using System.Linq;
  * */
 public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     bool m_hologramsAlreadyDisplayed;
     Vector3 m_ParentOrigin;
 
@@ -115,53 +113,53 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
         MouseUtilitiesInteractionHologram.HologramPositioning tempRelativePositioning = MouseUtilitiesInteractionHologram.HologramPositioning.Bottom;
         m_hologramNok = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Refuse", tempRelativePositioning, convertRelativeToConcretePosition(tempRelativePositioning),
             convertPositionRelativeToScaling(tempRelativePositioning),
-            convertPositionRelativeToRotation(tempRelativePositioning), false, m_debug);
+            convertPositionRelativeToRotation(tempRelativePositioning), false);
 
         Vector3 pos = convertRelativeToConcretePosition(tempRelativePositioning);
         pos.y = (pos.y + 1.0f) / 2.0f - 0.75f; // Locating the arrow at mid-distance between the edge (hence the "1.0f") parent's hologram and the action hologram 
         Vector3 rotation = new Vector3(0.0f, 0.0f, 90.0f);
         m_hologramNokArrow = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Arrow_Progressive", tempRelativePositioning, pos,
             convertPositionRelativeToScaling(tempRelativePositioning),
-            rotation, false, m_debug);
+            rotation, false);
 
         // Instanciate Ok hologram
         tempRelativePositioning = MouseUtilitiesInteractionHologram.HologramPositioning.Right;
         m_hologramOk = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Agree", tempRelativePositioning, convertRelativeToConcretePosition(tempRelativePositioning),
             convertPositionRelativeToScaling(tempRelativePositioning),
-            convertPositionRelativeToRotation(tempRelativePositioning), false, m_debug);
+            convertPositionRelativeToRotation(tempRelativePositioning), false);
 
         pos = convertRelativeToConcretePosition(tempRelativePositioning);
         pos.x = (pos.x - 1.0f) / 2.0f + 0.75f; // Locating the arrow at mid-distance between the edge (hence the "1.0f") parent's hologram and the action hologram 
         rotation = new Vector3(0.0f, 0.0f, 180.0f);
         m_hologramOkArrow = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Arrow_Progressive", tempRelativePositioning, pos,
             convertPositionRelativeToScaling(tempRelativePositioning),
-            rotation, false, m_debug);
+            rotation, false);
 
         // Instanciate help hologram
         tempRelativePositioning = MouseUtilitiesInteractionHologram.HologramPositioning.Left;
         m_hologramHelp = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Help", tempRelativePositioning, convertRelativeToConcretePosition(tempRelativePositioning),
             convertPositionRelativeToScaling(tempRelativePositioning),
-            convertPositionRelativeToRotation(tempRelativePositioning), false, m_debug);
+            convertPositionRelativeToRotation(tempRelativePositioning), false);
 
         pos = convertRelativeToConcretePosition(tempRelativePositioning);
         pos.x = (pos.x + 1.0f) / 2.0f - 0.75f; // Locating the arrow at mid-distance between the edge (hence the "1.0f") parent's hologram and the action hologram 
         rotation = new Vector3(0.0f, 0.0f, 0.0f);
         m_hologramHelpArrow = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Arrow_Progressive", tempRelativePositioning, pos,
             convertPositionRelativeToScaling(tempRelativePositioning),
-            rotation, false, m_debug);
+            rotation, false);
 
         // Instanciate reminder hologram and the corresponding arrow
         tempRelativePositioning = MouseUtilitiesInteractionHologram.HologramPositioning.Top;
         m_hologramReminder = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Reminder", tempRelativePositioning, convertRelativeToConcretePosition(tempRelativePositioning),
             convertPositionRelativeToScaling(tempRelativePositioning),
-            convertPositionRelativeToRotation(tempRelativePositioning), false, m_debug);
+            convertPositionRelativeToRotation(tempRelativePositioning), false);
 
         pos = convertRelativeToConcretePosition(tempRelativePositioning);
         pos.y = (pos.y - 1.0f) / 2.0f + 0.75f; // Locating the arrow at mid-distance between the edge (hence the "1.0f") parent's hologram and the action hologram 
         rotation = new Vector3(0.0f, 0.0f, 270.0f);
         m_hologramReminderArrow = new MouseUtilitiesInteractionHologram(gameObject, "Mouse_Arrow_Progressive", tempRelativePositioning, pos,
             convertPositionRelativeToScaling(tempRelativePositioning),
-            rotation, false, m_debug);
+            rotation, false);
 
         // Get parent's origin
         m_ParentOrigin = gameObject.transform.position;
@@ -172,7 +170,6 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
         // Prepare parent's animator, i.e. connect the callback. For the initialization of the different parameters, will be done when required during the process
         MouseUtilitiesAnimation animatorParent = gameObject.AddComponent<MouseUtilitiesAnimation>();
         animatorParent.m_animationSpeed = 1.0f;
-        animatorParent.m_debug = m_debug;
         animatorParent.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnPositioning;
 
         // Computation of the coefficients for the transparency management
@@ -187,7 +184,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
         {
             m_oneShotActivated = true;
 
-            m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Just been displayed");
+            MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Just been displayed");
         }
 
 
@@ -276,7 +273,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
         }
         else if (m_objectStatus == InteractionState.InteractionStateParentHitNothing)
         {
-            m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Nothing was hit: bring the cube back to the center, i.e. from " + gameObject.transform.position.ToString() +  " to " + m_ParentOrigin.ToString());
+            MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Info, "Nothing was hit: bring the cube back to the center, i.e. from " + gameObject.transform.position.ToString() +  " to " + m_ParentOrigin.ToString());
 
              // Start the animation: be careful, the animation run on another object, so some processes will run on the callback called by the dedicated object when the animation is finished
              MouseUtilitiesAnimation animatorParent = gameObject.GetComponent<MouseUtilitiesAnimation>();
@@ -313,7 +310,6 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 
             MouseUtilitiesAnimation animatorParent = gameObject.GetComponent<MouseUtilitiesAnimation>();
             animatorParent.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
-            animatorParent.m_debug = m_debug;
             animatorParent.m_scalingEnd = new Vector3(0.001f, 0.001f, 0.001f);
             animatorParent.m_animationSpeed = 3.0f;
             animatorParent.m_scalingstep.x = 0.01f;
@@ -372,7 +368,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
                 m_utilitiesInteractionSwipesEventReminder?.Invoke(this, EventArgs.Empty);
             }
             else {
-                m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Error, "The state InteractionStateMenuAnimationFinished should not be invoked if no hologram's menus touched bool are set to true");
+                MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Error, "The state InteractionStateMenuAnimationFinished should not be invoked if no hologram's menus touched bool are set to true");
             }
 
             gameObject.SetActive(false);
@@ -382,7 +378,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
         }
         else
         {
-            m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Error, "At least one state is not managed. This will likely cause this part of the software to fail.");
+            MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "Update", MouseDebugMessagesManager.MessageLevel.Error, "At least one state is not managed. This will likely cause this part of the software to fail.");
         }
     }
 
@@ -393,7 +389,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 
     public void callbackParentReleased()
     {
-        m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "callbackParentReleased", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "callbackParentReleased", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         m_objectStatus = InteractionState.InteractionStateParentMoveEnd;
     }
@@ -409,7 +405,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
                 if (gameObject.GetComponent<Billboard>() != null)
                 {
                     gameObject.GetComponent<Billboard>().PivotAxis = PivotAxis.Y;
-                    m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "setBillboardToParent", MouseDebugMessagesManager.MessageLevel.Info, "Billboard component has been successfully added");
+                    MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "setBillboardToParent", MouseDebugMessagesManager.MessageLevel.Info, "Billboard component has been successfully added");
                 }
             }
         }
@@ -421,7 +417,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
                 Destroy(gameObject.GetComponent<Billboard>());
                 if (gameObject.GetComponent<Billboard>() == null)
                 {
-                    m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "setBillboardToParent", MouseDebugMessagesManager.MessageLevel.Info, "Billboard component has been successfully destroyed");
+                    MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "setBillboardToParent", MouseDebugMessagesManager.MessageLevel.Info, "Billboard component has been successfully destroyed");
                 }
             }
         }
@@ -538,7 +534,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
 
     void interactionHologramsDisplay(bool display)
     {
-        m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "interactionHologramsDisplay", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "interactionHologramsDisplay", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         m_hologramNok.setLocalRotation(convertPositionRelativeToRotation(m_hologramNok.getPositionRelativeToParent()));
         m_hologramOk.setLocalRotation(convertPositionRelativeToRotation(m_hologramOk.getPositionRelativeToParent()));
@@ -694,7 +690,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
      */
         public bool increaseAssistanceGradation()
     {
-        m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "setColorToVivid", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "setColorToVivid", MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         bool toReturn = false;
         int maxGradation = Enum.GetValues(typeof(GradationState)).Cast<int>().Max();
@@ -731,7 +727,7 @@ public class MouseUtilitiesHologramInteractionSwipes : MonoBehaviour
             case GradationState.SpatialAudio:
                 break;
             default:
-                m_debug.displayMessage("MouseUtilitiesHologramInteractionSwipes", "increaseAssistanceGradation", MouseDebugMessagesManager.MessageLevel.Warning, "This place should not be reached");
+                MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesHologramInteractionSwipes", "increaseAssistanceGradation", MouseDebugMessagesManager.MessageLevel.Warning, "This place should not be reached");
                 break;
         }
     }
@@ -751,10 +747,9 @@ public class MouseUtilitiesInteractionHologram
     HologramPositioning m_positionRelativeToParent;
     Vector3 m_positionOriginWorld;
     bool m_touched; // Should be set to true if touched by the main cube, false otherwise
-    MouseDebugMessagesManager m_debug;
     Quaternion m_backupRotation;
 
-    public MouseUtilitiesInteractionHologram (GameObject parent, string materialName, HologramPositioning positionRelativeToParent, Vector3 positionLocal, Vector3 scaling, Vector3 rotation,  bool touched, MouseDebugMessagesManager debug)
+    public MouseUtilitiesInteractionHologram (GameObject parent, string materialName, HologramPositioning positionRelativeToParent, Vector3 positionLocal, Vector3 scaling, Vector3 rotation,  bool touched)
     {
         m_hologram = GameObject.CreatePrimitive(PrimitiveType.Cube);
         m_hologram.transform.SetParent(parent.transform);
@@ -763,7 +758,6 @@ public class MouseUtilitiesInteractionHologram
         m_hologram.transform.localScale = scaling;
         m_hologram.transform.localRotation = Quaternion.Euler(rotation);
         m_hologram.SetActive(false);
-        m_debug = debug;
 
         m_positionRelativeToParent = positionRelativeToParent;
         m_positionOriginWorld = m_hologram.transform.position;
@@ -853,7 +847,6 @@ public class MouseUtilitiesInteractionHologram
         MouseUtilitiesAnimation animator = m_hologram.AddComponent<MouseUtilitiesAnimation>();
         animator.m_triggerStopAnimation = MouseUtilitiesAnimation.ConditionStopAnimation.OnScaling;
         animator.m_positionEnd = m_hologram.transform.position;
-        animator.m_debug = m_debug;
         animator.m_scalingEnd = scalingEnd;
         animator.m_animationSpeed = animationSpeed;
         animator.m_scalingstep.x = scalingStep;

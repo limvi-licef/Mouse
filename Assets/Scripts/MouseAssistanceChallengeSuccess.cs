@@ -26,15 +26,13 @@ using System.Reflection;
  * */
 public class MouseAssistanceChallengeSuccess : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     public EventHandler m_eventHologramTouched;
 
     // Start is called before the first frame update
     void Start()
     {
         // Callbacks
-        MouseUtilities.mouseUtilitiesAddTouchCallback(m_debug, transform, delegate () { m_eventHologramTouched?.Invoke(this, EventArgs.Empty); });
+        MouseUtilities.mouseUtilitiesAddTouchCallback(transform, delegate () { m_eventHologramTouched?.Invoke(this, EventArgs.Empty); });
     }
 
     // Update is called once per frame
@@ -54,13 +52,13 @@ public class MouseAssistanceChallengeSuccess : MonoBehaviour
                         Destroy(animator);
                     }), eventHandler };
 
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Target scaling: " + transform.localScale.ToString());
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Target scaling: " + transform.localScale.ToString());
 
-            animator.animateAppearInPlaceToScaling(transform.localScale, m_debug, eventHandlers);
+            animator.animateAppearInPlaceToScaling(transform.localScale, eventHandlers);
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Success hologram is enabled - no hide action to take");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Success hologram is enabled - no hide action to take");
         }
     }
 
@@ -68,23 +66,23 @@ public class MouseAssistanceChallengeSuccess : MonoBehaviour
     {
         if (gameObject.activeSelf)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube is going to be hidden");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube is going to be hidden");
 
 
             EventHandler[] eventHandlers = new EventHandler[] { new EventHandler(delegate (System.Object o, EventArgs e)
                {
-                   m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube should be hidden now");
+                   MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube should be hidden now");
 
                    gameObject.SetActive(false);
                    transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
                    Destroy(GetComponent<MouseUtilitiesAnimation>());
                }), eventHandler };
 
-            gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, eventHandlers);
+            gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(eventHandlers);
         }
         else
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Success hologram is disabled - no hide action to take");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Success hologram is disabled - no hide action to take");
         }
     }
 }

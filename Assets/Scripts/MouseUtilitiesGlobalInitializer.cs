@@ -27,7 +27,6 @@ using System.Linq;
  * */
 public class MouseUtilitiesGlobalInitializer : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
     public MouseUtilitiesAdminMenu m_adminMenu;
 
     // Start is called before the first frame update
@@ -35,11 +34,11 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
     {
         if (MouseUtilities.IsEditorSimulator() || MouseUtilities.IsEditorGameView())
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Editor simulator");
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Editor simulator");
         }
         else
         { // Means running in the Hololens, so adjusting some parameters
-            m_debug.m_displayOnConsole = false;
+            MouseDebugMessagesManager.Instance.m_displayOnConsole = false;
             m_adminMenu.m_menuStatic = false;
         }
     }

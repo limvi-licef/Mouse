@@ -28,8 +28,6 @@ using System;
  * */
 public class MouseAssistanceBasic : MonoBehaviour
 {
-    public MouseDebugMessagesManager m_debug;
-
     public Transform m_childView;
 
     Vector3 m_childScaleOrigin;
@@ -42,8 +40,8 @@ public class MouseAssistanceBasic : MonoBehaviour
     private void Awake()
     {
         // Initialize variables
-        m_mutexShow = new MouseUtilitiesMutex(m_debug);
-        m_mutexHide = new MouseUtilitiesMutex(m_debug);
+        m_mutexShow = new MouseUtilitiesMutex();
+        m_mutexHide = new MouseUtilitiesMutex();
 
         // Children
         m_childView = gameObject.transform.Find("Child");
@@ -59,7 +57,6 @@ public class MouseAssistanceBasic : MonoBehaviour
         }
         interactions.s_touched += delegate (System.Object sender, EventArgs args)
         {
-            m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "!!!!!!!!!!!!!!! Called");
             s_touched?.Invoke(sender, args);
         };
     }
@@ -82,21 +79,19 @@ public class MouseAssistanceBasic : MonoBehaviour
         {
             m_mutexShow.lockMutex();
 
-            MouseUtilities.adjustObjectHeightToHeadHeight(m_debug, transform);
+            MouseUtilities.adjustObjectHeightToHeadHeight(transform);
 
             EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
                 Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
                     m_mutexShow.unlockMutex();
             }), eventHandler };
 
-            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_childScaleOrigin, m_debug, temp);
+            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_childScaleOrigin, temp);
         }
     }
 
     public void hide(EventHandler eventHandler)
     {
-        m_debug.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "!!!!!!!!!!!!!!! Called 2 - the return");
-
         if (m_mutexHide.isLocked() == false)
         {
             m_mutexHide.lockMutex();
@@ -108,7 +103,7 @@ public class MouseAssistanceBasic : MonoBehaviour
                    m_mutexHide.unlockMutex();
             }), eventHandler };
 
-            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(m_debug, temp);
+            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(temp);
         }
     }
 }
