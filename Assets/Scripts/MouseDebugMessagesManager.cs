@@ -43,18 +43,12 @@ public class MouseDebugMessagesManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("!!!!! 1. Called");
-
         if (_instance != null && _instance != this)
         {
-            Debug.Log("!!!!! 3. If you see this message before the second one ... well ...");
-
             Destroy(this.gameObject);
         }
         else
         {
-            Debug.Log("!!!!! 2. Mouse Debug intialized");
-
             m_classNameFilter = new List<string>();
 
             // For now, filtering is hard coded

@@ -28,9 +28,10 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
 {
     Transform m_clockView; // Because we can have multiple clocks
 
-    Transform m_hologramWindowReminderButtonOkView;
+    //Transform m_hologramWindowReminderButtonOkView;
     Transform m_hologramWindowReminderView;
-    Transform m_hologramWindowReminderButtonBackView;
+    //Transform m_hologramWindowReminderButtonBackView;
+    MouseAssistanceDialog m_dialogController;
 
     public event EventHandler m_eventHologramClockTouched;
     public event EventHandler m_eventHologramWindowButtonOkTouched;
@@ -62,10 +63,22 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
 
         // Let's get the children
         m_clockView = gameObject.transform.Find("Clock");
-        m_hologramWindowReminderView = gameObject.transform.Find("Text");
+        m_hologramWindowReminderView = gameObject.transform.Find("MouseAssistanceDialog"); //gameObject.transform.Find("Text");
+        m_dialogController = m_hologramWindowReminderView.GetComponent<MouseAssistanceDialog>();
+        m_dialogController.setDescription("Très bien! J'apparaitrai de nouveau demain à la même heure. Est-ce que cela vous convient?", 0.15f);
+        m_dialogController.addButton("Parfait!");
+        m_dialogController.m_buttonsController[0].s_buttonClicked += new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            m_eventHologramWindowButtonOkTouched?.Invoke(this, EventArgs.Empty);
+        }); 
+        m_dialogController.addButton("Je me suis trompé de bouton! Revenir en arrière...");
+        m_dialogController.m_buttonsController[1].s_buttonClicked += new EventHandler(delegate (System.Object o, EventArgs e)
+        {
+            m_eventHologramWindowButtonBackTouched?.Invoke(this, EventArgs.Empty);
+        }); 
 
-        m_hologramWindowReminderButtonOkView = m_hologramWindowReminderView.Find("WindowMenu").Find("ButtonOk");
-        m_hologramWindowReminderButtonBackView = m_hologramWindowReminderView.Find("WindowMenu").Find("ButtonBack");
+        //m_hologramWindowReminderButtonOkView = m_hologramWindowReminderView.Find("WindowMenu").Find("ButtonOk");
+        //m_hologramWindowReminderButtonBackView = m_hologramWindowReminderView.Find("WindowMenu").Find("ButtonBack");
 
         m_mutexHide = new MouseUtilitiesMutex();
         m_mutexShow = new MouseUtilitiesMutex();
@@ -85,8 +98,8 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
         // Connect callbacks
         MouseUtilitiesHologramInteractions temp = m_clockView.GetComponent<MouseUtilitiesHologramInteractions>();
         temp.s_touched += callbackOnClockTouched;
-        m_hologramWindowReminderButtonOkView.gameObject.GetComponent<Interactable>().AddReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackOnWindowOkButtonTouched);
-        m_hologramWindowReminderButtonBackView.gameObject.GetComponent<Interactable>().AddReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackOnWindowBackButtonTouched);
+        //m_hologramWindowReminderButtonOkView.gameObject.GetComponent<Interactable>().AddReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackOnWindowOkButtonTouched);
+        //m_hologramWindowReminderButtonBackView.gameObject.GetComponent<Interactable>().AddReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(callbackOnWindowBackButtonTouched);
 
         m_gradationManager = transform.GetComponent<MouseUtilitiesGradationManager>();
         if (m_gradationManager == null)
@@ -137,9 +150,12 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
             m_clockView.gameObject.SetActive(false);
 
             // When the clock has diseappeared, make the text appearing, after moving it to the place of the hidden clock
-            m_hologramWindowReminderView.position = m_clockView.position;
-            MouseUtilitiesAnimation animatorText = m_hologramWindowReminderView.gameObject.AddComponent<MouseUtilitiesAnimation>();
-            animatorText.animateAppearInPlace(MouseUtilities.getEventHandlerEmpty());
+            //m_hologramWindowReminderView.position = m_clockView.position;
+            MouseUtilities.adjustObjectHeightToHeadHeight(m_hologramWindowReminderView);
+
+            m_dialogController.show(MouseUtilities.getEventHandlerEmpty());
+            //MouseUtilitiesAnimation animatorText = m_hologramWindowReminderView.gameObject.AddComponent<MouseUtilitiesAnimation>();
+            //animatorText.animateAppearInPlace(MouseUtilities.getEventHandlerEmpty());
 
             Destroy(m_clockView.GetComponent<MouseUtilitiesAnimation>());
         }));
@@ -195,30 +211,36 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex locked");
             m_mutexHide.lockMutex();
 
-            GameObject temp;
+            //GameObject temp;
 
             if (m_clockView.gameObject.activeSelf)
             {
-                temp = m_clockView.gameObject;
+                //temp = m_clockView.gameObject;
                 MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock is going to be hidden");
-            }
-            else
-            { // Only two children for know so fine this way. But to be extended if it happens that more children are added in the future
-                temp = m_hologramWindowReminderView.gameObject;
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Text is going to be hidden");
-            }
-
-            EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object oe, EventArgs ee)
+                EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object oe, EventArgs ee)
             {
                 m_mutexHide.unlockMutex();
                 MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - object hidden");
 
-                Destroy(temp.GetComponent<MouseUtilitiesAnimation>());
+                Destroy(m_clockView.gameObject.GetComponent<MouseUtilitiesAnimation>());
                 resetObject();
             }), e };
 
-            MouseUtilitiesAnimation animator = temp.AddComponent<MouseUtilitiesAnimation>();
-            animator.animateDiseappearInPlace(eventHandlers);
+                MouseUtilitiesAnimation animator = m_clockView.gameObject.AddComponent<MouseUtilitiesAnimation>();
+                animator.animateDiseappearInPlace(eventHandlers);
+            }
+            else
+            { // Only two children for know so fine this way. But to be extended if it happens that more children are added in the future
+                //temp = m_hologramWindowReminderView.gameObject;
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Text is going to be hidden");
+                m_dialogController.hide(new EventHandler(delegate(System.Object o, EventArgs ee)
+                {
+                    m_mutexHide.unlockMutex();
+                    e?.Invoke(this, EventArgs.Empty);
+                }));
+            }
+
+            
         }
     }
 

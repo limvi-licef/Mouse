@@ -19,6 +19,7 @@ using System.Reflection;
 using TMPro;
 using System.Linq;
 using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
@@ -136,10 +137,14 @@ public class MouseAssistanceDialog : MonoBehaviour
 
         // Locate button
         float scalingx = 1.0f / (float)(m_buttonsView.Count());
-        newButton.localScale = new Vector3(scalingx, newButton.localScale.y, newButton.localScale.z);
+
+        foreach (Transform b in m_buttonsView)
+        {
+            b.localScale = new Vector3(scalingx, b.localScale.y, b.localScale.z);
+        }
 
         //RectTransform newButtonSize = (RectTransform)newButton;
-        Renderer bc = newButton.GetComponent<Renderer>();
+        /*Renderer bc = newButton.GetComponent<Renderer>();
 
         //float width = (float)newButtonSize.rect.width;
         float width = bc.bounds.size.x;
@@ -151,10 +156,11 @@ public class MouseAssistanceDialog : MonoBehaviour
             newButton.localPosition = new Vector3(-offset + width*i, newButton.localPosition.y, newButton.localPosition.z);
 
             i++;
-        }
+        }*/
+        
 
         // Store button scaling
-        m_buttonsScalingOriginal.Add(newButton.localScale);
+        m_buttonsScalingOriginal.Add(m_buttonsView.Last().localScale);
 
         // Add touch event
         //EventHandler tempSignal = new EventHandler();
@@ -164,7 +170,9 @@ public class MouseAssistanceDialog : MonoBehaviour
             eventHandler?.Invoke(this, EventArgs.Empty); });*/
 
         // Enable button
-        newButton.gameObject.SetActive(true);
+        m_buttonsView.Last().gameObject.SetActive(true);
+
+        m_buttonsParentView.GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
     public void hide(EventHandler eventHandler)

@@ -22,15 +22,18 @@ using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using Microsoft.MixedReality.Toolkit.SpatialAwareness;
 using Microsoft.MixedReality.Toolkit.Diagnostics;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using TMPro;
 using System.Reflection;
+using System;
+using System.Linq;
 
 public class MouseUtilitiesAdminMenu : MonoBehaviour
 {
     bool m_menuShown;
     public MouseChallengeCleanTable m_challengeCleanTable;
     //public GameObject m_hologramInteractionSurface;
-    public MouseTable m_tableController;
+    public MouseInteractionSurface m_tableController;
     public MouseRag m_ragController;
     Transform m_ragInteractionSurfaceView;
     bool m_positioningInteractionSurfaceEnabled;
@@ -42,6 +45,34 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     string m_hologramRagInteractionSurfaceMaterialName;
 
+    private static MouseUtilitiesAdminMenu _instance;
+
+    public static MouseUtilitiesAdminMenu Instance { get { return _instance; } }
+
+    public GameObject m_refButtonSwitch;
+    public GameObject m_refButton;
+
+    List<GameObject> m_buttons;
+    Transform m_buttonsParent;
+
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            // Initialize variables
+            m_buttons = new List<GameObject>();
+
+            // Get children
+            m_buttonsParent = gameObject.transform.Find("MouseAssistanceDialog").Find("ButtonParent").transform;
+
+            _instance = this;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,21 +81,40 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_positioningInteractionSurfaceEnabled = true; // Enabled by default
         m_positioningRagInteractionSurfaceEnabled = true;
 
-        m_ragInteractionSurfaceView = m_ragController.m_interactionSurfaceRagView;//.transform.Find("InteractionSurfaceRag");
-        m_hologramRagInteractionSurfaceMaterialName = m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");
+        /*m_ragInteractionSurfaceView = m_ragController.m_interactionSurfaceRagView;//.transform.Find("InteractionSurfaceRag");
+        m_hologramRagInteractionSurfaceMaterialName = m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");*/
 
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
+         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
 
         // Check if the occlusion is enabled
         MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
 
         switchStaticOrMovingMenu();
+
+
+        // Connecting the callbacks
+       
+        //m_buttonsParent.Find("InteractionSurfaceTableShow").GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callbackSwitchPositioningInteractionSurface);
+        m_buttonsParent.Find("ResetChallenge").GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callbackResetChallengeCleanTable);
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void addSwitchButton(string text, UnityEngine.Events.UnityAction callback)
+    {
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding switch button");
+
+        m_buttons.Add(Instantiate(m_refButtonSwitch, m_buttonsParent));
+        m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callback);
+        m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().InteractionFilter = 0;
+        m_buttons.Last().transform.Find("IconAndText").Find("TextMeshPro").GetComponent<TextMeshPro>().SetText(text);
+        m_buttonsParent.GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
     public void callbackCubeTouched()
@@ -85,8 +135,11 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackSwitchPositioningInteractionSurface()
     {
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called \\^v^//");
+
         m_positioningInteractionSurfaceEnabled = !m_positioningInteractionSurfaceEnabled;
-        m_tableController.m_interactionSurfaceTableController.enableLocationControls(m_positioningInteractionSurfaceEnabled);
+        m_tableController.showInteractionSurfaceTable(m_positioningInteractionSurfaceEnabled);
+        //m_tableController.m_interactionSurfaceTableController.enableLocationControls(m_positioningInteractionSurfaceEnabled);
     }
 
     public void callbackSwitchPositioningRagInteractionSurface()

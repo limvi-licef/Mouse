@@ -30,7 +30,7 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
     public int m_numberOfCubesToAddInRow = 5;
     public int m_numberOfCubesToAddInColumn = 4;
 
-    public GameObject m_hologramToUseToPopulateSurface;
+    public Transform m_hologramToUseToPopulateSurface;
 
     public event EventHandler m_eventSurfaceCleaned;
 
@@ -41,6 +41,12 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
     {
         // Initialize the variables
         m_cubesTouched = new Dictionary<Tuple<float, float>, Tuple<GameObject, bool>>();
+
+        // Get child, i.e. the default hologram to use to populate the surface, in case the user did not provide one
+        if (m_hologramToUseToPopulateSurface == null)
+        {
+            m_hologramToUseToPopulateSurface = gameObject.transform.Find("DefaultHologramPopulateSurface");
+        }
 
         // Sanity checks
         if (m_hologramToUseToPopulateSurface.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>() == null)
@@ -94,7 +100,7 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
             {
                 for (posZ = 0.0f; posZ < goScaleZ; posZ += incrementZ)
                 {
-                    GameObject temp = Instantiate(m_hologramToUseToPopulateSurface);
+                    GameObject temp = Instantiate(m_hologramToUseToPopulateSurface.gameObject);
                     temp.transform.SetParent(gameObject.transform, false);
                     temp.transform.localPosition = Vector3.zero;
                     temp.transform.localScale = new Vector3(incrementX, 0.01f, incrementZ);
@@ -174,7 +180,7 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
         GetComponent<BoundsControl>().enabled = status;
     }
 
-    public void resetCubesStates(EventHandler eventHandler)
+    public void hide(EventHandler eventHandler)
     {
         // Here we will remove the cubes from the table and display an hologram in the center of the table
         foreach (KeyValuePair<Tuple<float, float>, Tuple<GameObject, bool>> tempKeyValue in m_cubesTouched)
