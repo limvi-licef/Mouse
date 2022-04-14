@@ -66,6 +66,10 @@ public class MouseDebugMessagesManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        MouseUtilitiesAdminMenu.Instance.addButton("Debug window - Bring", callbackDebugBringWindow);
+        MouseUtilitiesAdminMenu.Instance.addButton("Debug window - Clear", callbackDebugClearWindow);
+        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Debug window - display in console", callbackDebugDisplayDebugInWindow);
+
         if (m_classNameFilter.Count > 0)
         {
             displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Message filtering enabled. Only the messages from the following classes will be displayed: " + m_classNameFilter.ToString());
@@ -76,6 +80,23 @@ public class MouseDebugMessagesManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void callbackDebugBringWindow()
+    {
+        gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+        gameObject.transform.LookAt(Camera.main.transform);
+    }
+
+    public void callbackDebugClearWindow()
+    {
+        TextMeshPro temp = gameObject.GetComponent<TextMeshPro>();
+        temp.SetText("");
+    }
+
+    public void callbackDebugDisplayDebugInWindow()
+    {
+        gameObject.GetComponent<MouseDebugMessagesManager>().m_displayOnConsole = false;
     }
 
     public void displayMessage(string className, string functionName, MessageLevel messageLevel, string message)

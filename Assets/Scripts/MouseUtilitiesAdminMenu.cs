@@ -117,6 +117,20 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_buttonsParent.GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
+    public void addButton(string text, UnityEngine.Events.UnityAction callback)
+    {
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding button");
+
+        m_buttons.Add(Instantiate(m_refButton, m_buttonsParent));
+
+        m_buttons.Last().GetComponent<ButtonConfigHelper>().IconStyle = ButtonIconStyle.None;
+        m_buttons.Last().GetComponent<ButtonConfigHelper>().SeeItSayItLabelEnabled = false;
+        m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callback);
+        m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().InteractionFilter = 0;
+        m_buttons.Last().transform.Find("IconAndText").Find("TextMeshPro").GetComponent<TextMeshPro>().SetText(text);
+        m_buttonsParent.GetComponent<GridObjectCollection>().UpdateCollection();
+    }
+
     public void callbackCubeTouched()
     {
         MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackCubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
@@ -187,7 +201,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_hologramDebug.SetActive(!m_hologramDebug.activeSelf);
     }
 
-    public void callbackDebugBringWindow()
+    /*public void callbackDebugBringWindow()
     {
         m_hologramDebug.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
         m_hologramDebug.transform.LookAt(Camera.main.transform);
@@ -202,7 +216,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public void callbackDebugDisplayDebugInWindow()
     {
         m_hologramDebug.GetComponent<MouseDebugMessagesManager>().m_displayOnConsole = false;
-    }
+    }*/
 
 
     public void switchStaticOrMovingMenu()

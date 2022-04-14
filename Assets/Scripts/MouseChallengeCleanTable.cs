@@ -32,19 +32,10 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public AudioListener m_audioListener;
 
     public GameObject m_refAssistanceDialog;
-    //public GameObject m_refAssistanceSurfaceTouched;
     public GameObject m_refInteractionSurface;
-
-    //Transform m_containerTableView;
-    //MouseInteractionSurface m_containerTableController;
-    //Transform m_containerRagView;
-    //MouseRag m_containerRagController;
 
     Transform m_reminderView;
     MouseChallengeCleanTableReminderOneClockMoving m_reminderController;
-
-    /*Transform m_assistanceCueingView;
-    MouseCueing m_assistanceCueingController;*/
 
     Transform m_assistanceStimulateLevel2View;
     MouseChallengeCleanTableAssistanceStimulateLevel2 m_assistanceConnectWithArchController;
@@ -52,14 +43,14 @@ public class MouseChallengeCleanTable : MonoBehaviour
     Transform m_assistancePicturalView;
     MouseAssistanceStimulateLevel1 m_assistancePicturalController;
 
-    /*Transform m_assistanceSolutionView;
-    MouseAssistanceBasic m_assistanceSolutionController;*/
-
     Transform m_successView;
     MouseAssistanceBasic m_successController;
 
     Transform m_assistanceSurfaceTouchedView;
     MouseChallengeCleanTableSurfaceToPopulateWithCubes m_assistanceSurfaceTouchedController;
+
+    public Transform m_displayGraphView;
+    MouseUtilitiesDisplayGraph m_displayGraphController;
 
     EventHandler s_defaultCalled;
 
@@ -103,6 +94,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
         m_assistanceSurfaceTouchedView = gameObject.transform.Find("AssistanceSurfaceTouched");
         m_assistanceSurfaceTouchedController = m_assistanceSurfaceTouchedView.GetComponent<MouseChallengeCleanTableSurfaceToPopulateWithCubes>();
+
+        m_displayGraphController = m_displayGraphView.GetComponent<MouseUtilitiesDisplayGraph>();
 
         // Sanity checks
 
@@ -348,6 +341,9 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_reminderController.m_eventHologramClockTouched += sSurfaceToClean.addGradationNext(sReminder);
         m_reminderController.m_eventHologramWindowButtonBackTouched += sReminder.setGradationPrevious();
         m_reminderController.m_eventHologramWindowButtonOkTouched += sReminder.addGradationNext(sStandBy);
+
+        // Drawing the graph
+        m_displayGraphController.setManager(m_assistanceGradationManager);
     }
 
     void setStandByTransitions(MouseUtilitiesGradationAssistance state)

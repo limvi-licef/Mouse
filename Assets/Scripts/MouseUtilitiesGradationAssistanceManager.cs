@@ -39,6 +39,8 @@ public class MouseUtilitiesGradationAssistanceManager
     string m_gradationNext;
     string m_gradationInitial;
 
+    public event EventHandler s_newStateSelected; // Emitted with a MouseUtilisiesGradationAssistanceArgCurrentState argument
+
     public string getGradationCurrent()
     {
         return m_gradationCurrent;
@@ -52,6 +54,22 @@ public class MouseUtilitiesGradationAssistanceManager
     public void setGradationInitial(string id)
     {
         m_gradationInitial = id;
+    }
+
+    public MouseUtilitiesGradationAssistance getInitialAssistance()
+    {
+        MouseUtilitiesGradationAssistance toReturn;
+
+        if (m_gradationInitial == "")
+        {
+            toReturn = null;
+        }
+        else
+        {
+            toReturn = m_assistanceGradation[m_gradationInitial];
+        }
+
+        return toReturn;
     }
 
     public MouseUtilitiesGradationAssistanceManager()
@@ -85,6 +103,11 @@ public class MouseUtilitiesGradationAssistanceManager
 
             m_gradationPrevious = m_gradationCurrent;
             m_gradationCurrent = m_gradationNext;
+
+            MouseUtilisiesGradationAssistanceArgCurrentState args = new MouseUtilisiesGradationAssistanceArgCurrentState(m_assistanceGradation[m_gradationCurrent]);
+            //args.m_currentState
+
+            s_newStateSelected?.Invoke(this, args);
         });
 
         List<EventHandler> actionsEventHandler = newItem.getFunctionsShowEventHandlers();
@@ -93,7 +116,7 @@ public class MouseUtilitiesGradationAssistanceManager
         newItem.m_triggerNext += new EventHandler(delegate (System.Object o, EventArgs e)
         {
             MouseUtilitiesGradationAssistance caller = (MouseUtilitiesGradationAssistance)o;
-            MouseUtilisiesGradationAssistanceArgs args = (MouseUtilisiesGradationAssistanceArgs)e;
+            MouseUtilisiesGradationAssistanceArgNextState args = (MouseUtilisiesGradationAssistanceArgNextState)e;
 
             if (caller.getId() == m_gradationCurrent)
             { // A same trigger can call several time the same event for different objects (typically, the reminder one for instance, which is present at different stages of the scenario). So here we take into account only the trigger sent from the current gradation level.
@@ -244,7 +267,7 @@ public class MouseUtilitiesGradationAssistance
 
         return new EventHandler(delegate (System.Object o, EventArgs e)
         {
-            MouseUtilisiesGradationAssistanceArgs temp = new MouseUtilisiesGradationAssistanceArgs();
+            MouseUtilisiesGradationAssistanceArgNextState temp = new MouseUtilisiesGradationAssistanceArgNextState();
             temp.m_nextState = nextState.getId();
 
             m_triggerNext?.Invoke(this, temp);
@@ -295,12 +318,26 @@ public class MouseUtilitiesGradationAssistance
     {
         return m_functionHideEventHandler;
     }
+
+    public Dictionary<string, MouseUtilitiesGradationAssistance> getNextStates()
+    {
+        return m_nextStates;
+    }
 }
 
 /**
  * Simple encapsulation to inform the main class about the ID of the next state
  * */
-public class MouseUtilisiesGradationAssistanceArgs : EventArgs
+public class MouseUtilisiesGradationAssistanceArgNextState : EventArgs
 {
     public string m_nextState;
+}
+public class MouseUtilisiesGradationAssistanceArgCurrentState : EventArgs
+{
+    public MouseUtilitiesGradationAssistance m_currentState;
+
+    public MouseUtilisiesGradationAssistanceArgCurrentState(MouseUtilitiesGradationAssistance currentState)
+    {
+        m_currentState = currentState;
+    }
 }

@@ -36,8 +36,13 @@ public class MouseInteractionSurface : MonoBehaviour
 
     string m_color = "Mouse_Green_Glowing"; // Default color if the user does not set one
 
+    bool m_surfaceInitialized;
+
     private void Awake()
     {
+        // Initialize variables
+        m_surfaceInitialized = false;
+
         // Children
         m_interactionSurfaceView = gameObject.transform.Find("InteractionSurfaceChild");
     }
@@ -45,28 +50,7 @@ public class MouseInteractionSurface : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //m_interactionSurfaceView.gameObject.SetActive(true); // As hidden by default
-
-
-        //m_interactionSurfaceTableController = m_interactionSurfaceView.GetComponent<MouseChallengeCleanTableSurfaceToPopulateWithCubes>();
-
-        /*// Sanity check
-        if (m_interactionSurfaceView.GetComponent<MouseChallengeCleanTableSurfaceToPopulateWithCubes>() == null)
-        {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Error, "The m_hologramInteractionSurface object should have a MouseChallengeCleanTableSurfaceToPopulateWithCubes component");
-        }*/
-
-        // Set color to children
-        //m_interactionSurfaceView.GetComponent<Renderer>().material = m_color;
-
-        // Connect the callbacks
-        //m_interactionSurfaceTableView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished);
-        m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished); // Use the same callback than for taptoplace as the process to do is the same
-        m_interactionSurfaceView.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(delegate()
-        {
-            m_eventInteractionSurfaceTableTouched?.Invoke(this, EventArgs.Empty);
-        }); // Only have to forward the event
-        //m_interactionSurfaceTableController.m_eventSurfaceCleaned += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventInteractionSurfaceCleaned?.Invoke(this, EventArgs.Empty); });
+        
     }
 
     public Transform getInteractionSurface()
@@ -115,24 +99,26 @@ public class MouseInteractionSurface : MonoBehaviour
 
     public void showInteractionSurfaceTable(bool show)
     {
-        //m_interactionSurfaceTableController.resetCubesStates(eventHandler);
+        m_interactionSurfaceView.gameObject.SetActive(show);
 
-        /*string color = m_color;
-        if (show == false)
+        if (m_surfaceInitialized == false)
         {
-            color = "Mouse_White_Transparent";
-        }*/
+            // Connect the callbacks
+            //m_interactionSurfaceTableView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished);
+            m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished); // Use the same callback than for taptoplace as the process to do is the same
+            m_interactionSurfaceView.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(delegate ()
+            {
+                m_eventInteractionSurfaceTableTouched?.Invoke(this, EventArgs.Empty);
+            }); // Only have to forward the event
+                //m_interactionSurfaceTableController.m_eventSurfaceCleaned += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventInteractionSurfaceCleaned?.Invoke(this, EventArgs.Empty); });
 
-        //m_interactionSurfaceView.GetComponent<Renderer>().material = Resources.Load("Mouse_White_Transparent", typeof(Material)) as Material;
+            m_surfaceInitialized = true;
+        }
+
         m_interactionSurfaceView.GetComponent<Renderer>().enabled = show;
         m_interactionSurfaceView.GetComponent<BoundsControl>().enabled = show;
-        m_interactionSurfaceView.transform.Find("rigRoot").gameObject.SetActive(show);
+        m_interactionSurfaceView.transform.Find("rigRoot").gameObject.SetActive(show); // No idea what this "rigRoot" is.
     }
-
-    /*public void showInteractionSurfaceTable(EventHandler eventHandler)
-    {
-        m_interactionSurfaceTableController.showInteractionCubesTablePanel(eventHandler);
-    }*/
 
     public void setAdminButton(string text)
     {
