@@ -86,6 +86,7 @@ public class MouseDebugMessagesManager : MonoBehaviour
     {
         gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
         gameObject.transform.LookAt(Camera.main.transform);
+        gameObject.transform.Rotate(new Vector3(0, 1, 0), 180);
     }
 
     public void callbackDebugClearWindow()
@@ -96,7 +97,7 @@ public class MouseDebugMessagesManager : MonoBehaviour
 
     public void callbackDebugDisplayDebugInWindow()
     {
-        gameObject.GetComponent<MouseDebugMessagesManager>().m_displayOnConsole = false;
+        m_displayOnConsole = !m_displayOnConsole;
     }
 
     public void displayMessage(string className, string functionName, MessageLevel messageLevel, string message)

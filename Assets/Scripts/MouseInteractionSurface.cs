@@ -94,7 +94,9 @@ public class MouseInteractionSurface : MonoBehaviour
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Callback showing / hiding interaction surface called");
 
-        showInteractionSurfaceTable(!(m_interactionSurfaceView.transform.Find("rigRoot").gameObject.activeSelf));
+        //showInteractionSurfaceTable(!(m_interactionSurfaceView.transform.Find("rigRoot").gameObject.activeSelf));
+
+        showInteractionSurfaceTable(!(m_interactionSurfaceView.GetComponent<BoundsControl>().enabled));
     }
 
     public void showInteractionSurfaceTable(bool show)
@@ -117,12 +119,18 @@ public class MouseInteractionSurface : MonoBehaviour
 
         m_interactionSurfaceView.GetComponent<Renderer>().enabled = show;
         m_interactionSurfaceView.GetComponent<BoundsControl>().enabled = show;
-        m_interactionSurfaceView.transform.Find("rigRoot").gameObject.SetActive(show); // No idea what this "rigRoot" is.
+        //m_interactionSurfaceView.transform.Find("rigRoot").gameObject.SetActive(show); // No idea what this "rigRoot" is.
     }
 
-    public void setAdminButton(string text)
+    public void callbackBring()
     {
-        // Add button to admin interface
-        MouseUtilitiesAdminMenu.Instance.addSwitchButton(text, callbackShow);
+        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+    }
+
+    public void setAdminButtons(string interfaceSurfaceId)
+    {
+        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide " + interfaceSurfaceId + " interaction surface", callbackShow);
+        MouseUtilitiesAdminMenu.Instance.addButton("Bring " + interfaceSurfaceId + " interaction surface", callbackBring);
     }
 }

@@ -48,12 +48,14 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         m_refConnectorView = gameObject.transform.Find("Line");
 
         m_currentHighlightedState = null;
+
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        MouseUtilitiesAdminMenu.Instance.addButton("Bring graph window", callbackBringWindow);
     }
 
     // Update is called once per frame
@@ -61,6 +63,14 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
     {
         
     }
+
+    public void callbackBringWindow()
+    {
+        gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+        gameObject.transform.LookAt(Camera.main.transform);
+        gameObject.transform.Rotate(new Vector3(0, 1, 0), 180);
+    }
+
 
     public void setManager(MouseUtilitiesGradationAssistanceManager manager)
     {
@@ -152,6 +162,22 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         }
 
         m_states[currentState.m_currentState.getId()].transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Cyan_Glowing", typeof(Material)) as Material;
+
+        // Brut force to highlight the connectors
+        foreach (KeyValuePair<(string, string), GameObject> connector in m_connectors)
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Connector: " + connector.Key + " Current state id: " + currentState.m_currentState.getId());
+
+            if (connector.Key.Item1 == currentState.m_currentState.getId())
+            {
+                connector.Value.GetComponent<MouseUtilitiesLineBetweenTwoPoints>().highlightConnector(true);
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Highlight connector");
+            }
+            else
+            {
+                connector.Value.GetComponent<MouseUtilitiesLineBetweenTwoPoints>().highlightConnector(false);
+            }
+        }
 
         m_currentHighlightedState = currentState.m_currentState;
     }

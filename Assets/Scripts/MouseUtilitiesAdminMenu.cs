@@ -98,6 +98,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_buttonsParent.Find("ResetChallenge").GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callbackResetChallengeCleanTable);
 
 
+        // Add the buttons to manage this menu
+        addSwitchButton("Static/Mobile menu", callbackSwitchStaticOrMovingMenu);
     }
 
     // Update is called once per frame
@@ -147,16 +149,16 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_challengeCleanTable.resetChallenge();
     }
 
-    public void callbackSwitchPositioningInteractionSurface()
+    /*public void callbackSwitchPositioningInteractionSurface()
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called \\^v^//");
 
         m_positioningInteractionSurfaceEnabled = !m_positioningInteractionSurfaceEnabled;
         m_tableController.showInteractionSurfaceTable(m_positioningInteractionSurfaceEnabled);
         //m_tableController.m_interactionSurfaceTableController.enableLocationControls(m_positioningInteractionSurfaceEnabled);
-    }
+    }*/
 
-    public void callbackSwitchPositioningRagInteractionSurface()
+    /*public void callbackSwitchPositioningRagInteractionSurface()
     {
         string materialName = "";
 
@@ -175,19 +177,19 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().enabled = m_positioningRagInteractionSurfaceEnabled;
         m_ragInteractionSurfaceView.GetComponent<ObjectManipulator>().enabled = m_positioningRagInteractionSurfaceEnabled;
         m_ragInteractionSurfaceView.GetComponent<BoundsControl>().enabled = m_positioningRagInteractionSurfaceEnabled;
-    }
+    }*/
 
-    public void callbackBringInteractionSurface()
+    /*public void callbackBringInteractionSurface()
     {
         MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        /*m_hologramInteractionSurface*/m_tableController.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
-    }
+        m_tableController.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+    }*/
 
-    public void callbackBringRagInteractionSurface()
+    /*public void callbackBringRagInteractionSurface()
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        /*m_hologramRagInteractionSurface*//*m_ragInteractionSurfaceView*/m_ragController.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
-    }
+        m_ragController.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+    }*/
 
     public void callbackSwitchStaticOrMovingMenu()
     {

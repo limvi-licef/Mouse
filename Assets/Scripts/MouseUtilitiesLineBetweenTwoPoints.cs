@@ -26,11 +26,21 @@ using TMPro;
 
 public class MouseUtilitiesLineBetweenTwoPoints : MonoBehaviour
 {
+    string m_defaultMaterial = "Mouse_Orange_Glowing";
+    string m_highlightMaterial = "Mouse_Cyan_Glowing";
+
+    LineRenderer m_controller;
+
+    private void Awake()
+    {
+        m_controller = gameObject.GetComponent<LineRenderer>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        LineRenderer temp = gameObject.GetComponent<LineRenderer>();
-        temp.useWorldSpace = false;
+        //LineRenderer temp = gameObject.GetComponent<LineRenderer>();
+        m_controller.useWorldSpace = false;
     }
 
     // Update is called once per frame
@@ -44,7 +54,7 @@ public class MouseUtilitiesLineBetweenTwoPoints : MonoBehaviour
         LineRenderer line = gameObject.AddComponent<LineRenderer>();
         line.startColor = Color.blue;
         line.endColor = Color.blue;
-        line.material = new Material(Resources.Load("Mouse_Orange_Glowing", typeof(Material)) as Material);
+        line.material = new Material(Resources.Load(m_defaultMaterial, typeof(Material)) as Material);
         line.startWidth = 0.001f;
         line.endWidth = 0.001f;
         line.positionCount = 2;
@@ -54,20 +64,32 @@ public class MouseUtilitiesLineBetweenTwoPoints : MonoBehaviour
         line.SetPosition(1, end.transform.position);
     }
 
+    public void highlightConnector(bool highlight)
+    {
+        if (highlight)
+        {
+            m_controller.material = new Material(Resources.Load(m_highlightMaterial, typeof(Material)) as Material);
+        }
+        else
+        {
+            m_controller.material = new Material(Resources.Load(m_defaultMaterial, typeof(Material)) as Material);
+        }
+    }
+
     /**
      * Be careful: Z is ignored!
      * */
     public void drawLineWithArrow(GameObject start, GameObject end, float offsetX = 0.0f, float offsetY = 0.0f)
     {
         // Initializing
-        LineRenderer line = gameObject.AddComponent<LineRenderer>();
-        line.startColor = Color.blue;
-        line.endColor = Color.blue;
-        line.material = new Material(Resources.Load("Mouse_Orange_Glowing", typeof(Material)) as Material);
-        line.startWidth = 0.001f;
-        line.endWidth = 0.001f;
-        line.positionCount = 5;
-        line.useWorldSpace = true;
+
+        m_controller.startColor = Color.blue;
+        m_controller.endColor = Color.blue;
+        m_controller.material = new Material(Resources.Load(m_defaultMaterial, typeof(Material)) as Material);
+        m_controller.startWidth = 0.001f;
+        m_controller.endWidth = 0.001f;
+        m_controller.positionCount = 5;
+        m_controller.useWorldSpace = true;
 
         Vector3 p1 = start.transform.localPosition;//new Vector2(start.transform.localPosition.x, start.transform.localPosition.y);
         Vector3 p2 = end.transform.localPosition;// new Vector2(end.transform.localPosition.x, end.transform.localPosition.y) ;
@@ -116,10 +138,10 @@ public class MouseUtilitiesLineBetweenTwoPoints : MonoBehaviour
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "p3: " + p3 + " with rotation: " + p3r  + " p4: " + p4 + " with rotation: " + p4r);
 
         // Drawing
-        line.SetPosition(0, p1);
-        line.SetPosition(1, p2);
-        line.SetPosition(2, p3r);
-        line.SetPosition(3, p4r);
-        line.SetPosition(4, p2);
+        m_controller.SetPosition(0, p1);
+        m_controller.SetPosition(1, p2);
+        m_controller.SetPosition(2, p3r);
+        m_controller.SetPosition(3, p4r);
+        m_controller.SetPosition(4, p2);
     }
 }

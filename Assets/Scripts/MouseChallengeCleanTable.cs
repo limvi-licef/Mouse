@@ -239,7 +239,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         // First interaction surface, i.e. for the table
         GameObject interactionTableView = Instantiate(m_refInteractionSurface, gameObject.transform);
         MouseInteractionSurface interactionTableController = interactionTableView.GetComponent<MouseInteractionSurface>();
-        interactionTableController.setAdminButton("Hide table interaction surface");
+        interactionTableController.setAdminButtons("table");
         interactionTableController.setColor("Mouse_Cyan_Glowing");
         interactionTableView.transform.localPosition = new Vector3(0.949f, -0.017f, 1.117f);
         interactionTableController.setScaling(new Vector3(1.1f, 0.02f, 0.7f));
@@ -249,7 +249,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         GameObject interactionRagView = Instantiate(m_refInteractionSurface, gameObject.transform);
         MouseInteractionSurface interactionRagController = interactionRagView.GetComponent<MouseInteractionSurface>();
         interactionRagController.setColor("Mouse_Orange_Glowing");
-        interactionRagController.setAdminButton("Hide rag surface interaction");
+        interactionRagController.setAdminButtons("rag");
         interactionRagView.transform.localPosition = new Vector3(0, -0.008f, 3.843f);
         interactionRagController.showInteractionSurfaceTable(true);
 
