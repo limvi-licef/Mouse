@@ -134,11 +134,11 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
                 MouseUtilitiesLineBetweenTwoPoints line = temp.GetComponent<MouseUtilitiesLineBetweenTwoPoints>();
                 //line.drawLineWithArrow(m_states[stateStart.getId()], m_states[stateEnd.getId()]);
 
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Connector from: " + stateStart.getId() + " to: " + stateEnd.getId());
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Connector from: " + stateStart.getId() + " to: " + stateEnd.getId());
 
             RectTransform transformGrid = m_parentLabelsView.GetComponent<RectTransform>();
 
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Grid object width: " + transformGrid.rect.width + " height: " + transformGrid.rect.width + " x: " + transformGrid.rect.x +" y: " + transformGrid.rect.y);
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Grid object width: " + transformGrid.rect.width + " height: " + transformGrid.rect.width + " x: " + transformGrid.rect.x +" y: " + transformGrid.rect.y);
 
             line.drawLineWithArrow(m_states[stateStart.getId()], m_states[stateEnd.getId()]);
                 m_connectors.Add((stateStart.getId(), stateEnd.getId()), temp.gameObject);
@@ -166,12 +166,12 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         // Brut force to highlight the connectors
         foreach (KeyValuePair<(string, string), GameObject> connector in m_connectors)
         {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Connector: " + connector.Key + " Current state id: " + currentState.m_currentState.getId());
+            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Connector: " + connector.Key + " Current state id: " + currentState.m_currentState.getId());
 
             if (connector.Key.Item1 == currentState.m_currentState.getId())
             {
                 connector.Value.GetComponent<MouseUtilitiesLineBetweenTwoPoints>().highlightConnector(true);
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Highlight connector");
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Highlight connector");
             }
             else
             {

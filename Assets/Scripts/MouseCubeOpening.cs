@@ -37,12 +37,16 @@ public class MouseCubeOpening : MonoBehaviour
     Vector3 m_scalingOriginal;
     Vector3 m_scalingReduced;
 
+    bool m_animateCubeOnTouched;
+
     private void Awake()
     {
         // Children
         m_cubeTopRightPartView = gameObject.transform.Find("TopRightPart");
         m_cubeTopLeftPartView = gameObject.transform.Find("TopLeftPart");
         m_cubeBottomPartView = gameObject.transform.Find("BottomPart");
+
+        m_animateCubeOnTouched = false;
     }
 
     // Start is called before the first frame update
@@ -69,7 +73,14 @@ public class MouseCubeOpening : MonoBehaviour
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
 
-        openCube(m_eventCubetouched);
+        if (m_animateCubeOnTouched)
+        {
+            openCube(m_eventCubetouched);
+        }
+        else
+        { // Otherwise behaves like a normal cube and thus amit the event directly
+            m_eventCubetouched?.Invoke(this, EventArgs.Empty);
+        }
 
     }
 
@@ -143,5 +154,10 @@ public class MouseCubeOpening : MonoBehaviour
         transform.localScale = m_scalingReduced;
 
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Reducing scale to: " + m_scalingReduced.ToString());
+    }
+
+    public void animateCubeOnTouch(bool animate)
+    {
+        m_animateCubeOnTouched = animate;
     }
 }

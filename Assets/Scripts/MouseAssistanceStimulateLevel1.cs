@@ -72,7 +72,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         // Setting up the gradation manger
         m_gradationManager = transform.GetComponent<MouseUtilitiesGradationManager>();
         m_gradationManager.addNewAssistanceGradation("Default", callbackGradationDefault);
-        m_gradationManager.addNewAssistanceGradation("Low", callbackGradationLow);
+        //m_gradationManager.addNewAssistanceGradation("Low", callbackGradationLow);
         m_gradationManager.addNewAssistanceGradation("LowVivid", callbackGradationLowVivid);
         //m_gradationManager.addNewAssistanceGradation("HighFollow", callbackGradationHighFollow);
 
@@ -138,6 +138,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
             m_help.gameObject.SetActive(true);
             m_surfaceWithStarsView.gameObject.SetActive(true);
+            eventHandler?.Invoke(this, EventArgs.Empty);
             m_mutexShow = false;
         }
         else
@@ -237,6 +238,10 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
 
     void callbackGradationLowVivid(System.Object o, EventArgs e)
     {
+        m_help.gameObject.SetActive(false);
+
+        MouseUtilities.adjustObjectHeightToHeadHeight(m_hologramView, m_hologramOriginalLocalPos.y);
+        m_hologramView.gameObject.SetActive(true);
         m_hologramController.updateMaterials("Mouse_Clean_Bottom_Vivid", "Mouse_Clean_Top-Left_Vivid", "Mouse_Clean_Top-Right_Vivid");
         m_lightView.gameObject.SetActive(true);
         m_hologramController.GetComponent<Billboard>().enabled = true;

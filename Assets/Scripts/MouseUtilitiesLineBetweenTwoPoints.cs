@@ -112,10 +112,10 @@ public class MouseUtilitiesLineBetweenTwoPoints : MonoBehaviour
         //angle = ((float)Math.Acos(Vector3.Dot(p2pE, p2p1)))*180.0f/Mathf.PI;
         float angle = Vector3.SignedAngle(p2pE, p2p1, new Vector3(0, 0, 1));
 
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "A/p1: " + p1 + " B/pE: " + pEndLineRef + " C/p2: " + p2 + " p2pE: " + p2pE + " p2p1: " + p2p1 + " Angle: " + angle);
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "A/p1: " + p1 + " B/pE: " + pEndLineRef + " C/p2: " + p2 + " p2pE: " + p2pE + " p2p1: " + p2p1 + " Angle: " + angle);
 
         // Calculations for the arrow
-        float proportion = 0.25f; // proportion of the line the arrow will use
+        //float proportion = 0.25f; // proportion of the line the arrow will use
         float length = Mathf.Sqrt(Mathf.Pow(p1.x - p2.x,2) + Mathf.Pow(p1.y - p2.y,2));
         float lengthArrow = 0.005f;//length * proportion;
         float v3dx = p2.x + Mathf.Cos(70 * Mathf.PI / 180.0f); // Vector destination for later determining p3
@@ -135,7 +135,7 @@ public class MouseUtilitiesLineBetweenTwoPoints : MonoBehaviour
         Vector3 p3r = (Quaternion.AngleAxis(angle, new Vector3(0,0,1)) * new Vector3(dir3.x, dir3.y)) + p2;
         Vector3 p4r = (Quaternion.AngleAxis(angle, new Vector3(0, 0, 1)) * new Vector3(dir4.x, dir4.y)) + p2;
 
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "p3: " + p3 + " with rotation: " + p3r  + " p4: " + p4 + " with rotation: " + p4r);
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "p3: " + p3 + " with rotation: " + p3r  + " p4: " + p4 + " with rotation: " + p4r);
 
         // Drawing
         m_controller.SetPosition(0, p1);

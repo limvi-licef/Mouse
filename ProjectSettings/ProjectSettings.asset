@@ -640,11 +640,11 @@ PlayerSettings:
   platformCapabilities:
     WindowsStoreApps:
       GazeInput: True
-      PrivateNetworkClientServer: True
-      InternetClientServer: True
+      PrivateNetworkClientServer: False
+      InternetClientServer: False
       SpatialPerception: True
       InternetClient: True
-      WebCam: True
+      WebCam: False
       Microphone: True
   metroTargetDeviceFamilies: {}
   metroFTAName: 

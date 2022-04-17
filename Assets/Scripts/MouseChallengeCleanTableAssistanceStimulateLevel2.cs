@@ -90,26 +90,27 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             // Trick to start the line to the text position, i.e. to start at user's head's position
             m_hologramLineController.m_hologramOrigin.transform.position = m_textView.position;
             
-            m_textController.show(new EventHandler(delegate (System.Object o, EventArgs e)
+            m_textController.show(delegate
             {
+                m_textController.enableBillboard(true);
                 m_mutexShow = false;
-            }));
+            });
 
             // Showing line
-                m_hologramLineView.GetComponent<MouseLineToObject>().show(new EventHandler(delegate (System.Object oo, EventArgs ee) {
-                    EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object ooo, EventArgs eee)
-            {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+                m_hologramLineView.GetComponent<MouseLineToObject>().show(delegate  {
+                    EventHandler[] temp = new EventHandler[] { delegate 
+                    {
+                        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-                Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
+                        Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
 
-                m_mutexShow = false;
-            }), eventHandler };
+                        m_mutexShow = false;
+                    }, eventHandler };
 
                     MouseUtilities.adjustObjectHeightToHeadHeight(m_hologramHelp);
 
                     m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), temp);
-                }));
+                });
         }
         else
         {
@@ -124,10 +125,16 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
         {
             m_mutexHide = true;
 
+            m_textController.hide(eventHandler);
+            MouseUtilities.animateDisappearInPlace(m_hologramHelp.gameObject, new Vector3(0.1f, 0.1f, 0.1f), delegate {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - all elements from the arch should be hidden");
+                m_mutexHide = false;
+            });
+
             // Hiding text
-            m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
+            /*m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
-                m_textView.gameObject.SetActive(false);
+                //m_textView.gameObject.SetActive(false);
 
                 Destroy(m_textView.gameObject.GetComponent<MouseUtilitiesAnimation>());
 
@@ -143,7 +150,7 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             }), eventHandler };
 
                 m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(temp);
-            }));
+            }));*/
 
             // Hiding line
             if (m_hologramLineView.gameObject.activeSelf)

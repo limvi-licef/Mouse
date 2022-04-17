@@ -60,10 +60,15 @@ static class MouseUtilities
 
     public static EventHandler getEventHandlerEmpty()
     {
-        return new EventHandler(delegate (System.Object o, EventArgs e)
+        /*return new EventHandler(delegate (System.Object o, EventArgs e)
         {
 
-        });
+        });*/
+
+        return delegate
+        {
+
+        };
     }
 
     public static EventHandler getEventHandlerWithDebugMessage(/*MouseDebugMessagesManager debug,*/ string debugMessage)
@@ -78,7 +83,7 @@ static class MouseUtilities
 
     public static void adjustObjectHeightToHeadHeight(/*MouseDebugMessagesManager debug,*/ Transform t, float originalLocalHeightPos=0.0f)
     {
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Adjusting object height to head position: x= " + t.position.x + " y= Camera position (" + Camera.main.transform.position.y + ") + local position (" + originalLocalHeightPos + ") z=" + t.position.z);
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Adjusting object height to head position: x= " + t.position.x + " y= Camera position (" + Camera.main.transform.position.y + ") + local position (" + originalLocalHeightPos + ") z=" + t.position.z);
 
         t.position = new Vector3(t.position.x, Camera.main.transform.position.y + /*t.localPosition.y*/ originalLocalHeightPos-0.2f, t.position.z); // The -0.2 is to be more aligned with the hololens.
     }
@@ -137,12 +142,12 @@ static class MouseUtilities
         animator.m_scalingstep.y = scaling.y / 50.0f;
         animator.m_scalingstep.z = scaling.z / 50.0f;
 
-        animator.animateAppearInPlaceToScaling(scaling, new EventHandler(delegate (System.Object o, EventArgs e)
+        animator.animateAppearInPlaceToScaling(scaling, delegate 
         {
             UnityEngine.Object.Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
 
             eventHandler?.Invoke(gameObject, EventArgs.Empty);
-        }));
+        });
     }
     public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scaling)
     {

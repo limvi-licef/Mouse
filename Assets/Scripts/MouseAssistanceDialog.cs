@@ -34,8 +34,8 @@ public class MouseAssistanceDialog : MonoBehaviour
     List<Transform> m_buttonsView;
     public List<MouseAssistanceButton> m_buttonsController;
 
-    MouseUtilitiesMutex m_mutexShow;
-    MouseUtilitiesMutex m_mutexHide;
+    //MouseUtilitiesMutex m_mutexShow;
+    //MouseUtilitiesMutex m_mutexHide;
 
     Vector3 m_buttonsParentScalingOriginal;
     Vector3 m_backgoundScalingOriginal;
@@ -70,8 +70,8 @@ public class MouseAssistanceDialog : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_mutexShow = new MouseUtilitiesMutex();
-        m_mutexHide = new MouseUtilitiesMutex();
+        //m_mutexShow = new MouseUtilitiesMutex();
+        //m_mutexHide = new MouseUtilitiesMutex();
     }
 
     // Update is called once per frame
@@ -175,17 +175,18 @@ public class MouseAssistanceDialog : MonoBehaviour
         m_buttonsParentView.GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
+    bool m_mutexHide = false;
     public void hide(EventHandler eventHandler)
     {
-        if (m_mutexHide.isLocked() == false)
+        if (m_mutexHide/*.isLocked()*/ == false)
         {
-            m_mutexHide.lockMutex();
+            m_mutexHide = true; //.lockMutex();
 
-            MouseUtilities.animateDisappearInPlace(m_titleView.gameObject, m_titleScalingOriginal, new EventHandler(delegate (System.Object o, EventArgs e)
+            MouseUtilities.animateDisappearInPlace(m_titleView.gameObject, m_titleScalingOriginal, delegate 
             {
-                m_mutexHide.unlockMutex();
+                m_mutexHide = false; //.unlockMutex();
                 eventHandler?.Invoke(this, EventArgs.Empty);
-            }));
+            });
 
             MouseUtilities.animateDisappearInPlace(m_descriptionView.gameObject, m_descriptionScalingOriginal);
 
@@ -195,34 +196,46 @@ public class MouseAssistanceDialog : MonoBehaviour
         }
     }
 
+    bool m_mutexShow = false;
     public void show (EventHandler eventHandler)
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-        if (m_mutexHide.isLocked() == false)
+        if (m_mutexShow/*.isLocked()*/ == false)
         {
-            m_mutexHide.lockMutex();
+            m_mutexShow = true; //.lockMutex();
 
             MouseUtilities.adjustObjectHeightToHeadHeight(transform);
 
-            m_titleView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
+            /*m_titleView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Title view shown");
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Title view shown");
 
 
                 Destroy(m_titleView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-                m_mutexHide.unlockMutex();
-                eventHandler?.Invoke(this, EventArgs.Empty);
-            }));
-            m_descriptionView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
+                //m_mutexShow = false;//.unlockMutex();
+                //eventHandler?.Invoke(this, EventArgs.Empty);
+            }));*/
+            /*m_descriptionView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 Destroy(m_descriptionView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-            }));
-            m_buttonsParentView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
+            }));*/
+            /*m_buttonsParentView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
             {
                 Destroy(m_buttonsParentView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-            }));
-            MouseUtilities.animateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal);
+            }));*/
+
+            MouseUtilities.animateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal, delegate {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Background shown");
+
+                MouseUtilities.animateAppearInPlace(m_titleView.gameObject);
+                MouseUtilities.animateAppearInPlace(m_buttonsParentView.gameObject);
+                MouseUtilities.animateAppearInPlace(m_descriptionView.gameObject);
+
+                m_mutexShow = false;
+                eventHandler?.Invoke(this, EventArgs.Empty);
+
+            });
         }
         else
         {

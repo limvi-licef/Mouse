@@ -255,10 +255,10 @@ public class MouseUtilitiesGradationAssistance
 
     public EventHandler setGradationPrevious()
     {
-        return new EventHandler(delegate (System.Object o, EventArgs e)
+        return delegate 
         {
             m_triggerPrevious?.Invoke(this, EventArgs.Empty);
-        });
+        };
     }
 
     public EventHandler addGradationNext(MouseUtilitiesGradationAssistance nextState)

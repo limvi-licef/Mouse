@@ -36,8 +36,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public MouseInteractionSurface m_tableController;
     public MouseRag m_ragController;
     Transform m_ragInteractionSurfaceView;
-    bool m_positioningInteractionSurfaceEnabled;
-    bool m_positioningRagInteractionSurfaceEnabled;
+    //bool m_positioningInteractionSurfaceEnabled;
+    //bool m_positioningRagInteractionSurfaceEnabled;
     public GameObject m_hologramDebug;
     public GameObject m_MRTK;
 
@@ -78,8 +78,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     {
         // Variables
         m_menuShown = false; // By default, the menu is hidden
-        m_positioningInteractionSurfaceEnabled = true; // Enabled by default
-        m_positioningRagInteractionSurfaceEnabled = true;
+        //m_positioningInteractionSurfaceEnabled = true; // Enabled by default
+        //m_positioningRagInteractionSurfaceEnabled = true;
 
         /*m_ragInteractionSurfaceView = m_ragController.m_interactionSurfaceRagView;//.transform.Find("InteractionSurfaceRag");
         m_hologramRagInteractionSurfaceMaterialName = m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");*/
@@ -110,7 +110,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void addSwitchButton(string text, UnityEngine.Events.UnityAction callback)
     {
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding switch button");
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding switch button");
 
         m_buttons.Add(Instantiate(m_refButtonSwitch, m_buttonsParent));
         m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callback);
@@ -121,7 +121,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void addButton(string text, UnityEngine.Events.UnityAction callback)
     {
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding button");
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding button");
 
         m_buttons.Add(Instantiate(m_refButton, m_buttonsParent));
 
