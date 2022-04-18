@@ -101,10 +101,12 @@ public class MouseInteractionSurface : MonoBehaviour
 
     public void showInteractionSurfaceTable(bool show)
     {
-        m_interactionSurfaceView.gameObject.SetActive(show);
+        
 
         if (m_surfaceInitialized == false)
         {
+            m_interactionSurfaceView.gameObject.SetActive(true); // If it happens that the surface is not displayed
+
             // Connect the callbacks
             //m_interactionSurfaceTableView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished);
             m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished); // Use the same callback than for taptoplace as the process to do is the same
@@ -114,10 +116,12 @@ public class MouseInteractionSurface : MonoBehaviour
             }); // Only have to forward the event
                 //m_interactionSurfaceTableController.m_eventSurfaceCleaned += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventInteractionSurfaceCleaned?.Invoke(this, EventArgs.Empty); });
 
+            
             m_surfaceInitialized = true;
+
         }
 
-        m_interactionSurfaceView.GetComponent<Renderer>().enabled = show;
+        m_interactionSurfaceView.GetComponent<Renderer>().enabled = show; // To hide the surface while keeping it interactable, then the renderer is disabled if show==false;
         m_interactionSurfaceView.GetComponent<BoundsControl>().enabled = show;
         //m_interactionSurfaceView.transform.Find("rigRoot").gameObject.SetActive(show); // No idea what this "rigRoot" is.
     }
