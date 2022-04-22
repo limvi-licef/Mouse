@@ -26,22 +26,24 @@ using System;
  * An event is emitted if the nested hologram is touched.
  * Appears / disappears in place. I told you it was basic.
  * */
-public class MouseAssistanceBasic : MonoBehaviour
+public class MouseAssistanceBasic : MouseAssistanceAbstract
 {
     public Transform m_childView;
 
     Vector3 m_childScaleOrigin;
 
-    MouseUtilitiesMutex m_mutexShow;
-    MouseUtilitiesMutex m_mutexHide;
+    /*MouseUtilitiesMutex m_mutexShow;
+    MouseUtilitiesMutex m_mutexHide;*/
 
     public event EventHandler s_touched;
+
+    bool m_adjustHeight;
 
     private void Awake()
     {
         // Initialize variables
-        m_mutexShow = new MouseUtilitiesMutex();
-        m_mutexHide = new MouseUtilitiesMutex();
+        /*m_mutexShow = new MouseUtilitiesMutex();
+        m_mutexHide = new MouseUtilitiesMutex();*/
 
         // Children
         m_childView = gameObject.transform.Find("Child");
@@ -59,6 +61,8 @@ public class MouseAssistanceBasic : MonoBehaviour
         {
             s_touched?.Invoke(sender, args);
         };
+
+        m_adjustHeight = true;
     }
 
     // Start is called before the first frame update
@@ -73,37 +77,95 @@ public class MouseAssistanceBasic : MonoBehaviour
         
     }
 
-    public void show(EventHandler eventHandler)
+    bool m_mutexShow = false;
+    public override void show(EventHandler eventHandler)
     {
-        if (m_mutexShow.isLocked() == false)
+        if (m_mutexShow == false)
         {
-            m_mutexShow.lockMutex();
+            m_mutexShow = true;
 
-            MouseUtilities.adjustObjectHeightToHeadHeight(transform);
+            if (m_adjustHeight)
+            {
+                MouseUtilities.adjustObjectHeightToHeadHeight(transform);
+            }
+            
 
-            EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
+            /*EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
                 Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
-                    m_mutexShow.unlockMutex();
+                    m_mutexShow = false;
             }), eventHandler };
 
-            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_childScaleOrigin, temp);
+            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_childScaleOrigin, temp);*/
+
+            MouseUtilities.animateAppearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
+            {
+                m_mutexShow = false;
+                eventHandler?.Invoke(this, EventArgs.Empty);
+            });
         }
     }
 
-    public void hide(EventHandler eventHandler)
+    bool m_mutexHide = false;
+    public override void hide(EventHandler eventHandler)
     {
-        if (m_mutexHide.isLocked() == false)
+        if (m_mutexHide == false)
         {
-            m_mutexHide.lockMutex();
+            m_mutexHide = true;
 
-            EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
+            /*EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
                 m_childView.gameObject.transform.localScale = m_childScaleOrigin;
                 Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
                 m_childView.gameObject.SetActive(false);
-                   m_mutexHide.unlockMutex();
+                   m_mutexHide = false;
             }), eventHandler };
 
-            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(temp);
+            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(temp);*/
+
+            MouseUtilities.animateDisappearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
+            {
+                m_childView.gameObject.transform.localScale = m_childScaleOrigin;
+                m_mutexHide = false;
+                eventHandler?.Invoke(this, EventArgs.Empty);
+            });
         }
+    }
+
+    public void setMaterialToChild(string materialName)
+    {
+        Renderer renderer = m_childView.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material = Resources.Load(materialName, typeof(Material)) as Material;
+        }
+        else
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No renderer component for the child - no action will be done");
+        }
+    }
+
+    public void setAdjustHeightOnShow(bool enable)
+    {
+        m_adjustHeight = enable;
+    }
+
+    public void setScale(float x, float y, float z)
+    {
+        m_childView.transform.localScale = new Vector3(x, y, z);
+        m_childScaleOrigin = m_childView.transform.localScale;
+    }
+
+    public void setLocalPosition(float x, float y, float z)
+    {
+        m_childView.transform.localPosition = new Vector3(x, y, z);
+    }
+
+    public void setBillboard(bool enable)
+    {
+        m_childView.GetComponent<Billboard>().enabled = enable;
+    }
+
+    public void triggerTouch()
+    {
+        s_touched?.Invoke(this, EventArgs.Empty);
     }
 }

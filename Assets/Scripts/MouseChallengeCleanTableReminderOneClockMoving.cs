@@ -24,7 +24,7 @@ using System.Linq;
 /**
  * Used as an "escape" where the user can ask to be reminded later about the challenge
  * */
-public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
+public class MouseChallengeCleanTableReminderOneClockMoving : MouseAssistanceAbstract
 {
 
 
@@ -230,7 +230,7 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
     }
 
     bool m_mutexHide = false;
-    public void hide(EventHandler e)
+    public override void hide(EventHandler e)
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
@@ -282,7 +282,7 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MonoBehaviour
 
     bool m_mutexShow = false;
     bool m_showFirstTime = false;
-    public void show(EventHandler eventHandler)
+    public override void show(EventHandler eventHandler)
     {
         m_clockScalingOriginal = new Vector3(0.1f,0.1f, 0.1f);
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Clock is going to appear to scaling: " + m_clockScalingOriginal);

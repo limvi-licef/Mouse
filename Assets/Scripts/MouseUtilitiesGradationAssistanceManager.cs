@@ -261,7 +261,7 @@ public class MouseUtilitiesGradationAssistance
         };
     }
 
-    public EventHandler addGradationNext(MouseUtilitiesGradationAssistance nextState)
+    public EventHandler goToState(MouseUtilitiesGradationAssistance nextState)
     {
         m_nextStates.Add(nextState.getId(), nextState);
 
@@ -293,6 +293,19 @@ public class MouseUtilitiesGradationAssistance
         m_functionsShowEventHandlers.Add(handler);
     }
 
+    public void addFunctionShow(MouseAssistanceAbstract assistance, EventHandler callback)
+    {
+        addFunctionShow(assistance.show, callback);
+    }
+
+    /**
+     * Then no callback trigerred when processed finished
+     * */
+    public void addFunctionShow(MouseAssistanceAbstract assistance)
+    {
+        addFunctionShow(assistance.show, MouseUtilities.getEventHandlerEmpty());
+    }
+
     public List<Action<EventHandler>> getFunctionsShow()
     {
         return m_functionsShow;
@@ -307,6 +320,22 @@ public class MouseUtilitiesGradationAssistance
     {
         m_functionHide = fHide;
         m_functionHideEventHandler = handler;
+    }
+
+    public void setFunctionHide(MouseAssistanceAbstract assistance, EventHandler callback)
+    {
+        setFunctionHide(assistance.hide, callback);
+    }
+
+    public void setFunctionHide(MouseAssistanceAbstract assistance)
+    {
+        setFunctionHide(assistance.hide, MouseUtilities.getEventHandlerEmpty());
+    }
+
+    public void setFunctionHideAndShow(MouseAssistanceAbstract assistance)
+    {
+        setFunctionHide(assistance);
+        addFunctionShow(assistance);
     }
 
     public Action<EventHandler> getFunctionHide()

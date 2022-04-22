@@ -25,7 +25,7 @@ using System.Linq;
 /**
  * Assistance to who a cube, that has 3 gradation level: fix with discrete colors, vivid colors, and that follows the user
  * */
-public class MouseAssistanceStimulateLevel1 : MonoBehaviour
+public class MouseAssistanceStimulateLevel1 : MouseAssistanceAbstract
 {
     public Transform m_hologramView;
     MouseCubeOpening m_hologramController;
@@ -115,7 +115,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
     }
 
     bool m_mutexShow = false;
-    public void show(EventHandler eventHandler)
+    public override void show(EventHandler eventHandler)
     {
         if (m_mutexShow == false)
         {
@@ -152,7 +152,7 @@ public class MouseAssistanceStimulateLevel1 : MonoBehaviour
         m_hologramView.localPosition = m_hologramOriginalLocalPos;
     }
 
-    public void hide(EventHandler eventHandler)
+    public override void hide(EventHandler eventHandler)
     {
         setGradationToMinimum();
 

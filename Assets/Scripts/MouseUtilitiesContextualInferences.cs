@@ -31,12 +31,9 @@ public class MouseUtilitiesContextualInferences : MonoBehaviour
 {
     Dictionary<string, MouseUtilitiesInferenceAbstract> m_inferences;
 
-    //MouseUtilitiesMutex m_mutexDictionary;
-
     private void Awake()
     {
         m_inferences = new Dictionary<string, MouseUtilitiesInferenceAbstract>();
-        //m_mutexDictionary = new MouseUtilitiesMutex();
     }
 
     // Start is called before the first frame update
@@ -48,19 +45,11 @@ public class MouseUtilitiesContextualInferences : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       /* if (m_mutexDictionary.isLocked() == false)
-        { // Running the loop only if the mutex is not locked
-          // Evaluation of the inferences. If positive, then the callback is called
-          */
             try
             {
                 foreach (KeyValuePair<string, MouseUtilitiesInferenceAbstract> inference in m_inferences)
                 {
-            /*        if (m_mutexDictionary.isLocked())
-                    { // Then stop the loop immediatly
-                        break;
-                    }*/
-
+                    // Mettre tout ça dans un thread? Pour pas que ce soit bloquant?
                     if (inference.Value.evaluate())
                     {
                         inference.Value.triggerCallback();
@@ -70,20 +59,15 @@ public class MouseUtilitiesContextualInferences : MonoBehaviour
             catch(InvalidOperationException)
             {
                 MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Inference dictionary has changed, no update performed this frame");
-            }
-            
-        //}
-        
+            }        
     }
 
     public void registerInference(MouseUtilitiesInferenceAbstract inference)
     {
         if (m_inferences.ContainsKey(inference.getId()) == false)
         {
-            //m_mutexDictionary.lockMutex();
             m_inferences.Add(inference.getId(), inference);
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Inference " + inference.getId() + " added");
-            //m_mutexDictionary.unlockMutex();
         }
         else
         {
@@ -100,10 +84,8 @@ public class MouseUtilitiesContextualInferences : MonoBehaviour
     {
         if (m_inferences.ContainsKey(id))
         {
-            //m_mutexDictionary.lockMutex();
             m_inferences.Remove(id);
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Inference " + id + " unregistered");
-            //m_mutexDictionary.unlockMutex();
         }
         else
         {
@@ -146,13 +128,64 @@ public class MouseUtilitiesInferenceDistanceFromObject : MouseUtilitiesInference
 
         float tempDistance = Vector3.Distance(Camera.main.transform.position, m_gameObject.transform.position);
 
-        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Distance: " + tempDistance);
-
         if (tempDistance > m_minDistanceToTrigger)
         {
             toReturn = true;
         }
 
         return toReturn;
+    }
+}
+
+public class MouseUtilitiesInferenceTime : MouseUtilitiesInferenceAbstract
+{
+    DateTime m_time;
+    bool m_useOneMinuteTrigger;
+    DateTime m_timeOneMinuteTrigger;
+
+    public MouseUtilitiesInferenceTime(string id, DateTime time, EventHandler callback): base(id, callback)
+    {
+        m_time = time;
+
+        m_useOneMinuteTrigger = false;
+
+        MouseUtilitiesAdminMenu.Instance.addButton("One minute trigger for " + id, callbackOneMinuteTrigger);
+
+    }
+
+    public override bool evaluate()
+    {
+        bool toReturn = false;
+
+        if (m_useOneMinuteTrigger == false)
+        {
+            if (DateTime.Now.Hour == m_time.Hour && DateTime.Now.Minute == m_time.Minute)
+            {
+                toReturn = true;
+            }
+        }
+        else
+        {
+            TimeSpan elapsed = DateTime.Now.Subtract(m_timeOneMinuteTrigger);
+
+            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Time elapsed: " + elapsed + " minutes elapsed: " + elapsed.Minutes);
+
+            if ( /*elapsed.Minutes >= 1*/ elapsed.Seconds >= 10)
+            {
+                m_useOneMinuteTrigger = false;
+                toReturn = true;
+            }
+        }
+        
+
+        return toReturn;
+    }
+
+    public void callbackOneMinuteTrigger()
+    {
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Callback one minute triggered called");
+
+        m_timeOneMinuteTrigger = DateTime.Now;
+        m_useOneMinuteTrigger = true;
     }
 }

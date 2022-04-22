@@ -28,6 +28,7 @@ using System.Linq;
 public class MouseUtilitiesGlobalInitializer : MonoBehaviour
 {
     public MouseUtilitiesAdminMenu m_adminMenu;
+    public GameObject m_virtualRoom;
 
     // Start is called before the first frame update
     void Start()
@@ -40,6 +41,7 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
         { // Means running in the Hololens, so adjusting some parameters
             MouseDebugMessagesManager.Instance.m_displayOnConsole = false;
             m_adminMenu.m_menuStatic = false;
+            m_virtualRoom.SetActive(false); // In the editor, the user does what he wants, but in the hololens, this should surely be disabled.
         }
     }
 

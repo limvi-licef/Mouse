@@ -24,7 +24,7 @@ using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
 
-public class MouseAssistanceDialog : MonoBehaviour
+public class MouseAssistanceDialog : MouseAssistanceAbstract
 {
     Transform m_buttonsParentView;
     Transform m_refButtonView;
@@ -176,7 +176,7 @@ public class MouseAssistanceDialog : MonoBehaviour
     }
 
     bool m_mutexHide = false;
-    public void hide(EventHandler eventHandler)
+    public override void hide(EventHandler eventHandler)
     {
         if (m_mutexHide/*.isLocked()*/ == false)
         {
@@ -197,7 +197,7 @@ public class MouseAssistanceDialog : MonoBehaviour
     }
 
     bool m_mutexShow = false;
-    public void show (EventHandler eventHandler)
+    public override void show (EventHandler eventHandler)
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 

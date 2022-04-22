@@ -31,19 +31,16 @@ using System.Linq;
 public class MouseUtilitiesAdminMenu : MonoBehaviour
 {
     bool m_menuShown;
-    public MouseChallengeCleanTable m_challengeCleanTable;
-    //public GameObject m_hologramInteractionSurface;
-    public MouseInteractionSurface m_tableController;
-    public MouseRag m_ragController;
-    Transform m_ragInteractionSurfaceView;
-    //bool m_positioningInteractionSurfaceEnabled;
-    //bool m_positioningRagInteractionSurfaceEnabled;
-    public GameObject m_hologramDebug;
-    public GameObject m_MRTK;
+    //public MouseChallengeCleanTable m_challengeCleanTable;
+    //public MouseInteractionSurface m_tableController;
+    //public MouseRag m_ragController;
+    //Transform m_ragInteractionSurfaceView;
+    //public GameObject m_hologramDebug;
+    //public GameObject m_MRTK;
 
     public bool m_menuStatic = false;
 
-    string m_hologramRagInteractionSurfaceMaterialName;
+    //string m_hologramRagInteractionSurfaceMaterialName;
 
     private static MouseUtilitiesAdminMenu _instance;
 
@@ -78,25 +75,13 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     {
         // Variables
         m_menuShown = false; // By default, the menu is hidden
-        //m_positioningInteractionSurfaceEnabled = true; // Enabled by default
-        //m_positioningRagInteractionSurfaceEnabled = true;
 
-        /*m_ragInteractionSurfaceView = m_ragController.m_interactionSurfaceRagView;//.transform.Find("InteractionSurfaceRag");
-        m_hologramRagInteractionSurfaceMaterialName = m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().material.name.Replace(" (Instance)","");*/
-
-         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
+         //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
 
         // Check if the occlusion is enabled
-        MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
+        //MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
 
         switchStaticOrMovingMenu();
-
-
-        // Connecting the callbacks
-       
-        //m_buttonsParent.Find("InteractionSurfaceTableShow").GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callbackSwitchPositioningInteractionSurface);
-        m_buttonsParent.Find("ResetChallenge").GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callbackResetChallengeCleanTable);
-
 
         // Add the buttons to manage this menu
         addSwitchButton("Static/Mobile menu", callbackSwitchStaticOrMovingMenu);
@@ -110,8 +95,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void addSwitchButton(string text, UnityEngine.Events.UnityAction callback)
     {
-        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding switch button");
-
         m_buttons.Add(Instantiate(m_refButtonSwitch, m_buttonsParent));
         m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callback);
         m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().InteractionFilter = 0;
@@ -121,8 +104,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void addButton(string text, UnityEngine.Events.UnityAction callback)
     {
-        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - adding button");
-
         m_buttons.Add(Instantiate(m_refButton, m_buttonsParent));
 
         m_buttons.Last().GetComponent<ButtonConfigHelper>().IconStyle = ButtonIconStyle.None;
@@ -135,7 +116,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackCubeTouched()
     {
-        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackCubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
+        //MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackCubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
         m_menuShown = !m_menuShown;
 
        for (int i = 0; i < gameObject.transform.childCount; i ++)
@@ -144,53 +125,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         }
     }
 
-    public void callbackResetChallengeCleanTable()
-    {
-        m_challengeCleanTable.resetChallenge();
-    }
-
-    /*public void callbackSwitchPositioningInteractionSurface()
-    {
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called \\^v^//");
-
-        m_positioningInteractionSurfaceEnabled = !m_positioningInteractionSurfaceEnabled;
-        m_tableController.showInteractionSurfaceTable(m_positioningInteractionSurfaceEnabled);
-        //m_tableController.m_interactionSurfaceTableController.enableLocationControls(m_positioningInteractionSurfaceEnabled);
-    }*/
-
-    /*public void callbackSwitchPositioningRagInteractionSurface()
-    {
-        string materialName = "";
-
-        if (m_positioningRagInteractionSurfaceEnabled)
-        {
-            m_positioningRagInteractionSurfaceEnabled = false;
-            materialName = "Mouse_White_Transparent";
-        }
-        else
-        {
-            m_positioningRagInteractionSurfaceEnabled = true;
-            materialName = m_hologramRagInteractionSurfaceMaterialName;
-        }
-
-        m_ragInteractionSurfaceView.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
-        m_ragInteractionSurfaceView.GetComponent<MeshRenderer>().enabled = m_positioningRagInteractionSurfaceEnabled;
-        m_ragInteractionSurfaceView.GetComponent<ObjectManipulator>().enabled = m_positioningRagInteractionSurfaceEnabled;
-        m_ragInteractionSurfaceView.GetComponent<BoundsControl>().enabled = m_positioningRagInteractionSurfaceEnabled;
-    }*/
-
-    /*public void callbackBringInteractionSurface()
-    {
-        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_tableController.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
-    }*/
-
-    /*public void callbackBringRagInteractionSurface()
-    {
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-        m_ragController.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
-    }*/
-
     public void callbackSwitchStaticOrMovingMenu()
     {
         m_menuStatic = !m_menuStatic;
@@ -198,28 +132,10 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         switchStaticOrMovingMenu();
     }
 
-    public void callbackDebugSwitchDisplay()
+    /*public void callbackDebugSwitchDisplay()
     {
         m_hologramDebug.SetActive(!m_hologramDebug.activeSelf);
-    }
-
-    /*public void callbackDebugBringWindow()
-    {
-        m_hologramDebug.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
-        m_hologramDebug.transform.LookAt(Camera.main.transform);
-    }
-
-    public void callbackDebugClearWindow()
-    {
-        TextMeshPro temp = m_hologramDebug.GetComponent<TextMeshPro>();
-        temp.SetText("");
-    }
-
-    public void callbackDebugDisplayDebugInWindow()
-    {
-        m_hologramDebug.GetComponent<MouseDebugMessagesManager>().m_displayOnConsole = false;
     }*/
-
 
     public void switchStaticOrMovingMenu()
     {
@@ -239,8 +155,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         gameObject.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
     }
 
-    public void debugSwitchDisplayMessages()
+    /*public void debugSwitchDisplayMessages()
     {
         MouseDebugMessagesManager.Instance.m_displayMessages = !MouseDebugMessagesManager.Instance.m_displayMessages;
-    }
+    }*/
 }
