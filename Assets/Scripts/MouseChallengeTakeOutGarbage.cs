@@ -75,6 +75,13 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         garbageInteractionSurfaceController.setColor("Mouse_Purple_Glowing");
         garbageInteractionSurfaceController.showInteractionSurfaceTable(true);
 
+        GameObject doorInteractionSurfaceView = Instantiate(m_refInteractionSurface, gameObject.transform);
+        MouseInteractionSurface doorInteractionSurfaceController = doorInteractionSurfaceView.GetComponent<MouseInteractionSurface>();
+        doorInteractionSurfaceController.setAdminButtons("door");
+        doorInteractionSurfaceController.setColor("Mouse_Green_Glowing");
+        doorInteractionSurfaceController.showInteractionSurfaceTable(true);
+        doorInteractionSurfaceView.transform.localPosition = new Vector3(-0.5f, doorInteractionSurfaceView.transform.localPosition.y, doorInteractionSurfaceView.transform.localPosition.z);
+
         GameObject exclamationMarkView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
         MouseAssistanceBasic exclamationMarkController = exclamationMarkView.GetComponent<MouseAssistanceBasic>();
         exclamationMarkController.setMaterialToChild("Mouse_Exclamation");
@@ -105,21 +112,23 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
 
         // Add inferences
         m_inferenceManager.registerInference(m_inference19h00);
-        m_inferenceManager.registerInference(m_inference19h30);
 
+        // Set states
         MouseUtilitiesGradationAssistance sStandBy = m_gradationManager.addNewAssistanceGradation("StandBy");
         sStandBy.addFunctionShow(delegate (EventHandler e)
         {
             m_inferenceManager.registerInference(m_inference19h00);
-            m_inferenceManager.registerInference(m_inference19h30);
         }, MouseUtilities.getEventHandlerEmpty());
         sStandBy.setFunctionHide(delegate (EventHandler e)
         {
-            // Play sound to get the user's attention from audio on top of visually
             e?.Invoke(this, EventArgs.Empty);
         }, MouseUtilities.getEventHandlerEmpty());
         MouseUtilitiesGradationAssistance sHighlightGarbage = m_gradationManager.addNewAssistanceGradation("HighlightGarbage");
         sHighlightGarbage.setFunctionHideAndShow(highlightGarbageController);
+        sHighlightGarbage.addFunctionShow(delegate (EventHandler e)
+        {
+            m_inferenceManager.registerInference(m_inference19h30);
+        }, MouseUtilities.getEventHandlerEmpty());
         MouseUtilitiesGradationAssistance sExclamationMark = m_gradationManager.addNewAssistanceGradation("ExclamationMark");
         sExclamationMark.addFunctionShow(exclamationMarkController);
         sExclamationMark.addFunctionShow(highlightGarbageVividController);
@@ -131,21 +140,31 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         //sExclamationMark.setFunctionHideAndShow(exclamationMarkController);
         MouseUtilitiesGradationAssistance sSolution = m_gradationManager.addNewAssistanceGradation("Solution");
         sSolution.setFunctionHideAndShow(solutionController);
+        MouseUtilitiesGradationAssistance sGarbageGrabbed = m_gradationManager.addNewAssistanceGradation("Garbage grabbed");
+        sGarbageGrabbed.addFunctionShow(delegate(EventHandler e)
+        {
+           
+        }, MouseUtilities.getEventHandlerEmpty());
+        sGarbageGrabbed.setFunctionHide(delegate (EventHandler e)
+        {
+            e?.Invoke(this, EventArgs.Empty);
+        }, MouseUtilities.getEventHandlerEmpty());
         MouseUtilitiesGradationAssistance sSuccess = m_gradationManager.addNewAssistanceGradation("Success");
         sSuccess.setFunctionHideAndShow(successController);
 
         
         // Connections between states
         s_inference19h00 += sStandBy.goToState(sHighlightGarbage);
-        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sStandBy.goToState(sSuccess);
+        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sStandBy.goToState(/*sSuccess*/sGarbageGrabbed);
         highlightGarbageController.s_touched += sHighlightGarbage.goToState(sSolution);
         s_inference19h30 += sHighlightGarbage.goToState(sExclamationMark);
-        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sHighlightGarbage.goToState(sSuccess);
+        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sHighlightGarbage.goToState(/*sSuccess*/sGarbageGrabbed);
         exclamationMarkController.s_touched += sExclamationMark.goToState(sSolution);
         highlightGarbageVividController.s_touched += delegate (System.Object o, EventArgs e) { exclamationMarkController.triggerTouch(); };
         
-        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sExclamationMark.goToState(sSuccess);
-        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sSolution.goToState(sSuccess);
+        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sExclamationMark.goToState(/*sSuccess*/sGarbageGrabbed);
+        garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sSolution.goToState(/*sSuccess*/sGarbageGrabbed);
+        doorInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sGarbageGrabbed.goToState(sSuccess);
         successController.s_touched += sSuccess.goToState(sStandBy);
 
         m_gradationManager.setGradationInitial("StandBy");
