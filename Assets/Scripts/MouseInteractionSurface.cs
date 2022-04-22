@@ -137,4 +137,17 @@ public class MouseInteractionSurface : MonoBehaviour
         MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide " + interfaceSurfaceId + " interaction surface", callbackShow);
         MouseUtilitiesAdminMenu.Instance.addButton("Bring " + interfaceSurfaceId + " interaction surface", callbackBring);
     }
+
+    public void setObjectResizable(bool enable)
+    {
+        if (enable)
+        {
+            m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleHandlesConfig.ScaleBehavior = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.HandleScaleMode.NonUniform;
+        }
+        else
+        {
+            m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleHandlesConfig.ScaleBehavior = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.HandleScaleMode.Uniform;
+        }
+        
+    }
 }
