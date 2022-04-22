@@ -74,13 +74,15 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         garbageInteractionSurfaceController.setAdminButtons("garbage");
         garbageInteractionSurfaceController.setColor("Mouse_Purple_Glowing");
         garbageInteractionSurfaceController.showInteractionSurfaceTable(true);
+        garbageInteractionSurfaceView.transform.localPosition = new Vector3(-0.92f, 0.383f, 3.881f);
+
 
         GameObject doorInteractionSurfaceView = Instantiate(m_refInteractionSurface, gameObject.transform);
         MouseInteractionSurface doorInteractionSurfaceController = doorInteractionSurfaceView.GetComponent<MouseInteractionSurface>();
         doorInteractionSurfaceController.setAdminButtons("door");
         doorInteractionSurfaceController.setColor("Mouse_Green_Glowing");
         doorInteractionSurfaceController.showInteractionSurfaceTable(true);
-        doorInteractionSurfaceView.transform.localPosition = new Vector3(-0.5f, doorInteractionSurfaceView.transform.localPosition.y, doorInteractionSurfaceView.transform.localPosition.z);
+        doorInteractionSurfaceView.transform.localPosition = new Vector3(-1.032f, 0.544f, 2.617f);
         doorInteractionSurfaceController.setObjectResizable(true);
 
         GameObject exclamationMarkView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
