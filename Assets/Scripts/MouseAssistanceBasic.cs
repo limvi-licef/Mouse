@@ -149,4 +149,9 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
     {
         s_touched?.Invoke(this, EventArgs.Empty);
     }
+
+    public Transform getChildTransform()
+    {
+        return m_childView.transform;
+    }
 }

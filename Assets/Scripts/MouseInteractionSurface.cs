@@ -29,6 +29,7 @@ public class MouseInteractionSurface : MonoBehaviour
     Transform m_interactionSurfaceView;
 
     public event EventHandler m_eventInteractionSurfaceTableTouched;
+    public event EventHandler s_interactionSurfaceScaled;
 
     string m_color = "Mouse_Green_Glowing"; // Default color if the user does not set one
 
@@ -46,7 +47,10 @@ public class MouseInteractionSurface : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleStopped.AddListener(delegate
+        {
+            s_interactionSurfaceScaled?.Invoke(this, EventArgs.Empty);
+        });
     }
 
     public Transform getInteractionSurface()

@@ -113,6 +113,15 @@ public class MouseChallengeCleanTable : MonoBehaviour
         interactionRagView.transform.localPosition = new Vector3(0, -0.008f, 3.843f);
         interactionRagController.showInteractionSurfaceTable(true);
 
+        m_assistanceSurfaceTouchedView.localScale = new Vector3(interactionTableController.getInteractionSurface().localScale.x,
+                m_assistanceSurfaceTouchedView.localScale.y, interactionTableController.getInteractionSurface().localScale.z);
+        interactionTableController.s_interactionSurfaceScaled += delegate
+        {
+            m_assistanceSurfaceTouchedView.localScale = new Vector3(interactionTableController.getInteractionSurface().localScale.x,
+                m_assistanceSurfaceTouchedView.localScale.y, interactionTableController.getInteractionSurface().localScale.z);
+        };
+        
+
         // First stimulate assistance
         m_assistancePicturalController.setCubeMaterialVivid("Mouse_Help_Bottom_Vivid", "Mouse_Help_Top-Left_Vivid", "Mouse_Help_Top-Right_Vivid");
 

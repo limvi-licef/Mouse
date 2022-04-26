@@ -102,6 +102,12 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         highlightGarbageController.setScale(0.2f, 0.6f, 0.2f);
         highlightGarbageController.setLocalPosition(0, -0.35f, 0);
         highlightGarbageController.setBillboard(false);
+        garbageInteractionSurfaceController.s_interactionSurfaceScaled += delegate
+        {
+            highlightGarbageController.setScale(garbageInteractionSurfaceController.getInteractionSurface().localScale.x,
+                highlightGarbageController.getChildTransform().localScale.y,
+                garbageInteractionSurfaceController.getInteractionSurface().localScale.z);
+        };
 
         GameObject highlightGarbageVividView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
         MouseAssistanceBasic highlightGarbageVividController = highlightGarbageVividView.GetComponent<MouseAssistanceBasic>();
@@ -110,6 +116,12 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         highlightGarbageVividController.setScale(0.2f, 0.6f, 0.2f);
         highlightGarbageVividController.setLocalPosition(0, -0.35f, 0);
         highlightGarbageVividController.setBillboard(false);
+        garbageInteractionSurfaceController.s_interactionSurfaceScaled += delegate
+        {
+            highlightGarbageVividController.setScale(garbageInteractionSurfaceController.getInteractionSurface().localScale.x,
+                highlightGarbageVividController.getChildTransform().localScale.y,
+                garbageInteractionSurfaceController.getInteractionSurface().localScale.z);
+        };
 
         GameObject successView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
         MouseAssistanceBasic successController = successView.GetComponent<MouseAssistanceBasic>();

@@ -90,6 +90,8 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
             float goScaleX = 1.0f;
             float goScaleZ = 1.0f;
 
+            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Scaling of surface to populate: x=" + goScaleX + " z=" + goScaleZ);
+
             float posX = 0.0f;
             float posZ = 0.0f;
 
