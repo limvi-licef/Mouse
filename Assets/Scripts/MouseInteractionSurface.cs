@@ -145,4 +145,16 @@ public class MouseInteractionSurface : MonoBehaviour
         }
         
     }
+
+    public void setPreventResizeY(bool prevent)
+    {
+        if (prevent)
+        {
+            m_interactionSurfaceView.GetComponent<BoundsControl>().FlattenAxis = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.FlattenModeType.FlattenY;
+        }
+        else
+        {
+            m_interactionSurfaceView.GetComponent<BoundsControl>().FlattenAxis = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.FlattenModeType.DoNotFlatten;
+        }
+    }
 }

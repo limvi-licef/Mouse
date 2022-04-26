@@ -104,6 +104,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
         interactionTableView.transform.localPosition = new Vector3(0.949f, -0.017f, 1.117f);
         interactionTableController.setScaling(new Vector3(1.1f, 0.02f, 0.7f));
         interactionTableController.showInteractionSurfaceTable(true);
+        interactionTableController.setPreventResizeY(true);
+
 
         // Second interaction surface, i.e. for the rag
         GameObject interactionRagView = Instantiate(m_refInteractionSurface, gameObject.transform);
