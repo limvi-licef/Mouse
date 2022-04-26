@@ -52,8 +52,6 @@ public class MouseChallengeCleanTable : MonoBehaviour
     public Transform m_displayGraphView;
     MouseUtilitiesDisplayGraph m_displayGraphController;
 
-    //EventHandler s_defaultCalled;
-
     Vector3 m_positionLocalReferenceForHolograms = new Vector3(0.0f, 0.6f, 0.0f);
 
     MouseUtilitiesGradationAssistanceManager m_assistanceGradationManager;
@@ -115,6 +113,9 @@ public class MouseChallengeCleanTable : MonoBehaviour
         interactionRagView.transform.localPosition = new Vector3(0, -0.008f, 3.843f);
         interactionRagController.showInteractionSurfaceTable(true);
 
+        // First stimulate assistance
+        m_assistancePicturalController.setCubeMaterialVivid("Mouse_Help_Bottom_Vivid", "Mouse_Help_Top-Left_Vivid", "Mouse_Help_Top-Right_Vivid");
+
         // Cueing for the beginning of the scenario
         GameObject initialCueingView = Instantiate(m_refAssistanceDialog, interactionTableView.transform);
         MouseAssistanceDialog initialCueingController = initialCueingView.GetComponent<MouseAssistanceDialog>();
@@ -146,6 +147,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_reminderController.addObjectToBeClose(interactionTableController.getInteractionSurface());
         m_reminderController.addObjectToBeClose(initialCueingView.transform);
         m_reminderController.addObjectToBeClose(solutionView.transform);
+        m_reminderController.addObjectToBeClose(m_assistanceSurfaceTouchedView);
 
         // Settings the states
         MouseUtilitiesGradationAssistance sStandBy = m_assistanceGradationManager.addNewAssistanceGradation("StandBy");
@@ -279,18 +281,4 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
         state.setFunctionHide(m_successController.hide, MouseUtilities.getEventHandlerEmpty());
     }
-
-    // One to hide, and once hidden, can show several
-    /*void hideAndShow(Action<EventHandler> fHide, List<Action<EventHandler>> fShows)
-    {
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-        fHide(new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-            foreach (Action<EventHandler> fShow in fShows)
-            {
-                fShow(MouseUtilities.getEventHandlerEmpty());
-            }
-        }));
-    }*/
 }

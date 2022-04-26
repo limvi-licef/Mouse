@@ -46,7 +46,6 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
     Vector3 m_clockScalingOriginal;
     Vector3 m_clockScalingReduced;
 
-    //bool m_mutexHiding = false;
     MouseUtilitiesMutex m_mutexHide;
 
     private void Awake()
@@ -88,7 +87,7 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       //m_hologramClock.RotateAround(transform.position, Vector3.up, 20 * Time.deltaTime);
+       
     }
 
     public void addClock(Transform parent) // The parent the clock will belong to
@@ -163,7 +162,6 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
                         // Unlocking the mutex at the last element of the list
                         if (clock == m_clocksView.Last())
                         {
-                            //m_mutexHiding = false;
                             m_mutexHide.unlockMutex();
                             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked");
                         }
@@ -176,7 +174,6 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
             { // Means text needs to be hidden
                 EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object oe, EventArgs ee)
             {
-                //m_mutexHiding = false;
                 m_mutexHide.unlockMutex();
                 MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked");
 

@@ -75,6 +75,7 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         garbageInteractionSurfaceController.setColor("Mouse_Purple_Glowing");
         garbageInteractionSurfaceController.showInteractionSurfaceTable(true);
         garbageInteractionSurfaceView.transform.localPosition = new Vector3(-0.92f, 0.383f, 3.881f);
+        garbageInteractionSurfaceController.setObjectResizable(true);
 
 
         GameObject doorInteractionSurfaceView = Instantiate(m_refInteractionSurface, gameObject.transform);
@@ -91,7 +92,8 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
 
         GameObject solutionView = Instantiate(m_refDialog, garbageInteractionSurfaceView.transform);
         MouseAssistanceDialog solutionController = solutionView.GetComponent<MouseAssistanceDialog>();
-        solutionController.setDescription("Il est l'heure de sortir les poubelles!");
+        solutionController.setDescription("Il est l'heure de sortir les poubelles!", 0.3f);
+        solutionController.enableBillboard(true);
 
         GameObject highlightGarbageView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
         MouseAssistanceBasic highlightGarbageController = highlightGarbageView.GetComponent<MouseAssistanceBasic>();

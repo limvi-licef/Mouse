@@ -34,9 +34,6 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     List<Transform> m_buttonsView;
     public List<MouseAssistanceButton> m_buttonsController;
 
-    //MouseUtilitiesMutex m_mutexShow;
-    //MouseUtilitiesMutex m_mutexHide;
-
     Vector3 m_buttonsParentScalingOriginal;
     Vector3 m_backgoundScalingOriginal;
     Vector3 m_titleScalingOriginal;
@@ -48,9 +45,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         // Instantiate variables
         m_buttonsView = new List<Transform>();
         m_buttonsController = new List<MouseAssistanceButton>();
-        m_buttonsScalingOriginal = new List<Vector3>();
-        //m_buttonsSignals = new List<EventHandler>();
-        
+        m_buttonsScalingOriginal = new List<Vector3>();  
 
         // Children
         m_buttonsParentView = transform.Find("ButtonParent");
@@ -64,14 +59,12 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         m_backgoundScalingOriginal = m_backgroundView.localScale;
         m_titleScalingOriginal = m_titleView.localScale;
         m_descriptionScalingOriginal = m_descriptionView.localScale;
-
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        //m_mutexShow = new MouseUtilitiesMutex();
-        //m_mutexHide = new MouseUtilitiesMutex();
+        
     }
 
     // Update is called once per frame
@@ -82,7 +75,6 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
 
     public void setTitle(string text, float fontSize = -1.0f)
     {
-        //m_titleView.GetComponent<TextMeshPro>().SetText(text);
         TextMeshPro tmp = m_titleView.GetComponent<TextMeshPro>();
 
         setTextToTextMeshProComponent(tmp, text, fontSize);
@@ -92,15 +84,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     {
         TextMeshPro tmp = m_descriptionView.GetComponent<TextMeshPro>();
 
-        setTextToTextMeshProComponent(tmp, text, fontSize);
-
-        /*if (fontSize > 0.0f)
-        {
-            tmp.fontSize = fontSize;
-        }
-
-        tmp.SetText(text);*/
-        
+        setTextToTextMeshProComponent(tmp, text, fontSize);       
     }
 
     void setTextToTextMeshProComponent(TextMeshPro component, string text, float fontSize)
@@ -141,33 +125,10 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         foreach (Transform b in m_buttonsView)
         {
             b.localScale = new Vector3(scalingx, b.localScale.y, b.localScale.z);
-        }
-
-        //RectTransform newButtonSize = (RectTransform)newButton;
-        /*Renderer bc = newButton.GetComponent<Renderer>();
-
-        //float width = (float)newButtonSize.rect.width;
-        float width = bc.bounds.size.x;
-        float offset = (width)/2.0f;
-        int i = 0;
-
-        foreach (Transform b in m_buttonsParentView)
-        {
-            newButton.localPosition = new Vector3(-offset + width*i, newButton.localPosition.y, newButton.localPosition.z);
-
-            i++;
-        }*/
-        
+        }        
 
         // Store button scaling
         m_buttonsScalingOriginal.Add(m_buttonsView.Last().localScale);
-
-        // Add touch event
-        //EventHandler tempSignal = new EventHandler();
-        //m_buttonsSignals.Add(tempSignal);
-        /*Interactable interactions = newButton.GetComponent<Interactable>();
-        interactions.AddReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(delegate () {
-            eventHandler?.Invoke(this, EventArgs.Empty); });*/
 
         // Enable button
         m_buttonsView.Last().gameObject.SetActive(true);
@@ -178,13 +139,13 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     bool m_mutexHide = false;
     public override void hide(EventHandler eventHandler)
     {
-        if (m_mutexHide/*.isLocked()*/ == false)
+        if (m_mutexHide == false)
         {
-            m_mutexHide = true; //.lockMutex();
+            m_mutexHide = true; 
 
             MouseUtilities.animateDisappearInPlace(m_titleView.gameObject, m_titleScalingOriginal, delegate 
             {
-                m_mutexHide = false; //.unlockMutex();
+                m_mutexHide = false; 
                 eventHandler?.Invoke(this, EventArgs.Empty);
             });
 
@@ -201,29 +162,11 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
-        if (m_mutexShow/*.isLocked()*/ == false)
+        if (m_mutexShow == false)
         {
-            m_mutexShow = true; //.lockMutex();
+            m_mutexShow = true; 
 
             MouseUtilities.adjustObjectHeightToHeadHeight(transform);
-
-            /*m_titleView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Title view shown");
-
-
-                Destroy(m_titleView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-                //m_mutexShow = false;//.unlockMutex();
-                //eventHandler?.Invoke(this, EventArgs.Empty);
-            }));*/
-            /*m_descriptionView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                Destroy(m_descriptionView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-            }));*/
-            /*m_buttonsParentView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                Destroy(m_buttonsParentView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-            }));*/
 
             MouseUtilities.animateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal, delegate {
                 MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Background shown");

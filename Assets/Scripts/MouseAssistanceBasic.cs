@@ -42,8 +42,6 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
     private void Awake()
     {
         // Initialize variables
-        /*m_mutexShow = new MouseUtilitiesMutex();
-        m_mutexHide = new MouseUtilitiesMutex();*/
 
         // Children
         m_childView = gameObject.transform.Find("Child");
@@ -87,15 +85,7 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
             if (m_adjustHeight)
             {
                 MouseUtilities.adjustObjectHeightToHeadHeight(transform);
-            }
-            
-
-            /*EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
-                Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
-                    m_mutexShow = false;
-            }), eventHandler };
-
-            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlaceToScaling(m_childScaleOrigin, temp);*/
+            }   
 
             MouseUtilities.animateAppearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
             {
@@ -111,15 +101,6 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
         if (m_mutexHide == false)
         {
             m_mutexHide = true;
-
-            /*EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e) {
-                m_childView.gameObject.transform.localScale = m_childScaleOrigin;
-                Destroy(gameObject.GetComponent<MouseUtilitiesAnimation>());
-                m_childView.gameObject.SetActive(false);
-                   m_mutexHide = false;
-            }), eventHandler };
-
-            m_childView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(temp);*/
 
             MouseUtilities.animateDisappearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
             {

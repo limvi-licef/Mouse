@@ -31,12 +31,6 @@ using System.Linq;
 public class MouseUtilitiesAdminMenu : MonoBehaviour
 {
     bool m_menuShown;
-    //public MouseChallengeCleanTable m_challengeCleanTable;
-    //public MouseInteractionSurface m_tableController;
-    //public MouseRag m_ragController;
-    //Transform m_ragInteractionSurfaceView;
-    //public GameObject m_hologramDebug;
-    //public GameObject m_MRTK;
 
     public bool m_menuStatic = false;
 
@@ -76,11 +70,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         // Variables
         m_menuShown = false; // By default, the menu is hidden
 
-         //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Material name: " + m_hologramRagInteractionSurfaceMaterialName);
-
-        // Check if the occlusion is enabled
-        //MixedRealityToolkit mrtk = m_MRTK.GetComponent<MixedRealityToolkit>();
-
         switchStaticOrMovingMenu();
 
         // Add the buttons to manage this menu
@@ -116,7 +105,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
     public void callbackCubeTouched()
     {
-        //MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackCubeTouched", MouseDebugMessagesManager.MessageLevel.Info, "Cube touched");
         m_menuShown = !m_menuShown;
 
        for (int i = 0; i < gameObject.transform.childCount; i ++)
@@ -131,11 +119,6 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
         switchStaticOrMovingMenu();
     }
-
-    /*public void callbackDebugSwitchDisplay()
-    {
-        m_hologramDebug.SetActive(!m_hologramDebug.activeSelf);
-    }*/
 
     public void switchStaticOrMovingMenu()
     {
@@ -154,9 +137,4 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
         gameObject.GetComponent<Renderer>().material = Resources.Load(materialName, typeof(Material)) as Material;
     }
-
-    /*public void debugSwitchDisplayMessages()
-    {
-        MouseDebugMessagesManager.Instance.m_displayMessages = !MouseDebugMessagesManager.Instance.m_displayMessages;
-    }*/
 }

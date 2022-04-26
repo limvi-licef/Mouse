@@ -82,15 +82,6 @@ public class MouseUtilitiesAnimation : MonoBehaviour
                 gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, m_positionEnd, step);
             }
 
-            /*if ( m_scalingGrow && gameObject.transform.localScale.x < m_scalingEnd.x )
-            {
-                gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x + m_scalingstep, gameObject.transform.localScale.y + m_scalingstep, gameObject.transform.localScale.z + m_scalingstep);
-            }
-            else if (m_scalingGrow == false && gameObject.transform.localScale.x > m_scalingEnd.x)
-            {
-                gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x - m_scalingstep, gameObject.transform.localScale.y - m_scalingstep, gameObject.transform.localScale.z - m_scalingstep);
-            }*/
-
             if ( m_scalingGrow && MouseUtilities.convertBitArrayToInt(m_scalingFinished) < 7 ) // < 7 because if the value is 7, that means the three bits (corresponding to x, y, z respectively) are set to 1, i.e. scaling is finished in the 3 directions.
             {
                 Vector3 newScaling = gameObject.transform.localScale; // current value by default, and changed below if necessary
@@ -111,8 +102,6 @@ public class MouseUtilitiesAnimation : MonoBehaviour
             }
             else if (m_scalingGrow == false && MouseUtilities.convertBitArrayToInt(m_scalingFinished) < 7)
             {
-                /*gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x - m_scalingstep, gameObject.transform.localScale.y - m_scalingstep, gameObject.transform.localScale.z - m_scalingstep);*/
-
                 Vector3 newScaling = gameObject.transform.localScale; // current value by default, and changed below if necessary
 
                 for (int i = 0; i < 3; i++)
@@ -143,14 +132,6 @@ public class MouseUtilitiesAnimation : MonoBehaviour
             }
             else if (m_triggerStopAnimation == ConditionStopAnimation.OnScaling)
             {
-                /*if ((m_scalingGrow && gameObject.transform.localScale.x >= m_scalingEnd.x) ||
-                    m_scalingGrow == false && gameObject.transform.localScale.x <= m_scalingEnd.x)
-                {
-                    // Animation is finished: trigger event
-                    m_eventAnimationFinished?.Invoke(this, EventArgs.Empty);
-
-                    m_startAnimation = false;
-                }*/
                 if (MouseUtilities.convertBitArrayToInt(m_scalingFinished) == 7 )
                 {
                     // Animation is finished: trigger event
@@ -167,7 +148,7 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         m_startAnimation = true;
     }
 
-    public void animateDiseappearInPlace(/*MouseDebugMessagesManager debug, */EventHandler eventHandler)
+    public void animateDiseappearInPlace(EventHandler eventHandler)
     {
         EventHandler[] temp = new EventHandler[1];
 
@@ -176,7 +157,7 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         animateDiseappearInPlace(temp);
     }
 
-    public void animateDiseappearInPlace(/*MouseDebugMessagesManager debug ,*/EventHandler[] eventHandlers)
+    public void animateDiseappearInPlace(EventHandler[] eventHandlers)
     {
         m_positionEnd = gameObject.transform.position;
         m_scalingEnd = new Vector3(0f, 0f, 0f);
@@ -189,14 +170,14 @@ public class MouseUtilitiesAnimation : MonoBehaviour
         startAnimation();
     }
 
-    public void animateAppearInPlace(/*MouseDebugMessagesManager debug, */EventHandler e)
+    public void animateAppearInPlace(EventHandler e)
     {
         EventHandler[] eventHandlers = new EventHandler[] { e };
 
         animateAppearInPlace(eventHandlers);
     }
 
-    public void animateAppearInPlace(/*MouseDebugMessagesManager debug, */EventHandler[] e)
+    public void animateAppearInPlace(EventHandler[] e)
     {
         animateAppearInPlaceToScaling(new Vector3(1.0f, 1.0f, 1.0f), e);
     }

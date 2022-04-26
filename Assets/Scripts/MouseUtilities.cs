@@ -28,7 +28,7 @@ using System.Timers;
 static class MouseUtilities
 {
     // Utilities functions: to be moved to a dedicated namespace later?
-    public static void mouseUtilitiesAddTouchCallback(/*MouseDebugMessagesManager debug,*/ Transform transform, UnityEngine.Events.UnityAction callback)
+    public static void mouseUtilitiesAddTouchCallback(Transform transform, UnityEngine.Events.UnityAction callback)
     {
         GameObject gameObject = transform.gameObject;
 
@@ -60,32 +60,23 @@ static class MouseUtilities
 
     public static EventHandler getEventHandlerEmpty()
     {
-        /*return new EventHandler(delegate (System.Object o, EventArgs e)
-        {
-
-        });*/
-
         return delegate
         {
 
         };
     }
 
-    public static EventHandler getEventHandlerWithDebugMessage(/*MouseDebugMessagesManager debug,*/ string debugMessage)
+    public static EventHandler getEventHandlerWithDebugMessage(string debugMessage)
     {
         return new EventHandler(delegate (System.Object o, EventArgs e)
         {
-            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "!!!!!!!!!!!!!!!!!!!! CALLICALLEDDDDDDDDDDDDDDDDDDDD");
-            /*debug*/
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, debugMessage);
         });
     }
 
-    public static void adjustObjectHeightToHeadHeight(/*MouseDebugMessagesManager debug,*/ Transform t, float originalLocalHeightPos=0.0f)
+    public static void adjustObjectHeightToHeadHeight(Transform t, float originalLocalHeightPos=0.0f)
     {
-        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Adjusting object height to head position: x= " + t.position.x + " y= Camera position (" + Camera.main.transform.position.y + ") + local position (" + originalLocalHeightPos + ") z=" + t.position.z);
-
-        t.position = new Vector3(t.position.x, Camera.main.transform.position.y + /*t.localPosition.y*/ originalLocalHeightPos-0.2f, t.position.z); // The -0.2 is to be more aligned with the hololens.
+        t.position = new Vector3(t.position.x, Camera.main.transform.position.y + originalLocalHeightPos-0.2f, t.position.z); // The -0.2 is to be more aligned with the hololens.
     }
 
     // This function keeps its local position relative to the new parent. I.e. if the current object local position is (0,0,0), it will remain (0,0,0) for the new parent
@@ -100,7 +91,7 @@ static class MouseUtilities
     /*
      * Add the animate component to the object, animate the object, and then destroy the component.
      * */
-    public static void animateDisappearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scalingOriginal, EventHandler eventHandler)
+    public static void animateDisappearInPlace(GameObject gameObject, Vector3 scalingOriginal, EventHandler eventHandler)
     {
         gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
         {
@@ -112,12 +103,12 @@ static class MouseUtilities
             eventHandler?.Invoke(gameObject, EventArgs.Empty);
         }));
     }
-    public static void animateDisappearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scalingOriginal)
+    public static void animateDisappearInPlace(GameObject gameObject, Vector3 scalingOriginal)
     {
         animateDisappearInPlace(gameObject, scalingOriginal, getEventHandlerEmpty());
     }
 
-    public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, EventHandler eventHandler)
+    public static void animateAppearInPlace(GameObject gameObject, EventHandler eventHandler)
     {
         gameObject.SetActive(true);
         gameObject.AddComponent<MouseUtilitiesAnimation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
@@ -127,12 +118,12 @@ static class MouseUtilities
             eventHandler?.Invoke(gameObject, EventArgs.Empty);
         }));
     }
-    public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject)
+    public static void animateAppearInPlace(GameObject gameObject)
     {
         animateAppearInPlace(gameObject, getEventHandlerEmpty());
     }
 
-   public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scaling, EventHandler eventHandler)
+   public static void animateAppearInPlace(GameObject gameObject, Vector3 scaling, EventHandler eventHandler)
     {
         gameObject.SetActive(true);
 
@@ -149,7 +140,7 @@ static class MouseUtilities
             eventHandler?.Invoke(gameObject, EventArgs.Empty);
         });
     }
-    public static void animateAppearInPlace(/*MouseDebugMessagesManager debug,*/ GameObject gameObject, Vector3 scaling)
+    public static void animateAppearInPlace(GameObject gameObject, Vector3 scaling)
     {
         animateAppearInPlace(gameObject, scaling, getEventHandlerEmpty());
     }

@@ -48,6 +48,14 @@ public class MouseAssistanceStimulateLevel1 : MouseAssistanceAbstract
 
     public bool m_hasFocus;
 
+    string m_materialBottomDefault;
+    string m_materialTopLeftDefault;
+    string m_materialTopRightDefault;
+
+    string m_materialBottomVivid;
+    string m_materialTopLeftVivid;
+    string m_materialTopRightVivid;
+
     private void Awake()
     {
         // Variables
@@ -64,6 +72,14 @@ public class MouseAssistanceStimulateLevel1 : MouseAssistanceAbstract
         m_surfaceWithStarsView = transform.Find("SurfaceWithStars");
 
         m_help = transform.Find("Help");
+
+        // Default materials
+        m_materialBottomDefault = "Mouse_Cyan_Glowing";
+        m_materialTopLeftDefault = "Mouse_Cyan_Glowing";
+        m_materialTopRightDefault = "Mouse_Cyan_Glowing";
+        m_materialBottomVivid = "Mouse_Orange_Glowing";
+        m_materialTopLeftVivid = "Mouse_Orange_Glowing";
+        m_materialTopRightVivid = "Mouse_Orange_Glowing";
     }
 
     // Start is called before the first frame update
@@ -72,9 +88,7 @@ public class MouseAssistanceStimulateLevel1 : MouseAssistanceAbstract
         // Setting up the gradation manger
         m_gradationManager = transform.GetComponent<MouseUtilitiesGradationManager>();
         m_gradationManager.addNewAssistanceGradation("Default", callbackGradationDefault);
-        //m_gradationManager.addNewAssistanceGradation("Low", callbackGradationLow);
         m_gradationManager.addNewAssistanceGradation("LowVivid", callbackGradationLowVivid);
-        //m_gradationManager.addNewAssistanceGradation("HighFollow", callbackGradationHighFollow);
 
         // Callbacks
         m_hologramController.m_eventCubetouched += new EventHandler(delegate (System.Object o, EventArgs e)
@@ -229,7 +243,7 @@ public class MouseAssistanceStimulateLevel1 : MouseAssistanceAbstract
         MouseUtilities.adjustObjectHeightToHeadHeight(m_hologramView, m_hologramOriginalLocalPos.y);
         m_hologramView.gameObject.SetActive(true);
 
-        m_hologramController.updateMaterials("Mouse_Clean_Bottom", "Mouse_Clean_Top-Left", "Mouse_Clean_Top-Right");
+        m_hologramController.updateMaterials(m_materialBottomDefault, m_materialTopLeftDefault, m_materialTopRightDefault);
         m_lightView.gameObject.SetActive(false);
         m_hologramController.GetComponent<Billboard>().enabled = true;
         GetComponent<RadialView>().enabled = false;
@@ -242,7 +256,7 @@ public class MouseAssistanceStimulateLevel1 : MouseAssistanceAbstract
 
         MouseUtilities.adjustObjectHeightToHeadHeight(m_hologramView, m_hologramOriginalLocalPos.y);
         m_hologramView.gameObject.SetActive(true);
-        m_hologramController.updateMaterials("Mouse_Clean_Bottom_Vivid", "Mouse_Clean_Top-Left_Vivid", "Mouse_Clean_Top-Right_Vivid");
+        m_hologramController.updateMaterials(m_materialBottomVivid, m_materialTopLeftVivid, m_materialTopRightVivid);
         m_lightView.gameObject.SetActive(true);
         m_hologramController.GetComponent<Billboard>().enabled = true;
         GetComponent<RadialView>().enabled = false;
@@ -268,5 +282,19 @@ public class MouseAssistanceStimulateLevel1 : MouseAssistanceAbstract
     public void openingCube(EventHandler eventHandler)
     {
         m_hologramController.openCube(eventHandler);
+    }
+
+    public void setCubeMaterialDefault(string bottom, string topLeft, string topRight)
+    {
+        m_materialBottomDefault = bottom;
+        m_materialTopLeftDefault = topLeft;
+        m_materialTopRightDefault = topRight;
+    }
+
+    public void setCubeMaterialVivid (string bottom, string topLeft, string topRight)
+    {
+        m_materialBottomVivid = bottom;
+        m_materialTopLeftVivid = topLeft;
+        m_materialTopRightVivid = topRight;
     }
 }

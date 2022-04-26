@@ -27,12 +27,8 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 public class MouseInteractionSurface : MonoBehaviour
 {
     Transform m_interactionSurfaceView;
-    //public MouseChallengeCleanTableSurfaceToPopulateWithCubes m_interactionSurfaceTableController;
-    //Transform m_assistanceStimulateLevel1View;
-    //MouseAssistanceChallengeSuccess m_assistanceChallengeSuccessController;
 
     public event EventHandler m_eventInteractionSurfaceTableTouched;
-    //public event EventHandler m_eventInteractionSurfaceCleaned;
 
     string m_color = "Mouse_Green_Glowing"; // Default color if the user does not set one
 
@@ -94,8 +90,6 @@ public class MouseInteractionSurface : MonoBehaviour
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Callback showing / hiding interaction surface called");
 
-        //showInteractionSurfaceTable(!(m_interactionSurfaceView.transform.Find("rigRoot").gameObject.activeSelf));
-
         showInteractionSurfaceTable(!(m_interactionSurfaceView.GetComponent<BoundsControl>().enabled));
     }
 
@@ -108,13 +102,11 @@ public class MouseInteractionSurface : MonoBehaviour
             m_interactionSurfaceView.gameObject.SetActive(true); // If it happens that the surface is not displayed
 
             // Connect the callbacks
-            //m_interactionSurfaceTableView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished);
             m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackHologramInteractionSurfaceMovedFinished); // Use the same callback than for taptoplace as the process to do is the same
             m_interactionSurfaceView.GetComponent<Interactable>().GetReceiver<InteractableOnTouchReceiver>().OnTouchStart.AddListener(delegate ()
             {
                 m_eventInteractionSurfaceTableTouched?.Invoke(this, EventArgs.Empty);
             }); // Only have to forward the event
-                //m_interactionSurfaceTableController.m_eventSurfaceCleaned += new EventHandler(delegate (System.Object o, EventArgs e) { m_eventInteractionSurfaceCleaned?.Invoke(this, EventArgs.Empty); });
 
             
             m_surfaceInitialized = true;
@@ -123,7 +115,6 @@ public class MouseInteractionSurface : MonoBehaviour
 
         m_interactionSurfaceView.GetComponent<Renderer>().enabled = show; // To hide the surface while keeping it interactable, then the renderer is disabled if show==false;
         m_interactionSurfaceView.GetComponent<BoundsControl>().enabled = show;
-        //m_interactionSurfaceView.transform.Find("rigRoot").gameObject.SetActive(show); // No idea what this "rigRoot" is.
     }
 
     public void callbackBring()

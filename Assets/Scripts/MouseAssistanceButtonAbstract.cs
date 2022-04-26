@@ -28,18 +28,6 @@ public abstract class MouseAssistanceButtonAbstract : MonoBehaviour
 {
     public event EventHandler s_buttonClicked;
 
-    // Start is called before the first frame update
-    /*void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }*/
-
     protected void onButtonClicked ()
     {
         s_buttonClicked?.Invoke(this, EventArgs.Empty);

@@ -168,8 +168,6 @@ public class MouseUtilitiesInferenceTime : MouseUtilitiesInferenceAbstract
         {
             TimeSpan elapsed = DateTime.Now.Subtract(m_timeOneMinuteTrigger);
 
-            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Time elapsed: " + elapsed + " minutes elapsed: " + elapsed.Minutes);
-
             if ( /*elapsed.Minutes >= 1*/ elapsed.Seconds >= 10)
             {
                 m_useOneMinuteTrigger = false;

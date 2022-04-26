@@ -92,7 +92,7 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
             
             m_textController.show(delegate
             {
-                m_textController.enableBillboard(true);
+                //m_textController.enableBillboard(true);
                 m_mutexShow = false;
             });
 
@@ -130,27 +130,6 @@ public class MouseChallengeCleanTableAssistanceStimulateLevel2 : MonoBehaviour
                 MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Mutex unlocked - all elements from the arch should be hidden");
                 m_mutexHide = false;
             });
-
-            // Hiding text
-            /*m_textView.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
-            {
-                //m_textView.gameObject.SetActive(false);
-
-                Destroy(m_textView.gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                EventHandler[] temp = new EventHandler[] { new EventHandler(delegate (System.Object oo, EventArgs ee)
-            {
-                m_hologramHelp.gameObject.SetActive(false);
-
-                m_hologramHelp.localScale = new Vector3(0.1f,0.1f,0.1f);
-
-			    Destroy(m_hologramHelp.gameObject.GetComponent<MouseUtilitiesAnimation>());
-
-                m_mutexHide = false;
-            }), eventHandler };
-
-                m_hologramHelp.gameObject.AddComponent<MouseUtilitiesAnimation>().animateDiseappearInPlace(temp);
-            }));*/
 
             // Hiding line
             if (m_hologramLineView.gameObject.activeSelf)

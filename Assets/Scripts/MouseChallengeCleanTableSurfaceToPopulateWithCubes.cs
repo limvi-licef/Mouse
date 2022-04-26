@@ -110,7 +110,6 @@ public class MouseChallengeCleanTableSurfaceToPopulateWithCubes : MonoBehaviour
                     temp.transform.localPosition = new Vector3(posXP, goLocalPosition.y + 1.0f, posZP);
 
                     BoxCollider box = temp.GetComponent<BoxCollider>();
-                    //box.center = new Vector3(box.center.x, 250, box.center.z);
                     box.size = new Vector3(box.size.x, 1000, box.size.z);
 
                     MouseChallengeCleanTableHologramForSurfaceToClean cubeInteractions = temp.GetComponent<MouseChallengeCleanTableHologramForSurfaceToClean>();
