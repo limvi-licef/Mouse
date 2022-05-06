@@ -18,6 +18,12 @@
         "com.microsoft.mixedreality.toolkit.standardassets": "2.7.3"
       }
     },
+    "com.microsoft.mixedreality.toolkit.planefinding": {
+      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.planefinding-1.0.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {}
+    },
     "com.microsoft.mixedreality.toolkit.standardassets": {
       "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.standardassets-2.7.3.tgz",
       "depth": 0,

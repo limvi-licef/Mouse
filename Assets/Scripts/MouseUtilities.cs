@@ -145,6 +145,20 @@ static class MouseUtilities
         animateAppearInPlace(gameObject, scaling, getEventHandlerEmpty());
     }
 
+    public static void bringObject(Transform t)
+    {
+        t.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+        t.LookAt(Camera.main.transform);
+        t.Rotate(new Vector3(0, 1, 0), 180);
+    }
+
+    public static void showInteractionSurface(Transform gameobject, bool show)
+    {
+        gameobject.GetComponent<Renderer>().enabled = show; // To hide the surface while keeping it interactable, then the renderer is disabled if show==false;
+        gameobject.GetComponent<BoundsControl>().enabled = show;
+    }
+
+
     /**
      * Convert a BitArray to int.
      * Be careful: the least significant bit is the first element of the array

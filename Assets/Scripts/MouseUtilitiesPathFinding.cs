@@ -5,6 +5,7 @@ using UnityEngine.AI;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using Microsoft.MixedReality.Toolkit.Experimental.SpatialAwareness;
 using System.Reflection;
 using System;
 
@@ -23,9 +24,13 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
 
     Transform m_cube1;
     Transform m_cube2;
+    Transform m_obstacle1;
+    Transform m_obstacle2;
 
     Transform m_interactionSurfaceView;
     MouseInteractionSurface m_interactionSurfaceController;
+
+    
 
     //Transform m_plane;
 
@@ -49,12 +54,17 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
         m_cube2 = transform.Find("Cube2");
         m_interactionSurfaceView = transform.Find("AssistanceInteractionSurface");
         m_interactionSurfaceController = m_interactionSurfaceView.GetComponent<MouseInteractionSurface>();
-        //m_plane = transform.Find("temp");
+        m_obstacle1 = transform.Find("Obstacles").Find("Obstacle1");
+        m_obstacle2 = transform.Find("Obstacles").Find("Obstacle2");
 
         // Set admin buttons
         MouseUtilitiesAdminMenu.Instance.addButton("Compute path", callbackFindPath);
         MouseUtilitiesAdminMenu.Instance.addButton("Bring cube 1", callbackBringCube1);
         MouseUtilitiesAdminMenu.Instance.addButton("Bring cube 2", callbackBringCube2);
+        MouseUtilitiesAdminMenu.Instance.addButton("Bring obstacle 1", callbackBringObstacle1);
+        MouseUtilitiesAdminMenu.Instance.addButton("Bring obstacle 2", callbackBringObstacle2);
+        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide obstacle 1", callbackHideShowObstacle1);
+        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide obstacle 2", callbackHideShowObstacle2);
         m_interactionSurfaceController.setAdminButtons("path surface");
         m_interactionSurfaceController.setColor("Mouse_Cyan_Glowing");
         /*m_interactionSurfaceController.getInteractionSurface().localPosition*/ m_interactionSurfaceView.position = new Vector3(0.3f,-0.16f,-5f);
@@ -65,6 +75,8 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
 
         // Add component to the interaction surface to define walkable surface
         m_interactionSurfaceController.getInteractionSurface().gameObject.AddComponent<NavMeshSourceTag>();
+
+        
 
         // Nav mesh computation
         while (true)
@@ -117,6 +129,9 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
         {
             //Debug.LogWarning("Cannot compute the path");
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Cannot compute the path");
+            
+            
+
         }
 
 
@@ -157,6 +172,7 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
         {
             center = m_interactionSurfaceController.getInteractionSurface().position; //new Vector3(1.0f, 0, 2.94f)
             //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Center: " + center);
+            
         }
         else
         {
@@ -201,5 +217,25 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
         m_cube2.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
         m_cube2.transform.LookAt(Camera.main.transform);
         m_cube2.transform.Rotate(new Vector3(0, 1, 0), 180);
+    }
+
+    void callbackBringObstacle1()
+    {
+        MouseUtilities.bringObject(m_obstacle1);
+    }
+
+    void callbackBringObstacle2()
+    {
+        MouseUtilities.bringObject(m_obstacle2);
+    }
+
+    void callbackHideShowObstacle1()
+    {
+        MouseUtilities.showInteractionSurface(m_obstacle1, !m_obstacle1.GetComponent<Renderer>().enabled);
+    }
+
+    void callbackHideShowObstacle2()
+    {
+        MouseUtilities.showInteractionSurface(m_obstacle2, !m_obstacle2.GetComponent<Renderer>().enabled);
     }
 }
