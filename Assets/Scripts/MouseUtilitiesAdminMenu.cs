@@ -30,6 +30,12 @@ using System.Linq;
 
 public class MouseUtilitiesAdminMenu : MonoBehaviour
 {
+    public enum Panels
+    {
+        Default = 0,
+        Obstacles = 1
+    };
+
     bool m_menuShown;
 
     public bool m_menuStatic = false;
@@ -44,7 +50,7 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
     public GameObject m_refButton;
 
     List<GameObject> m_buttons;
-    Transform m_buttonsParent;
+    Dictionary<Panels,Transform> m_panels;
 
     private void Awake()
     {
@@ -56,9 +62,11 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         {
             // Initialize variables
             m_buttons = new List<GameObject>();
+            m_panels = new Dictionary<Panels, Transform>();
 
             // Get children
-            m_buttonsParent = gameObject.transform.Find("MouseAssistanceDialog").Find("ButtonParent").transform;
+            m_panels.Add(Panels.Default,gameObject.transform.Find("PanelDefault").Find("ButtonParent").transform);
+            m_panels.Add(Panels.Obstacles, gameObject.transform.Find("PanelObstacles").Find("ButtonParent").transform);
 
             _instance = this;
         }
@@ -82,25 +90,25 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
         
     }
 
-    public void addSwitchButton(string text, UnityEngine.Events.UnityAction callback)
+    public void addSwitchButton(string text, UnityEngine.Events.UnityAction callback, Panels panel = Panels.Default)
     {
-        m_buttons.Add(Instantiate(m_refButtonSwitch, m_buttonsParent));
+        m_buttons.Add(Instantiate(m_refButtonSwitch, m_panels[panel]));
         m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callback);
         m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().InteractionFilter = 0;
         m_buttons.Last().transform.Find("IconAndText").Find("TextMeshPro").GetComponent<TextMeshPro>().SetText(text);
-        m_buttonsParent.GetComponent<GridObjectCollection>().UpdateCollection();
+        m_panels[panel].GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
-    public void addButton(string text, UnityEngine.Events.UnityAction callback)
+    public void addButton(string text, UnityEngine.Events.UnityAction callback, Panels panel = Panels.Default)
     {
-        m_buttons.Add(Instantiate(m_refButton, m_buttonsParent));
+        m_buttons.Add(Instantiate(m_refButton, m_panels[panel]));
 
         m_buttons.Last().GetComponent<ButtonConfigHelper>().IconStyle = ButtonIconStyle.None;
         m_buttons.Last().GetComponent<ButtonConfigHelper>().SeeItSayItLabelEnabled = false;
         m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().OnPress.AddListener(callback);
         m_buttons.Last().GetComponent<Interactable>().GetReceiver<InteractableOnPressReceiver>().InteractionFilter = 0;
         m_buttons.Last().transform.Find("IconAndText").Find("TextMeshPro").GetComponent<TextMeshPro>().SetText(text);
-        m_buttonsParent.GetComponent<GridObjectCollection>().UpdateCollection();
+        m_panels[panel].GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
     public void callbackCubeTouched()

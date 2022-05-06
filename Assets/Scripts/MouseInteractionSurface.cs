@@ -30,6 +30,7 @@ public class MouseInteractionSurface : MonoBehaviour
 
     public event EventHandler m_eventInteractionSurfaceTableTouched;
     public event EventHandler s_interactionSurfaceScaled;
+    public event EventHandler s_interactionSurfaceMoved;
 
     string m_color = "Mouse_Green_Glowing"; // Default color if the user does not set one
 
@@ -47,9 +48,40 @@ public class MouseInteractionSurface : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_interactionSurfaceView.GetComponent<BoundsControl>().ScaleStopped.AddListener(delegate
+        BoundsControl boundsControl = m_interactionSurfaceView.GetComponent<BoundsControl>();
+
+        boundsControl.ScaleStopped.AddListener(delegate
         {
             s_interactionSurfaceScaled?.Invoke(this, EventArgs.Empty);
+        });
+
+        /*boundsControl.TranslateStopped.AddListener(delegate
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+            s_interactionSurfaceMoved?.Invoke(this, EventArgs.Empty);
+        });
+
+        Interactable interactable = m_interactionSurfaceView.GetComponent<Interactable>();
+        InteractableOnGrabReceiver receiver = interactable.GetReceiver<InteractableOnGrabReceiver>();
+
+        if (receiver == null)
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No touch receiver to the interactable gameobject: adding one");
+
+            receiver = interactable.AddReceiver<InteractableOnGrabReceiver>();
+        }
+
+        receiver.OnRelease.AddListener(delegate
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+            s_interactionSurfaceMoved?.Invoke(this, EventArgs.Empty);
+        });*/
+
+        ObjectManipulator objectManipulator = m_interactionSurfaceView.GetComponent<ObjectManipulator>();
+        objectManipulator.OnManipulationEnded.AddListener(delegate (ManipulationEventData data)
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+            s_interactionSurfaceMoved?.Invoke(this, EventArgs.Empty);
         });
     }
 

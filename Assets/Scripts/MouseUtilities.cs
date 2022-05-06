@@ -158,6 +158,11 @@ static class MouseUtilities
         gameobject.GetComponent<BoundsControl>().enabled = show;
     }
 
+    public static void setColor(Transform gameobject, string colorName)
+    {
+        Renderer r = gameobject.GetComponent<Renderer>();
+        r.material = Resources.Load(colorName, typeof(Material)) as Material;
+    }
 
     /**
      * Convert a BitArray to int.

@@ -11,10 +11,10 @@ using System;
 
 public class MouseUtilitiesPathFinding : MonoBehaviour
 {
-    public Transform m_origin;
-    public Transform m_target;
+    /*public Transform m_origin;
+    public Transform m_target;*/
     private NavMeshPath m_path;
-    private float m_elapsed = 0.0f;
+    //private float m_elapsed = 0.0f;
 
 
     NavMeshData m_NavMesh;
@@ -22,15 +22,15 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
     NavMeshDataInstance m_Instance;
     List<NavMeshBuildSource> m_Sources = new List<NavMeshBuildSource>();
 
-    Transform m_cube1;
+    /*Transform m_cube1;
     Transform m_cube2;
     Transform m_obstacle1;
-    Transform m_obstacle2;
+    Transform m_obstacle2;*/
 
     Transform m_interactionSurfaceView;
     MouseInteractionSurface m_interactionSurfaceController;
 
-    
+    MouseUtilitiesPathFindingObstacles m_obstaclesManager;
 
     //Transform m_plane;
 
@@ -49,22 +49,24 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
     }*/
     IEnumerator Start()
     {
-        // Get children
-        m_cube1 = transform.Find("Cube1");
-        m_cube2 = transform.Find("Cube2");
+        // Get children and components
+        //m_cube1 = transform.Find("Cube1");
+        //m_cube2 = transform.Find("Cube2");
         m_interactionSurfaceView = transform.Find("AssistanceInteractionSurface");
         m_interactionSurfaceController = m_interactionSurfaceView.GetComponent<MouseInteractionSurface>();
-        m_obstacle1 = transform.Find("Obstacles").Find("Obstacle1");
-        m_obstacle2 = transform.Find("Obstacles").Find("Obstacle2");
+        //m_obstacle1 = transform.Find("Obstacles").Find("Obstacle1");
+        //m_obstacle2 = transform.Find("Obstacles").Find("Obstacle2");
+        m_obstaclesManager = GetComponent<MouseUtilitiesPathFindingObstacles>();
 
         // Set admin buttons
-        MouseUtilitiesAdminMenu.Instance.addButton("Compute path", callbackFindPath);
-        MouseUtilitiesAdminMenu.Instance.addButton("Bring cube 1", callbackBringCube1);
-        MouseUtilitiesAdminMenu.Instance.addButton("Bring cube 2", callbackBringCube2);
-        MouseUtilitiesAdminMenu.Instance.addButton("Bring obstacle 1", callbackBringObstacle1);
+        //MouseUtilitiesAdminMenu.Instance.addButton("Compute path", callbackFindPath);
+        //MouseUtilitiesAdminMenu.Instance.addButton("Bring cube 1", callbackBringCube1);
+        //MouseUtilitiesAdminMenu.Instance.addButton("Bring cube 2", callbackBringCube2);
+        /*MouseUtilitiesAdminMenu.Instance.addButton("Bring obstacle 1", callbackBringObstacle1);
         MouseUtilitiesAdminMenu.Instance.addButton("Bring obstacle 2", callbackBringObstacle2);
         MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide obstacle 1", callbackHideShowObstacle1);
-        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide obstacle 2", callbackHideShowObstacle2);
+        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide obstacle 2", callbackHideShowObstacle2);*/
+        MouseUtilitiesAdminMenu.Instance.addButton("Add obstacle", callbackAddObstacle, MouseUtilitiesAdminMenu.Panels.Obstacles);
         m_interactionSurfaceController.setAdminButtons("path surface");
         m_interactionSurfaceController.setColor("Mouse_Cyan_Glowing");
         /*m_interactionSurfaceController.getInteractionSurface().localPosition*/ m_interactionSurfaceView.position = new Vector3(0.3f,-0.16f,-5f);
@@ -117,9 +119,8 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
             NavMeshBuilder.UpdateNavMeshData(m_NavMesh, defaultBuildSettings, m_Sources, bounds);
     }
 
-    void callbackFindPath()
+    /*void callbackFindPath()
     {
-        //Debug.Log("Number of registered meshes: " + NavMesh.GetSettingsCount());
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Number of registered meshes: " + NavMesh.GetSettingsCount());
 
         Vector3 target = new Vector3(m_target.position.x, m_target.position.y, m_target.position.z);
@@ -127,15 +128,8 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
         NavMeshPath path = new NavMeshPath();
         if (NavMesh.CalculatePath(m_origin.position, target, NavMesh.AllAreas, path) == false)
         {
-            //Debug.LogWarning("Cannot compute the path");
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Cannot compute the path");
-            
-            
-
         }
-
-
-        //Debug.Log("Number of corner: " + path.corners.Length + " Start position: " + m_origin.position + " Target position: " + target);
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Number of corner: " + path.corners.Length + " Start position: " + m_origin.position + " Target position: " + target);
 
         LineRenderer lineRenderer = GetComponent<LineRenderer>();
@@ -143,17 +137,27 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
 
         for (int i = 0; i < path.corners.Length; i++)
         {
-            // Vector3 cornerStart = path.corners[i - 1];
             Vector3 corner = path.corners[i];
 
             lineRenderer.SetPosition(i, corner);
-            //lineRenderer.SetPosition(i, cornerEnd);
 
-            //Debug.Log("Corner start: " + corner);
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Corner start: " + corner);
-            //Gizmos.DrawLine(cornerStart, cornerEnd);
-            //Debug.Log("Corner start: " + cornerStart + " corner end: " + cornerEnd);
         }
+    }*/
+
+    public Vector3[] computePath(Transform origin, Transform destination)
+    {
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Number of registered meshes: " + NavMesh.GetSettingsCount());
+
+        NavMeshPath path = new NavMeshPath();
+        if (NavMesh.CalculatePath(origin.position, destination.position, NavMesh.AllAreas, path) == false)
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Cannot compute the path");
+        }
+
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Number of corner: " + path.corners.Length + " Start position: " + origin.position + " Target position: " + destination.position);
+
+        return path.corners;
     }
 
     /*static Vector3 Quantize(Vector3 v, Vector3 quant)
@@ -205,7 +209,7 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
         }*/
     }
 
-    void callbackBringCube1()
+    /*void callbackBringCube1()
     {
         m_cube1.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
         m_cube1.transform.LookAt(Camera.main.transform);
@@ -217,9 +221,9 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
         m_cube2.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
         m_cube2.transform.LookAt(Camera.main.transform);
         m_cube2.transform.Rotate(new Vector3(0, 1, 0), 180);
-    }
+    }*/
 
-    void callbackBringObstacle1()
+    /*void callbackBringObstacle1()
     {
         MouseUtilities.bringObject(m_obstacle1);
     }
@@ -237,5 +241,10 @@ public class MouseUtilitiesPathFinding : MonoBehaviour
     void callbackHideShowObstacle2()
     {
         MouseUtilities.showInteractionSurface(m_obstacle2, !m_obstacle2.GetComponent<Renderer>().enabled);
+    }*/
+
+    void callbackAddObstacle()
+    {
+        m_obstaclesManager.addCube("Obstacle " + (m_obstaclesManager.getCubes().Count + 1).ToString(), new Vector3(0.1f, 0.1f, 0.1f), new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z), "Mouse_White_Transparent", true, false, transform);
     }
 }
