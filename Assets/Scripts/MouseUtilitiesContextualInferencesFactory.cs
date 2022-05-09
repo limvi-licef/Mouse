@@ -72,6 +72,13 @@ public class MouseUtilitiesContextualInferencesFactory : MonoBehaviour
                 createDistanceLeavingInferenceOneShot(inferenceManager, inferenceId + "Internal", toTrigger, refObject, trigerringDistanceLeaving);
             }, refObject, trigerringDistanceComing);
         }
+    public void createDistanceLeavingAndComingInferenceOneShot(MouseUtilitiesContextualInferences inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistanceComing = 1.5f, float trigerringDistanceLeaving = 2.0f)
+    {
+        createDistanceLeavingInferenceOneShot(inferenceManager, inferenceId, delegate (System.Object o, EventArgs e)
+        {
+            createDistanceComingInferenceOneShot(inferenceManager, inferenceId + "Internal", toTrigger, refObject, trigerringDistanceComing);
+        }, refObject, trigerringDistanceLeaving);
+    }
 
 
     // Start is called before the first frame update

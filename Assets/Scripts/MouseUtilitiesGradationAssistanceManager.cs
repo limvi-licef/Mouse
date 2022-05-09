@@ -303,7 +303,11 @@ public class MouseUtilitiesGradationAssistance: MouseUtilitiesGradationAssistanc
 
     public EventHandler goToState(MouseUtilitiesGradationAssistanceAbstract nextState)
     {
-        m_nextStates.Add(nextState.getId(), nextState);
+        if (m_nextStates.ContainsKey(nextState.getId()) == false)
+        {
+            m_nextStates.Add(nextState.getId(), nextState);
+        }
+        
 
         return new EventHandler(delegate (System.Object o, EventArgs e)
         {
@@ -402,6 +406,7 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
     MouseUtilitiesGradationAssistanceAbstract m_nextState; // Called once all the state from the previous dictionary have shown up
     public EventHandler s_eventNextState;
     string m_id;
+    int m_nbOfStatesCalled = 0; // Variable storing the number of intermediate states that have called so far
 
     public MouseUtilitiesGradationAssistanceIntermediateState(string id, MouseUtilitiesGradationAssistance nextState)
     {
@@ -469,6 +474,8 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
             }
         }
 
+        m_nbOfStatesCalled = nbStatesCalled;
+
         if (triggerNextState)
         {
             MouseUtilisiesGradationAssistanceArgNextState temp = new MouseUtilisiesGradationAssistanceArgNextState();
@@ -480,7 +487,7 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
         }
         else
         {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cannot trigger the next state yet - Total number of registered states: " + totalNbStates + " number of states called so far : " + nbStatesCalled);
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cannot trigger the next state yet - Total number of registered states: " + totalNbStates + " number of states called so far : " + m_nbOfStatesCalled);
         }
     }
 
@@ -575,6 +582,11 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
         toReturn.Add(m_nextState.getId(), m_nextState);
 
         return toReturn;
+    }
+
+    public int getNbOfStatesWhoCalled()
+    {
+        return m_nbOfStatesCalled;
     }
 }
 
