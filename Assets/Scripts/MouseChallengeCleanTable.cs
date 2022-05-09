@@ -239,7 +239,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         state.addFunctionShow(delegate (EventHandler e)
         {
             // Set the inference
-            MouseUtilitiesInferenceDistanceFromObject inferenceAssistancePicturalDistance = new MouseUtilitiesInferenceDistanceFromObject("inferenceAssistancePicturalDistance", callbackInferenceDistanceAssistanceStimulateLevel1, m_assistancePicturalView.gameObject, 3.0f);
+            MouseUtilitiesInferenceDistanceLeaving inferenceAssistancePicturalDistance = new MouseUtilitiesInferenceDistanceLeaving("inferenceAssistancePicturalDistance", callbackInferenceDistanceAssistanceStimulateLevel1, m_assistancePicturalView.gameObject, 3.0f);
 
             m_inferenceEngine.registerInference(inferenceAssistancePicturalDistance);
         }, MouseUtilities.getEventHandlerEmpty());

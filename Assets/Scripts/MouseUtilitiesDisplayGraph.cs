@@ -27,7 +27,7 @@ using TMPro;
 public class MouseUtilitiesDisplayGraph : MonoBehaviour
 {
     MouseUtilitiesGradationAssistanceManager m_manager;
-    MouseUtilitiesGradationAssistance m_initialState;
+    MouseUtilitiesGradationAssistanceAbstract m_initialState;
     public GameObject m_refLabel;
 
     Transform m_parentLabelsView;
@@ -37,7 +37,7 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
     Dictionary<string, GameObject> m_states;
     Dictionary<(string, string), GameObject> m_connectors;
 
-    MouseUtilitiesGradationAssistance m_currentHighlightedState;
+    MouseUtilitiesGradationAssistanceAbstract m_currentHighlightedState;
 
     private void Awake()
     {
@@ -87,11 +87,11 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         m_manager.s_newStateSelected += callbackNewStateSelected;
     }
 
-    void displayStates(MouseUtilitiesGradationAssistance currentstate, int nbLevels)
+    void displayStates(MouseUtilitiesGradationAssistanceAbstract currentstate, int nbLevels)
     {
         addState(currentstate);
 
-        foreach (KeyValuePair<string, MouseUtilitiesGradationAssistance> nextState in currentstate.getNextStates())
+        foreach (KeyValuePair<string, MouseUtilitiesGradationAssistanceAbstract> nextState in currentstate.getNextStates())
         {
             if(nextState.Key != m_initialState.getId())
             {
@@ -102,7 +102,7 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         }
     }
 
-    void addState(MouseUtilitiesGradationAssistance state)
+    void addState(MouseUtilitiesGradationAssistanceAbstract state)
     {
         if (m_states.ContainsKey(state.getId()) == false)
         {
@@ -117,7 +117,7 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         }
     }
 
-    void addConnector(MouseUtilitiesGradationAssistance stateStart, MouseUtilitiesGradationAssistance stateEnd)
+    void addConnector(MouseUtilitiesGradationAssistanceAbstract stateStart, MouseUtilitiesGradationAssistanceAbstract stateEnd)
     {
         if (m_connectors.ContainsKey((stateStart.getId(), stateEnd.getId())) == false)
         {

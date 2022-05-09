@@ -111,12 +111,12 @@ public abstract class MouseUtilitiesInferenceAbstract
     public void triggerCallback() => m_callback?.Invoke(this, EventArgs.Empty);
 }
 
-public class MouseUtilitiesInferenceDistanceFromObject : MouseUtilitiesInferenceAbstract
+public class MouseUtilitiesInferenceDistanceLeaving : MouseUtilitiesInferenceAbstract
 {
     GameObject m_gameObject;
     float m_minDistanceToTrigger;
 
-    public MouseUtilitiesInferenceDistanceFromObject (string id, EventHandler callback, GameObject gameObject, float minDistanceToTrigger): base(id, callback)
+    public MouseUtilitiesInferenceDistanceLeaving (string id, EventHandler callback, GameObject gameObject, float minDistanceToTrigger): base(id, callback)
     {
         m_gameObject = gameObject;
         m_minDistanceToTrigger = minDistanceToTrigger;
@@ -129,6 +129,32 @@ public class MouseUtilitiesInferenceDistanceFromObject : MouseUtilitiesInference
         float tempDistance = Vector3.Distance(Camera.main.transform.position, m_gameObject.transform.position);
 
         if (tempDistance > m_minDistanceToTrigger)
+        {
+            toReturn = true;
+        }
+
+        return toReturn;
+    }
+}
+
+public class MouseUtilitiesInferenceDistanceComing : MouseUtilitiesInferenceAbstract
+{
+    GameObject m_gameObject;
+    float m_minDistanceToTrigger;
+
+    public MouseUtilitiesInferenceDistanceComing(string id, EventHandler callback, GameObject gameObject, float minDistanceToTrigger) : base(id, callback)
+    {
+        m_gameObject = gameObject;
+        m_minDistanceToTrigger = minDistanceToTrigger;
+    }
+
+    public override bool evaluate()
+    {
+        bool toReturn = false;
+
+        float tempDistance = Vector3.Distance(Camera.main.transform.position, m_gameObject.transform.position);
+
+        if (tempDistance < m_minDistanceToTrigger)
         {
             toReturn = true;
         }

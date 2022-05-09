@@ -53,7 +53,11 @@ public class MouseUtilitiesPathFindingObstacles : MonoBehaviour
         // Set the manipulation features
         cube.AddComponent<ObjectManipulator>();
         cube.AddComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.XAxis | Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.ZAxis;
-        cube.AddComponent<BoundsControl>().ScaleHandlesConfig.ScaleBehavior = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.HandleScaleMode.NonUniform;
+        BoundsControl boundsControl = cube.AddComponent<BoundsControl>();
+        boundsControl.ScaleHandlesConfig.ScaleBehavior = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.HandleScaleMode.NonUniform;
+        boundsControl.TranslationHandlesConfig.ShowHandleForX = true;
+        boundsControl.TranslationHandlesConfig.ShowHandleForY = true;
+        boundsControl.TranslationHandlesConfig.ShowHandleForZ = true;
 
         // Set optional features
         if (navMeshTag)
