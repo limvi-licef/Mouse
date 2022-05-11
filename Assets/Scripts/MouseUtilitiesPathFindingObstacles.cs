@@ -4,10 +4,15 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using System;
+using System.Linq;
+using System.Reflection;
 
 public class MouseUtilitiesPathFindingObstacles : MonoBehaviour
 {
     List<GameObject> m_cubes;
+
+    public EventHandler s_resized;
+    public EventHandler s_moved;
 
     private void Awake()
     {
@@ -51,7 +56,7 @@ public class MouseUtilitiesPathFindingObstacles : MonoBehaviour
         cube.transform.localScale = scaling;
 
         // Set the manipulation features
-        cube.AddComponent<ObjectManipulator>();
+        ObjectManipulator objectManipulator = cube.AddComponent<ObjectManipulator>();
         cube.AddComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.XAxis | Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.ZAxis;
         BoundsControl boundsControl = cube.AddComponent<BoundsControl>();
         boundsControl.ScaleHandlesConfig.ScaleBehavior = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.HandleScaleMode.NonUniform;
@@ -74,6 +79,17 @@ public class MouseUtilitiesPathFindingObstacles : MonoBehaviour
             
             cube.AddComponent<MouseAssistanceBasic>();
         }
+
+        // Add the callbacks
+        boundsControl.ScaleStopped.AddListener(delegate
+        {
+            s_resized?.Invoke(cube, EventArgs.Empty);
+        });
+
+        objectManipulator.OnManipulationEnded.AddListener(delegate (ManipulationEventData data)
+        {
+            s_moved?.Invoke(cube, EventArgs.Empty);
+        });
 
         m_cubes.Add(cube);
     }

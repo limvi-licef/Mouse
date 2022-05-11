@@ -30,7 +30,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
     public MouseUtilitiesDisplayGraph m_graphMain;
     public MouseUtilitiesDisplayGraph m_graphHelp;
     public MouseUtilitiesContextualInferences m_inferenceManager;
-    //MouseUtilitiesManagerCubes m_plantsManager;
 
     MouseAssistanceDialog m_dialogAssistanceWaterHelp; // Class variable as used in another function than the initialization of the scenario
 
@@ -73,9 +72,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         m_plantsControllers = new List<MouseInteractionSurface>();
         m_plantsHighlight = new List<MouseAssistanceBasic>();
 
-        // Get children and components
-        //m_plantsManager = GetComponent<MouseUtilitiesManagerCubes>();
-
         // Add buttons to admin menu
         MouseUtilitiesAdminMenu.Instance.addButton("Add plant", callbackAddPlant);
 
@@ -91,7 +87,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
     void callbackAddPlant()
     {
-        //m_plantsManager.addCube("Plant " + (m_plantsManager.getCubes().Count + 1).ToString(), new Vector3(0.1f, 0.1f, 0.1f), new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z), "Mouse_Orange_Glowing", false, true, transform);
         m_plantsView.Add(Instantiate(m_refInteractionSurface, transform));
 
         int indexPlant = m_plantsView.Count - 1;
@@ -108,10 +103,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         };
         m_plantsControllers.Last().showInteractionSurfaceTable(true);
         m_plantsControllers.Last().setObjectResizable(true);
-        //m_plantsControllers.Last().showInteractionSurfaceTable(false);
-
-
-        //LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
 
         GameObject gameObjectForLine = new GameObject("Line " + (m_plantsView.Count).ToString());
         gameObjectForLine.transform.parent = transform;
@@ -158,7 +149,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         m_plantsHighlight.Last().setScale(interactionSurfaceParent.getInteractionSurface().localScale.x, 0.6f, interactionSurfaceParent.getInteractionSurface().localScale.z);
         m_plantsHighlight.Last().setLocalPosition(0, -0.35f, 0);
         m_plantsHighlight.Last().setBillboard(false);
-        //m_plantsHighlight.Last().set
         m_plantsControllers.Last().s_interactionSurfaceScaled += delegate
         {
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Resizing called");
@@ -167,16 +157,15 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
                 m_plantsHighlight[indexPlant].getChildTransform().localScale.y,
                 m_plantsControllers[indexPlant].getInteractionSurface().localScale.z);
         };
-        /*m_plantsHighlight.Last().s_touched += delegate
-        {
-            m_plantsHighlight[indexPlant].setMaterialToChild("Mouse_Green_Glowing");
-        };*/
 
         // Add plant to the GUI
         m_dialogAssistanceWaterHelp.addButton(plantId, false);
         m_dialogAssistanceWaterHelp.m_buttonsController.Last().s_buttonClicked += m_plantsEventHandler.Last();
     }
 
+    /**
+     * The code of this function is a mess ... to be restructured
+     * */
     void initializeScenario()
     {
         // Object required
@@ -190,9 +179,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         interactionSurfaceController.setPreventResizeY(true);
         interactionSurfaceController.setObjectResizable(true);
 
-        /*GameObject successView = Instantiate(m_refCube, m_pointOfReferenceForPaths);
-        MouseAssistanceBasic successController = successView.GetComponent<MouseAssistanceBasic>();
-        successController.setMaterialToChild("Mouse_Congratulation");*/
         MouseAssistanceBasic successController = MouseUtilitiesAssistancesFactory.Instance.createCube("Mouse_Congratulation", m_pointOfReferenceForPaths);
 
         MouseUtilitiesGradationAssistance sSuccess = m_stateMachineMain.addNewAssistanceGradation("Success");
@@ -241,10 +227,7 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         MouseAssistanceDialog dialogThird = MouseUtilitiesAssistancesFactory.Instance.createDialogNoButton("", "Il est temps d'arroser vos plantes", m_pointOfReferenceForPaths);
 
         // Dialog to provide assistance to water the plants
-        MouseAssistanceDialog dialogAssistanceWaterProposeHelp = MouseUtilitiesAssistancesFactory.Instance.createDialogTwoButtons("", "Besoin d'aide?", "Oui", delegate(System.Object o, EventArgs e) { s_assistanceWaterNeedHelp?.Invoke(o, e); }, "Non", delegate (System.Object o, EventArgs e) { s_assistanceWaterNoNeedForHelp?.Invoke(o, e); },  m_pointOfReferenceForPaths);
-
-        //MouseAssistanceDialog dialogAssistanceWaterHelp = MouseUtilitiesAssistancesFactory.Instance.createDialogTwoButtons("", "Voici les plantes qu'il vous reste à arroser. Si vous touchez une des plantes, un chemin au sol vous y guidera.", "Plante 1", m_plantsEventHandler[0],  "Plante 2", m_plantsEventHandler[1],  m_pointOfReferenceForPaths);
-        
+        MouseAssistanceDialog dialogAssistanceWaterProposeHelp = MouseUtilitiesAssistancesFactory.Instance.createDialogTwoButtons("", "Besoin d'aide?", "Oui", delegate(System.Object o, EventArgs e) { s_assistanceWaterNeedHelp?.Invoke(o, e); }, "Non", delegate (System.Object o, EventArgs e) { s_assistanceWaterNoNeedForHelp?.Invoke(o, e); },  m_pointOfReferenceForPaths);       
 
         //// Inferences
         DateTime tempTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 19, 0, 0);
@@ -256,23 +239,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
             s_inference19h00?.Invoke(o, e);
         });
         m_inferenceManager.registerInference(m_inference19h00);
-
-        /*MouseUtilitiesInferenceDistanceFromObject inferenceDistanceDialogFirst = new MouseUtilitiesInferenceDistanceFromObject("inferenceDistanceFirstDialog", delegate (System.Object o, EventArgs e)
-        {
-            m_inferenceManager.unregisterInference("inferenceDistanceFirstDialog");
-            s_dialogFirstUserFar?.Invoke(o, e);
-        }, dialogFirst.gameObject, 2.0f);
-        m_inferenceManager.registerInference(inferenceDistanceDialogFirst);*/
-
-        /*MouseUtilitiesInferenceDistanceFromObject inferenceDistanceDialogSecond = new MouseUtilitiesInferenceDistanceFromObject("inferenceDistanceSecondDialog", delegate (System.Object o, EventArgs e)
-        {
-            m_inferenceManager.unregisterInference("inferenceDistanceSecondDialog");
-            s_dialogSecondUserFar?.Invoke(o, e);
-        }, dialogSecond.gameObject, 2.0f);
-        m_inferenceManager.registerInference(inferenceDistanceDialogSecond);*/
-        /*MouseUtilitiesContextualInferencesFactory.Instance.createDistanceInferenceOneShot(m_inferenceManager, "inferenceDistanceSecondDialog", s_dialogSecondUserFar, dialogSecond.gameObject);*/
-
-        /*MouseUtilitiesContextualInferencesFactory.Instance.createDistanceInferenceOneShot(m_inferenceManager, "inferenceDistanceThirdDialog", s_dialogThirdUserFar, dialogThird.gameObject);*/
 
         //// Asssitance to water the plants state machine
         MouseUtilitiesGradationAssistance sAssistanceWaterPlantsStandBy = m_stateMachineAssistanceWateringPlants.addNewAssistanceGradation("standBy");
@@ -297,7 +263,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         sAssistanceWaterDialogSecond.setFunctionHideAndShow(m_dialogAssistanceWaterHelp);
 
         m_stateMachineAssistanceWateringPlants.setGradationInitial("standBy");
-        //m_s
 
         //// Main State machine
         MouseUtilitiesGradationAssistance sStandBy = m_stateMachineMain.addNewAssistanceGradation("StandBy");
@@ -338,39 +303,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
             MouseUtilitiesContextualInferencesFactory.Instance.createDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceThirdDialog", s_dialogThirdUserFar, dialogThird.gameObject);
         }, MouseUtilities.getEventHandlerEmpty());
 
-        
-        //m_sIntermediateWateringPlants.addState
-
-
-        /*MouseUtilitiesGradationAssistance sPlant1 = m_stateMachineMain.addNewAssistanceGradation("Plant1");
-        sPlant1.addFunctionShow(delegate (EventHandler e)
-        {
-        }, MouseUtilities.getEventHandlerEmpty());
-        sPlant1.setFunctionHide(delegate (EventHandler e)
-        {
-            e?.Invoke(this, EventArgs.Empty);
-        }, MouseUtilities.getEventHandlerEmpty());*/
-
-        /*MouseUtilitiesGradationAssistance sPlant2 = m_stateMachineMain.addNewAssistanceGradation("Plant2");
-        sPlant2.addFunctionShow(delegate (EventHandler e)
-        {
-
-        }, MouseUtilities.getEventHandlerEmpty());
-        sPlant2.setFunctionHide(delegate (EventHandler e)
-        {
-            e?.Invoke(this, EventArgs.Empty);
-        }, MouseUtilities.getEventHandlerEmpty());*/
-
-       /* MouseUtilitiesGradationAssistance sPlant3 = m_stateMachineMain.addNewAssistanceGradation("Plant3");
-        sPlant3.addFunctionShow(delegate (EventHandler e)
-        {
-
-        }, MouseUtilities.getEventHandlerEmpty());
-        sPlant3.setFunctionHide(delegate (EventHandler e)
-        {
-            e?.Invoke(this, EventArgs.Empty);
-        }, MouseUtilities.getEventHandlerEmpty());*/
-
         // Set transitions and intermediate state
         s_inference19h00 += sStandBy.goToState(sDialogFirst);
         s_dialogFirstUserFar += sDialogFirst.goToState(sDialogSecond);
@@ -382,23 +314,12 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         faucetController.m_eventInteractionSurfaceTableTouched += sDialogThird.goToState(m_sIntermediateWateringPlants);
         faucetController.m_eventInteractionSurfaceTableTouched += sAssistanceWaterPlantsStandBy.goToState(sAssistanceWaterStart); // Enabling the nested state machine
 
-        /*plant1Controller.m_eventInteractionSurfaceTableTouched += delegate (System.Object o, EventArgs e)
-        {
-            plant1Controller.setColor("Mouse_Green_Glowing");
-            m_sIntermediateWateringPlants.addState(sPlant1);
-        };*/
-        //plant2Controller.m_eventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(sPlant2);
-        //plant3Controller.m_eventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(sPlant3);
-
         s_assistanceWaterNoPlantWatered += sAssistanceWaterStart.goToState(sAssistanceWaterDialogFirst);
         s_assistanceWaterNeedHelp += delegate (System.Object o, EventArgs e)
         {
             int indexPlant = 0;
             for (indexPlant = 0; indexPlant < m_plantsControllers.Count(); indexPlant ++)
             {
-                //m_plantsControllers[index].showInteractionSurfaceTable(true);
-
-                //m_plantsControllers[index].s_interactionSurfaceScaled;
                 MouseAssistanceBasic plantTemp = m_plantsHighlight[indexPlant];
                 plantTemp.show(MouseUtilities.getEventHandlerEmpty());
 
