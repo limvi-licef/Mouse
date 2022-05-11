@@ -29,6 +29,7 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
 
     public MouseAssistanceDialog m_refDialogAssistance;
     public MouseAssistanceBasic m_refCube;
+    public MouseAssistanceDialog m_refCheckListAssistance;
 
     private void Awake()
     {
@@ -66,6 +67,18 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
         return dialogController;
     }
 
+    public MouseAssistanceDialog createCheckListNoButton(string title, string description, Transform parent)
+    {
+        Transform dialogView = Instantiate(m_refCheckListAssistance.transform, parent);
+        MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
+        dialogController.setTitle(title);
+        float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+        dialogController.setDescription(description, sizeDescriptionText);
+        dialogController.enableBillboard(true);
+
+        return dialogController;
+    }
+
     public MouseAssistanceDialog createDialogTwoButtons(string title, string description, string textButton1, EventHandler callbackButton1, string textButton2, EventHandler callbackButton2, Transform parent)
     {
         Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
@@ -74,8 +87,8 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
         float sizeDescriptionText = -0.002f * description.Length + 0.38f;
         dialogController.setDescription(description, sizeDescriptionText);
         dialogController.enableBillboard(true);
-        dialogController.addButton(textButton1);
-        dialogController.addButton(textButton2);
+        dialogController.addButton(textButton1, true);
+        dialogController.addButton(textButton2, true);
         dialogController.m_buttonsController[0].s_buttonClicked += callbackButton1;
         dialogController.m_buttonsController[1].s_buttonClicked += callbackButton2;
 

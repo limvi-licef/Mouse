@@ -131,7 +131,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         GameObject initialCueingView = Instantiate(m_refAssistanceDialog, interactionTableView.transform);
         MouseAssistanceDialog initialCueingController = initialCueingView.GetComponent<MouseAssistanceDialog>();
         initialCueingController.setDescription("Que faites-vous typiquement après manger?", 0.2f);
-        initialCueingController.addButton("Je ne sais pas", 0.2f);
+        initialCueingController.addButton("Je ne sais pas", true, 0.2f);
         initialCueingController.enableBillboard(true);
 
         // Cueing for the solution

@@ -100,7 +100,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     /**
      * If fontSize < 0.0f, means keep the default value of the button's size. Hence the default value.
      * */
-    public void addButton(string text/*, EventHandler eventHandler*/, float fontSize = -1.0f)
+    public void addButton(string text/*, EventHandler eventHandler*/, bool autoScaling, float fontSize = -1.0f)
     {
         // Instantiate the button
         Transform newButton = Instantiate(m_refButtonView, m_buttonsParentView);
@@ -120,7 +120,12 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         m_buttonsController.Add(tempButtonController); // Only for the ease of use, nothing special here.
 
         // Locate button
-        float scalingx = 1.0f / (float)(m_buttonsView.Count());
+        float scalingx = 1.0f;
+        if (autoScaling)
+        {
+            scalingx = 1.0f / (float)(m_buttonsView.Count());
+        }
+        
 
         foreach (Transform b in m_buttonsView)
         {
@@ -184,6 +189,15 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         {
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Mutex locked, nothing will happen");
         }
+    }
+
+    /**
+     * This function changes the color - you still have the responsibility to disable the callback if required
+     * */
+    public void checkButton(MouseAssistanceButton button, bool check)
+    {
+        //m_states[currentState.m_currentState.getId()].transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Cyan_Glowing", typeof(Material)) as Material;
+        button.checkButton(check);
     }
 
     public void enableBillboard(bool enable)

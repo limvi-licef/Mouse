@@ -27,7 +27,7 @@ public class MouseUtilitiesContextualInferencesFactory : MonoBehaviour
         private static MouseUtilitiesContextualInferencesFactory m_instance;
         public static MouseUtilitiesContextualInferencesFactory Instance { get { return m_instance; } }
 
-        public MouseAssistanceDialog m_refDialogAssistance;
+        //public MouseAssistanceDialog m_refDialogAssistance;
 
         private void Awake()
         {

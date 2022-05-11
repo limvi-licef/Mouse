@@ -75,12 +75,12 @@ public class MouseChallengeCleanTableReminderOneClockMoving : MouseAssistanceAbs
         m_hologramWindowReminderView = gameObject.transform.Find("MouseAssistanceDialog"); //gameObject.transform.Find("Text");
         m_dialogController = m_hologramWindowReminderView.GetComponent<MouseAssistanceDialog>();
         m_dialogController.setDescription("Très bien! J'apparaitrai de nouveau demain à la même heure. Est-ce que cela vous convient?", 0.15f);
-        m_dialogController.addButton("Parfait!");
+        m_dialogController.addButton("Parfait!", true);
         m_dialogController.m_buttonsController[0].s_buttonClicked += new EventHandler(delegate (System.Object o, EventArgs e)
         {
             m_eventHologramWindowButtonOkTouched?.Invoke(this, EventArgs.Empty);
         });
-        m_dialogController.addButton("Je me suis trompé de bouton! Revenir en arrière...");
+        m_dialogController.addButton("Je me suis trompé de bouton! Revenir en arrière...", true);
         m_dialogController.m_buttonsController[1].s_buttonClicked += delegate
         {
             m_eventHologramWindowButtonBackTouched?.Invoke(this, EventArgs.Empty);

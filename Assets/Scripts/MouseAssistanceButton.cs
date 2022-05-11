@@ -28,6 +28,8 @@ using System;
  * */
 public class MouseAssistanceButton : MouseAssistanceButtonAbstract
 {
+    bool m_checked = false;
+
     public override void hide(EventHandler e)
     {
         throw new NotImplementedException();
@@ -56,5 +58,24 @@ public class MouseAssistanceButton : MouseAssistanceButtonAbstract
     void Update()
     {
         
+    }
+
+    public void checkButton(bool check)
+    {
+        m_checked = check;
+
+        if (m_checked)
+        {
+            transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_green_glowing", typeof(Material)) as Material;
+        }
+        else
+        {
+            transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_HolographicBackPlate", typeof(Material)) as Material;
+        }
+    }
+
+    public bool isChecked()
+    {
+        return m_checked;
     }
 }

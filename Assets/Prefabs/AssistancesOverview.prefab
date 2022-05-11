@@ -106,7 +106,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8960806094654444628}
   - component: {fileID: 8960806094654444630}
-  - component: {fileID: 8960806094654444629}
   - component: {fileID: 8960806094654444631}
   m_Layer: 0
   m_Name: TitleText
@@ -175,14 +174,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!222 &8960806094654444629
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8960806094654444616}
-  m_CullTransparentMesh: 0
 --- !u!114 &8960806094654444631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,7 +276,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8960806094857359464}
   - component: {fileID: 8960806094857359466}
-  - component: {fileID: 8960806094857359465}
   - component: {fileID: 8960806094857359467}
   m_Layer: 0
   m_Name: DescriptionText
@@ -354,14 +344,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!222 &8960806094857359465
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8960806094857359468}
-  m_CullTransparentMesh: 0
 --- !u!114 &8960806094857359467
 MonoBehaviour:
   m_ObjectHideFlags: 0

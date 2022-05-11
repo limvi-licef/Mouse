@@ -52,9 +52,18 @@ public class MouseUtilitiesGradationAssistanceManager
         return m_gradationPrevious;
     }
 
+    /**
+     * Do not forget to call this function at the end of the setup, otherwise, the object will most likely not work properly
+     * */
     public void setGradationInitial(string id)
     {
         m_gradationInitial = id;
+
+        // When setting the initial gradation, if there is no current state, then it also becomes the current state
+        if (m_gradationCurrent == "")
+        {
+            m_gradationCurrent = id;
+        }
     }
 
     public MouseUtilitiesGradationAssistanceAbstract getInitialAssistance()
@@ -89,10 +98,10 @@ public class MouseUtilitiesGradationAssistanceManager
 
         m_assistanceGradation.Add(newItem.getId(), newItem);
 
-        if (m_gradationCurrent == "")
+        /*if (m_gradationCurrent == "")
         {
             m_gradationCurrent = id;
-        }
+        }*/
 
         // Setting the internal callbacks to actually go to the next state
         List<Action<EventHandler>> fShows = newItem.getFunctionsShow();
@@ -151,6 +160,23 @@ public class MouseUtilitiesGradationAssistanceManager
             MouseUtilitiesGradationAssistanceIntermediateState state = new MouseUtilitiesGradationAssistanceIntermediateState(id, nextState);
             /*m_assistanceIntermediateStates*/
             m_assistanceGradation.Add(id, state);
+
+
+            List<Action<EventHandler>> fShows = state.getFunctionsShow();
+            List<EventHandler> fShowsEventHandlers = state.getFunctionsShowEventHandlers();
+
+            state.setFunctionShow(delegate (EventHandler e)
+            {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - intermediate show function trigerring the event for the graph display");
+
+                m_gradationPrevious = m_gradationCurrent;
+                m_gradationCurrent = m_gradationNext;
+
+                MouseUtilisiesGradationAssistanceArgCurrentState args = new MouseUtilisiesGradationAssistanceArgCurrentState(m_assistanceGradation[m_gradationCurrent]);
+                //args.m_currentState
+
+                s_newStateSelected?.Invoke(this, args);
+            });
         }
         else
         {
@@ -164,6 +190,7 @@ public class MouseUtilitiesGradationAssistanceManager
 
             goToNextState(next.m_nextState);
         };
+
 
         return /*m_assistanceIntermediateStates*/(MouseUtilitiesGradationAssistanceIntermediateState)m_assistanceGradation[id];
     }
@@ -408,6 +435,8 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
     string m_id;
     int m_nbOfStatesCalled = 0; // Variable storing the number of intermediate states that have called so far
 
+    Action<EventHandler> m_showFunction;
+
     public MouseUtilitiesGradationAssistanceIntermediateState(string id, MouseUtilitiesGradationAssistance nextState)
     {
         m_id = id;
@@ -415,6 +444,14 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
         m_statesWhoCalled = new Dictionary<string, bool>();
         m_statesCallbacks = new Dictionary<string, EventHandler>();
         setNextState(nextState);
+    }
+
+    /**
+     * For internal use. Please do not call this function, although it is public on purpose
+     * */
+    public void setFunctionShow(Action<EventHandler> fShow)
+    {
+        m_showFunction = fShow;
     }
 
     /**
@@ -426,6 +463,8 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
 
         if (m_statesThatHaveToCall.ContainsKey(state.getId()) == false)
         {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "New state added: " + state.getId());
+
             m_statesThatHaveToCall.Add(state.getId(), state);
             m_statesWhoCalled.Add(state.getId(), false);
 
@@ -465,11 +504,15 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
 
             if (pair.Value == false)
             {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "State " + pair.Key + " called");
+
                 triggerNextState = false;
                 //break; // No need to continue the loop
             }
             else
             {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "State " + pair.Key + " NOT called");
+
                 nbStatesCalled++;
             }
         }
@@ -489,6 +532,11 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
         {
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Cannot trigger the next state yet - Total number of registered states: " + totalNbStates + " number of states called so far : " + m_nbOfStatesCalled);
         }
+    }
+
+    public bool checkStateCalled(MouseUtilitiesGradationAssistance state)
+    {
+        return m_statesWhoCalled[state.getId()];
     }
 
     void setNextState(MouseUtilitiesGradationAssistance next)
@@ -521,6 +569,8 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
             toReturn.AddRange(assistance.Value.getFunctionsShow());
         }
 
+        toReturn.Insert(0, m_showFunction); // For internal purpose, to add extra process from the gradationmanager
+
         return toReturn;
     }
 
@@ -534,6 +584,8 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
             toReturn.AddRange(assistance.Value.getFunctionsShowEventHandlers());
         }
 
+        toReturn.Insert(0, MouseUtilities.getEventHandlerEmpty()); // For internal purpose, to add extra process from the gradationmanager, although this is empty here. This is to remain consistant with the bunch of show functions, where the process is relevant.
+
         return toReturn;
     }
 
@@ -545,9 +597,16 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
     void hide(EventHandler eventHandler)
     {
         // Calling hide function of all registered assistances
+        
         foreach (KeyValuePair<string, MouseUtilitiesGradationAssistanceAbstract> assistance in m_statesThatHaveToCall)
         {
             assistance.Value.getFunctionHide()(assistance.Value.getFunctionHideEventHandler());
+        }
+
+        // And resetting the object
+        foreach (KeyValuePair<string, MouseUtilitiesGradationAssistanceAbstract> state in m_statesThatHaveToCall)
+        {
+            m_statesWhoCalled[state.Key] = false;
         }
 
         eventHandler?.Invoke(this, EventArgs.Empty);

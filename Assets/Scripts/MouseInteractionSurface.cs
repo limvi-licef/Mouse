@@ -159,10 +159,10 @@ public class MouseInteractionSurface : MonoBehaviour
         gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
     }
 
-    public void setAdminButtons(string interfaceSurfaceId)
+    public void setAdminButtons(string interfaceSurfaceId, MouseUtilitiesAdminMenu.Panels panel = MouseUtilitiesAdminMenu.Panels.Default)
     {
-        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide " + interfaceSurfaceId + " interaction surface", callbackShow);
-        MouseUtilitiesAdminMenu.Instance.addButton("Bring " + interfaceSurfaceId + " interaction surface", callbackBring);
+        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Hide " + interfaceSurfaceId + " interaction surface", callbackShow, panel);
+        MouseUtilitiesAdminMenu.Instance.addButton("Bring " + interfaceSurfaceId + " interaction surface", callbackBring, panel);
     }
 
     public void setObjectResizable(bool enable)
@@ -177,6 +177,8 @@ public class MouseInteractionSurface : MonoBehaviour
         }
         
     }
+
+
 
     public void setPreventResizeY(bool prevent)
     {
