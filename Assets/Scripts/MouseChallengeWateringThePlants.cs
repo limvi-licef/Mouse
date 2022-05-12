@@ -91,7 +91,7 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
         int indexPlant = m_plantsView.Count - 1;
 
-        string plantId = "Plant " + (m_plantsView.Count).ToString();
+        string plantId = "Plante " + (m_plantsView.Count).ToString();
 
         m_plantsControllers.Add(m_plantsView.Last().GetComponent<MouseInteractionSurface>());
         m_plantsControllers.Last().setAdminButtons(plantId, MouseUtilitiesAdminMenu.Panels.Obstacles);
