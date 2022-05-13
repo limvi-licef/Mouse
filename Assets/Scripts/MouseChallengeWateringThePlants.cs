@@ -36,13 +36,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
     Transform m_pointOfReferenceForPaths;
 
-    /*List<Transform> m_plantsView;
-    List<EventHandler> m_plantsEventHandler;
-    List<GameObject> m_plantsLines;
-    List<MouseUtilitiesGradationAssistance> m_plantsStates;
-    List<MouseInteractionSurface> m_plantsControllers;
-    List<MouseAssistanceBasic> m_plantsHighlight;*/
-
     MouseUtilitiesGradationAssistanceManager m_stateMachineMain;
     MouseUtilitiesGradationAssistanceManager m_stateMachineAssistanceWateringPlants;
 
@@ -66,13 +59,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
     void Start()
     {
         // Variables
-        /*m_plantsView = new List<Transform>();
-        m_plantsLines = new List<GameObject>();
-        m_plantsEventHandler = new List<EventHandler>();
-        m_plantsStates = new List<MouseUtilitiesGradationAssistance>();
-        m_plantsControllers = new List<MouseInteractionSurface>();
-        m_plantsHighlight = new List<MouseAssistanceBasic>();*/
-
         m_stateMachineMain = new MouseUtilitiesGradationAssistanceManager();
         m_stateMachineAssistanceWateringPlants = new MouseUtilitiesGradationAssistanceManager();
 
@@ -93,42 +79,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
     void callbackAddPlant()
     {
-        /*m_plantsView.Add(Instantiate(m_refInteractionSurface, transform));
-
-        int indexPlant = m_plantsView.Count - 1;
-
-        string plantId = "Plante " + (m_plantsView.Count).ToString();
-
-        m_plantsControllers.Add(m_plantsView.Last().GetComponent<MouseInteractionSurface>());
-        m_plantsControllers.Last().setAdminButtons(plantId, MouseUtilitiesAdminMenu.Panels.Obstacles);
-        m_plantsControllers.Last().setScaling(new Vector3(0.1f, 0.1f, 0.1f));
-        m_plantsControllers.Last().setColor("Mouse_Yellow_Glowing");
-        m_plantsControllers.Last().s_interactionSurfaceMoved += delegate (System.Object o, EventArgs e)
-        { // Maybe this part will have to be updated , in the case I add a functionality to remove plants (which is unlokely but we never know).
-            drawLineForPlant(indexPlant);
-        };
-        m_plantsControllers.Last().showInteractionSurfaceTable(true);
-        m_plantsControllers.Last().setObjectResizable(true);
-
-        GameObject gameObjectForLine = new GameObject("Line " + (m_plantsView.Count).ToString());
-        gameObjectForLine.transform.parent = transform;
-        LineRenderer lineRenderer = gameObjectForLine.AddComponent<LineRenderer>();
-        lineRenderer.startWidth = 0.017f;
-        lineRenderer.endWidth = 0.017f;
-        lineRenderer.material = Resources.Load("Mouse_Green_Glowing", typeof(Material)) as Material;
-        lineRenderer.positionCount = 0;
-        
-        m_plantsLines.Add(gameObjectForLine);
-
-        // Adding event handler to draw the line
-        m_plantsEventHandler.Add(delegate (System.Object o, EventArgs e)
-        {
-            if (m_dialogAssistanceWaterHelp.m_buttonsController[indexPlant].isChecked() == false)
-            {
-                drawLineForPlant(indexPlant);
-            }
-        });*/
-
         int plantId = m_plantsManager.addPlant();
         Plant p = m_plantsManager.getPlant(plantId);
         p.s_moved += delegate (System.Object o, EventArgs e)
@@ -137,21 +87,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         };
 
         // Adding the information to the state machine and the interactions
-        /*m_plantsStates.Add(m_stateMachineMain.addNewAssistanceGradation(plantId));
-        m_plantsStates.Last().addFunctionShow(delegate (EventHandler e)
-        {}, MouseUtilities.getEventHandlerEmpty());
-        m_plantsStates.Last().setFunctionHide(delegate (EventHandler e)
-        {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called for plant index " + indexPlant);
-
-            m_plantsHighlight[indexPlant].hide(MouseUtilities.getEventHandlerEmpty());
-
-            // Setting the color back to unwatered
-            m_plantsHighlight[indexPlant].setMaterialToChild("Mouse_Yellow_Glowing");
-
-            e?.Invoke(this, EventArgs.Empty);
-        }, MouseUtilities.getEventHandlerEmpty());*/
-        //MouseUtilitiesGradationAssistance plantState = m_stateMachineMain.addNewAssistanceGradation(p.getId());
         p.setState(m_stateMachineMain.addNewAssistanceGradation(p.getId()));
         p.getState().addFunctionShow(delegate (EventHandler e)
         { }, MouseUtilities.getEventHandlerEmpty());
@@ -159,11 +94,9 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         {
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called for plant index " + plantId);
 
-            //m_plantsHighlight[indexPlant].hide(MouseUtilities.getEventHandlerEmpty());
             p.getHighlight().hide(MouseUtilities.getEventHandlerEmpty());
 
             // Setting the color back to unwatered
-            //m_plantsHighlight[indexPlant].setMaterialToChild("Mouse_Yellow_Glowing");
             p.getHighlight().setMaterialToChild("Mouse_Yellow_Glowing");
 
             e?.Invoke(this, EventArgs.Empty);
@@ -171,30 +104,7 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         p.getInteractionSurface().m_eventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(p.getState());
         p.getInteractionSurface().m_eventInteractionSurfaceTableTouched += p.gotoStateHighlightWatered(); // If we remain in the default attention state, it will just not go there, so should be safe
 
-        /*m_plantsControllers.Last().m_eventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(m_plantsStates[indexPlant]);
-
-        MouseInteractionSurface interactionSurfaceParent = m_plantsControllers.Last();
-        GameObject plantHighlightView = Instantiate(m_refCube, interactionSurfaceParent.transform);
-        m_plantsHighlight.Add(plantHighlightView.GetComponent<MouseAssistanceBasic>());
-        m_plantsHighlight.Last().setAdjustHeightOnShow(false);
-        m_plantsHighlight.Last().setMaterialToChild("Mouse_Yellow_Glowing");
-        m_plantsHighlight.Last().setScale(interactionSurfaceParent.getInteractionSurface().localScale.x, 0.6f, interactionSurfaceParent.getInteractionSurface().localScale.z);
-        m_plantsHighlight.Last().setLocalPosition(0, -0.35f, 0);
-        m_plantsHighlight.Last().setBillboard(false);
-        m_plantsControllers.Last().s_interactionSurfaceScaled += delegate
-        {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Resizing called");
-
-            m_plantsHighlight[indexPlant].setScale(m_plantsControllers[indexPlant].getInteractionSurface().localScale.x,
-                m_plantsHighlight[indexPlant].getChildTransform().localScale.y,
-                m_plantsControllers[indexPlant].getInteractionSurface().localScale.z);
-        };*/
-
-
-
         // Add plant to the GUI
-        /*m_dialogAssistanceWaterHelp.addButton(plantId, false);
-        m_dialogAssistanceWaterHelp.m_buttonsController.Last().s_buttonClicked += m_plantsEventHandler.Last();*/
         m_dialogAssistanceWaterHelp.addButton("Plante " + (plantId + 1), false);
         m_dialogAssistanceWaterHelp.m_buttonsController.Last().s_buttonClicked += delegate (System.Object o, EventArgs e)
         {
@@ -236,19 +146,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         callbackAddPlant();
 
         // The next lines are to fit with the "virtual room" stuff
-        /*MouseInteractionSurface plant1Controller = m_plantsView[0].GetComponent<MouseInteractionSurface>();
-        MouseInteractionSurface plant2Controller = m_plantsView[1].GetComponent<MouseInteractionSurface>();
-        MouseInteractionSurface plant3Controller = m_plantsView[2].GetComponent<MouseInteractionSurface>();*/
-        //plant1Controller.setScaling(new Vector3(0.3f, 0.02f, 0.3f));
-        /*plant1Controller.setScaling(new Vector3(0.3f, 0.02f, 0.3f));
-        m_plantsHighlight[0].setScale(plant1Controller.getInteractionSurface().localScale.x, m_plantsHighlight[0].getChildTransform().localScale.y, plant1Controller.getInteractionSurface().localScale.z);
-        m_plantsView[0].position = new Vector3(3.31499958f, 0.347000003f, 5.22099972f);
-        plant2Controller.setScaling(new Vector3(0.3f, 0.02f, 0.3f));
-        m_plantsHighlight[1].setScale(plant2Controller.getInteractionSurface().localScale.x, m_plantsHighlight[1].getChildTransform().localScale.y, plant2Controller.getInteractionSurface().localScale.z);
-        m_plantsView[1].position = new Vector3(-1.38000059f, 0.35800001f, 1.05400014f);
-        plant3Controller.setScaling(new Vector3(0.3f, 0.02f, 0.3f));
-        m_plantsHighlight[2].setScale(plant3Controller.getInteractionSurface().localScale.x, m_plantsHighlight[2].getChildTransform().localScale.y, plant3Controller.getInteractionSurface().localScale.z);
-        m_plantsView[2].position = new Vector3(3.35499954f, 0.331999987f, 1.5990001f);*/
         Plant plant1 = m_plantsManager.getPlant(0);
         Plant plant2 = m_plantsManager.getPlant(1);
         Plant plant3 = m_plantsManager.getPlant(2);
@@ -325,13 +222,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         sStandBy.addFunctionShow(delegate (EventHandler e)
         {
             m_inferenceManager.registerInference(m_inference19h00);
-
-            // Just to be sure: set the color of the plants to yellow
-            /*foreach (MouseAssistanceBasic plant in m_plantsHighlight)
-            {
-                plant.setMaterialToChild("Mouse_Yellow_Glowing");
-            }*/
-
         }, MouseUtilities.getEventHandlerEmpty());
         sStandBy.setFunctionHide(delegate (EventHandler e)
         {
@@ -381,13 +271,8 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - preparing lines display for the plants");
 
             int indexPlant = 0;
-            //for (indexPlant = 0; indexPlant < m_plantsControllers.Count(); indexPlant ++)
             for (indexPlant = 0; indexPlant < m_plantsManager.getNbPlants(); indexPlant++)
             {
-                /*MouseAssistanceBasic plantTemp = m_plantsHighlight[indexPlant];
-                plantTemp.show(MouseUtilities.getEventHandlerEmpty());*/
-
-                //GameObject plantLineTemps = m_plantsLines[indexPlant];
                 LineRenderer line = m_plantsManager.getLineRenderer(indexPlant);
                 Plant plant = m_plantsManager.getPlant(indexPlant);
 
@@ -400,7 +285,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
                 {
                     MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called for plant index " + indexPlant);
 
-                    //plant.getHighlight().setMaterialToChild("Mouse_Green_Glowing");
                     line.positionCount = 0;
                     plantButton.checkButton(true);
                 };
@@ -418,8 +302,6 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         m_sIntermediateWateringPlants.s_eventNextState += sAssistanceWaterStart.goToState(sAssistanceWaterPlantsStandBy);
         successController.s_touched += sSuccess.goToState(sStandBy);
         
-
-
         // Initial state
         m_stateMachineMain.setGradationInitial("StandBy");
 
@@ -437,10 +319,8 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
         Plant p = m_plantsManager.getPlant(index);
 
-        //Vector3[] corners = m_pathFinderEngine.computePath(m_pointOfReferenceForPaths, m_plantsView[index].transform);
         Vector3[] corners = m_pathFinderEngine.computePath(m_pointOfReferenceForPaths, p.getInteractionSurface().transform);
 
-        //LineRenderer lineRenderer = m_plantsLines[index].GetComponent<LineRenderer>();
         LineRenderer lineRenderer = m_plantsManager.getLineRenderer(index);
         lineRenderer.positionCount = corners.Length;
 
@@ -479,19 +359,8 @@ public class PlantsManager
     Transform m_parent;
     MouseUtilitiesDisplayGraph m_graph;
 
-    /*List<Transform> m_plantsView;
-    List<EventHandler> m_plantsEventHandler;
-    List<MouseUtilitiesGradationAssistance> m_plantsStates;
-    List<MouseInteractionSurface> m_plantsControllers;
-    List<MouseAssistanceBasic> m_plantsHighlight;*/
-
     public PlantsManager(MouseUtilitiesDisplayGraph graph, Transform parent)
     {
-        /*m_plantsView = new List<Transform>();
-        m_plantsEventHandler = new List<EventHandler>();
-        m_plantsStates = new List<MouseUtilitiesGradationAssistance>();
-        m_plantsControllers = new List<MouseInteractionSurface>();
-        m_plantsHighlight = new List<MouseAssistanceBasic>();*/
         m_plants = new List<Plant>();
         m_plantsLines = new List<LineRenderer>();
 
@@ -511,29 +380,7 @@ public class PlantsManager
         m_plants.Add(plant);
         int indexPlant = m_plants.Count - 1;
 
-        //m_plantsView.Add(Instantiate(m_refInteractionSurface, transform));
-
-        //int indexPlant = m_plantsView.Count - 1;
-
-
-        //string plantId = "Plante " + (m_plantsView.Count).ToString();
-
-
-        //m_plantsControllers.Add(m_plantsView.Last().GetComponent<MouseInteractionSurface>());
-        /*m_plantsControllers.Last().setAdminButtons(plantId, MouseUtilitiesAdminMenu.Panels.Obstacles);
-        m_plantsControllers.Last().setScaling(new Vector3(0.1f, 0.1f, 0.1f));
-        m_plantsControllers.Last().setColor("Mouse_Yellow_Glowing");*/
-        /*m_plantsControllers.Last().s_interactionSurfaceMoved += delegate (System.Object o, EventArgs e)
-        { // Maybe this part will have to be updated , in the case I add a functionality to remove plants (which is unlikely but we never know).
-            drawLineForPlant(indexPlant);
-        };*/
-        //m_plantsControllers.Last().showInteractionSurfaceTable(true);
-
-        //m_plantsControllers.Last().setObjectResizable(true);
-
-        //GameObject gameObjectForLine = new GameObject("Line " + (m_plantsView.Count).ToString());
         GameObject gameObjectForLine = new GameObject("Line for " + plantId);
-        //gameObjectForLine.transform.parent = transform;
         gameObjectForLine.transform.parent = m_parent;
         LineRenderer lineRenderer = gameObjectForLine.AddComponent<LineRenderer>();
         lineRenderer.startWidth = 0.017f;
@@ -541,61 +388,10 @@ public class PlantsManager
         lineRenderer.material = Resources.Load("Mouse_Green_Glowing", typeof(Material)) as Material;
         lineRenderer.positionCount = 0;
 
-        m_plantsLines.Add(/*gameObjectForLine*/lineRenderer);
-
-        // Adding event handler to draw the line
-        /*m_plantsEventHandler.Add(delegate (System.Object o, EventArgs e)
-        {
-            if (m_dialogAssistanceWaterHelp.m_buttonsController[indexPlant].isChecked() == false)
-            {
-                drawLineForPlant(indexPlant);
-            }
-        });*/
-
-        // Adding the information to the state machine and the interactions
-        /*m_plantsStates.Add(m_stateMachineMain.addNewAssistanceGradation(plantId));
-        m_plantsStates.Last().addFunctionShow(delegate (EventHandler e)
-        { }, MouseUtilities.getEventHandlerEmpty());
-        m_plantsStates.Last().setFunctionHide(delegate (EventHandler e)
-        {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called for plant index " + indexPlant);
-
-            m_plantsHighlight[indexPlant].hide(MouseUtilities.getEventHandlerEmpty());
-
-            // Setting the color back to unwatered
-            m_plantsHighlight[indexPlant].setMaterialToChild("Mouse_Yellow_Glowing");
-
-            e?.Invoke(this, EventArgs.Empty);
-        }, MouseUtilities.getEventHandlerEmpty());*/
-
-       // m_plantsControllers.Last().m_eventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(m_plantsStates[indexPlant]);
-
-        //MouseInteractionSurface interactionSurfaceParent = m_plantsControllers.Last();
-        //GameObject plantHighlightView = Instantiate(m_refCube, interactionSurfaceParent.transform);
+        m_plantsLines.Add(lineRenderer);
         
-        /*m_plantsHighlight.Add(plantHighlightView.GetComponent<MouseAssistanceBasic>());
-        m_plantsHighlight.Last().setAdjustHeightOnShow(false);
-        m_plantsHighlight.Last().setMaterialToChild("Mouse_Yellow_Glowing");
-        m_plantsHighlight.Last().setScale(interactionSurfaceParent.getInteractionSurface().localScale.x, 0.6f, interactionSurfaceParent.getInteractionSurface().localScale.z);
-        m_plantsHighlight.Last().setLocalPosition(0, -0.35f, 0);
-        m_plantsHighlight.Last().setBillboard(false);*/
-
-        /*m_plantsControllers.Last().s_interactionSurfaceScaled += delegate
-        {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Resizing called");
-
-            m_plantsHighlight[indexPlant].setScale(m_plantsControllers[indexPlant].getInteractionSurface().localScale.x,
-                m_plantsHighlight[indexPlant].getChildTransform().localScale.y,
-                m_plantsControllers[indexPlant].getInteractionSurface().localScale.z);
-        };*/
-
         return indexPlant;
     }
-
-    /*public EventHandler getPlantEventHandler(int index)
-    {
-        return m_plantsEventHandler[index];
-    }*/
 
     public Plant getPlant(int index)
     {
@@ -624,18 +420,6 @@ public class PlantsManager
         return handlers;
     }
 
-    /*public List<EventHandler> gotoStateDefaultFromHighlight()
-    {
-        List<EventHandler> handlers = new List<EventHandler>();
-
-        foreach (Plant p in m_plants)
-        {
-            handlers.Add(p.gotoStateDefaultFromHighlight());
-        }
-
-        return handlers;
-    }*/
-
     public List<EventHandler> gotoStateDefaultFromHighlightWatered()
     {
         List<EventHandler> handlers = new List<EventHandler>();
@@ -648,18 +432,6 @@ public class PlantsManager
         return handlers;
     }
 
-    /*public List<EventHandler> gotoStateHighlightWatered()
-    {
-        List<EventHandler> handlers = new List<EventHandler>();
-
-        foreach (Plant p in m_plants)
-        {
-            handlers.Add(p.gotoStateHighlightWatered());
-        }
-
-        return handlers;
-    }*/
-
     public void displayGraphLastPlant()
     {
         m_plants.Last().displayGraph(m_graph);
@@ -670,7 +442,6 @@ public class Plant
 {
     MouseUtilitiesGradationAssistanceManager m_grabAttentionManager;
 
-    //Transform m_view;
     MouseInteractionSurface m_interactionSurface;
     MouseAssistanceBasic m_highlight;
 
@@ -688,18 +459,6 @@ public class Plant
 
         m_id = id;
 
-        /*m_view = Instantiate(m_refInteractionSurface, parent);
-        m_id = id;
-        m_controller = m_view.GetComponent<MouseInteractionSurface>();
-        m_controller.setAdminButtons(m_id, MouseUtilitiesAdminMenu.Panels.Obstacles);
-        m_controller.setScaling(new Vector3(0.1f, 0.1f, 0.1f));
-        m_controller.setColor("Mouse_Yellow_Glowing");
-        m_controller.showInteractionSurfaceTable(true);
-        m_controller.setObjectResizable(true);
-        m_controller.s_interactionSurfaceMoved += delegate (System.Object o, EventArgs e)
-        {
-            s_moved?.Invoke(this, EventArgs.Empty);
-        };*/
         m_interactionSurface = MouseUtilitiesAssistancesFactory.Instance.createInteractionSurface(id, MouseUtilitiesAdminMenu.Panels.Obstacles, new Vector3(0.1f, 0.1f, 0.1f), "Mouse_Yellow_Glowing", true, true, delegate (System.Object o, EventArgs e)
         {
             s_moved?.Invoke(this, EventArgs.Empty);
@@ -749,9 +508,7 @@ public class Plant
             e?.Invoke(this, EventArgs.Empty);
         }, MouseUtilities.getEventHandlerEmpty());
 
-        m_grabAttentionManager.setGradationInitial("default");
-
-        //m_grabAttentionManager.get
+        m_grabAttentionManager.setGradationInitial("default");s
     }
 
     public string getId ()
