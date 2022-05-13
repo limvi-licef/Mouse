@@ -35,7 +35,7 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
     /*MouseUtilitiesMutex m_mutexShow;
     MouseUtilitiesMutex m_mutexHide;*/
 
-    public event EventHandler s_touched;
+    public EventHandler s_touched;
 
     bool m_adjustHeight;
 
@@ -131,13 +131,26 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
 
     public void setScale(float x, float y, float z)
     {
-        m_childView.transform.localScale = new Vector3(x, y, z);
+        setScale(new Vector3(x, y, z));
+        //m_childView.transform.localScale = new Vector3(x, y, z);
+        //m_childScaleOrigin = m_childView.transform.localScale;
+    }
+
+    public void setScale(Vector3 scale)
+    {
+        m_childView.transform.localScale = scale;
         m_childScaleOrigin = m_childView.transform.localScale;
     }
 
     public void setLocalPosition(float x, float y, float z)
     {
-        m_childView.transform.localPosition = new Vector3(x, y, z);
+        //m_childView.transform.localPosition = new Vector3(x, y, z);
+        setLocalPosition(new Vector3(x, y, z));
+    }
+
+    public void setLocalPosition(Vector3 localPosition)
+    {
+        m_childView.transform.localPosition = localPosition;
     }
 
     public void setBillboard(bool enable)

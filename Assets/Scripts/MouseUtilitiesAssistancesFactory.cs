@@ -30,6 +30,7 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
     public MouseAssistanceDialog m_refDialogAssistance;
     public MouseAssistanceBasic m_refCube;
     public MouseAssistanceDialog m_refCheckListAssistance;
+    public MouseInteractionSurface m_refInteractionSurface;
 
     private void Awake()
     {
@@ -103,4 +104,32 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
 
         return cubeController;
     }
+
+    public MouseAssistanceBasic createCube(string texture, bool adjustHeight, Vector3 scale, Vector3 localPosition, bool enableBillboard, Transform parent)
+    {
+        MouseAssistanceBasic cube = createCube(texture, parent);
+        cube.setAdjustHeightOnShow(false);
+        cube.setMaterialToChild("Mouse_Yellow_Glowing");
+        cube.setScale(scale);
+        cube.setLocalPosition(localPosition);
+        cube.setBillboard(enableBillboard);
+
+        return cube;
+    }
+
+    public MouseInteractionSurface createInteractionSurface(string id, MouseUtilitiesAdminMenu.Panels panel, Vector3 scaling, string texture, bool show, bool resizable, EventHandler onMove, Transform parent)
+    {
+        Transform interactionSurface = Instantiate(m_refInteractionSurface.transform, parent);
+        MouseInteractionSurface controller = interactionSurface.GetComponent<MouseInteractionSurface>();
+        controller.setAdminButtons(id, MouseUtilitiesAdminMenu.Panels.Obstacles);
+        controller.setScaling(scaling);
+        controller.setColor(texture);
+        controller.showInteractionSurfaceTable(show);
+        controller.setObjectResizable(resizable);
+        controller.s_interactionSurfaceMoved += onMove;
+
+        return controller;
+    }
+
+
 }

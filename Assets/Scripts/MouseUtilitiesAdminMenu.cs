@@ -64,6 +64,12 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
             m_buttons = new List<GameObject>();
             m_panels = new Dictionary<Panels, Transform>();
 
+            // Remove the canvas renderer from the buttons, to avoid the warning message from unity
+            DestroyImmediate(m_refButton.transform.Find("IconAndText").Find("TextMeshPro").GetComponent<CanvasRenderer>(), true);
+            DestroyImmediate(m_refButton.transform.Find("SeeItSayItLabel").Find("TextMeshPro").GetComponent<CanvasRenderer>(), true);
+            DestroyImmediate(m_refButtonSwitch.transform.Find("IconAndText").Find("TextMeshPro").GetComponent<CanvasRenderer>(), true);
+            DestroyImmediate(m_refButtonSwitch.transform.Find("SeeItSayItLabel").Find("TextMeshPro").GetComponent<CanvasRenderer>(), true);
+
             // Get children
             m_panels.Add(Panels.Default,gameObject.transform.Find("PanelDefault").Find("ButtonParent").transform);
             m_panels.Add(Panels.Obstacles, gameObject.transform.Find("PanelObstacles").Find("ButtonParent").transform);
@@ -82,6 +88,8 @@ public class MouseUtilitiesAdminMenu : MonoBehaviour
 
         // Add the buttons to manage this menu
         addSwitchButton("Static/Mobile menu", callbackSwitchStaticOrMovingMenu);
+
+        
     }
 
     // Update is called once per frame

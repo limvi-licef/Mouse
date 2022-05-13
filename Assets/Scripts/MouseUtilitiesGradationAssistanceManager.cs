@@ -66,6 +66,18 @@ public class MouseUtilitiesGradationAssistanceManager
         }
     }
 
+    public MouseUtilitiesGradationAssistanceAbstract getAssistance(string id)
+    {
+        MouseUtilitiesGradationAssistanceAbstract toReturn = null;
+
+        if (m_assistanceGradation.ContainsKey(id))
+        {
+            toReturn = m_assistanceGradation[id];
+        }
+
+        return toReturn;
+    }
+
     public MouseUtilitiesGradationAssistanceAbstract getInitialAssistance()
     {
         MouseUtilitiesGradationAssistanceAbstract toReturn;

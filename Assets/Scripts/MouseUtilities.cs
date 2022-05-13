@@ -84,7 +84,8 @@ static class MouseUtilities
     {
         Vector3 localPos = o.localPosition;
 
-        o.parent = p;
+        //o.parent = p;
+        o.SetParent(p);
         o.localPosition = localPos;
     }
 

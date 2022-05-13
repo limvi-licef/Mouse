@@ -16,9 +16,9 @@ public class MouseUtilitiesSpatialAwareness : MonoBehaviour
     DateTime m_time;
     DateTime m_timeOneMinuteTrigger;
 
-    string m_wallsColor = "Mouse_Green_Glowing";
-    string m_ceilingsColor = "Mouse_Orange_Glowing";
-    string m_floorsColor = "Mouse_Purple_Glowing";
+    //string m_wallsColor = "Mouse_Green_Glowing";
+    //string m_ceilingsColor = "Mouse_Orange_Glowing";
+    //string m_floorsColor = "Mouse_Purple_Glowing";
 
     // Start is called before the first frame update
     void Start()
