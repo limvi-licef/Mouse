@@ -110,6 +110,11 @@ public class MouseChallengeCleanTable : MonoBehaviour
         s_time20h?.Invoke(o, e);
     }
 
+    public MouseUtilitiesInferenceTime getInference()
+    {
+        return m_inference20h;
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -198,13 +198,7 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
         //// Inferences
         DateTime tempTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 19, 0, 0);
-        m_inference19h00 = new MouseUtilitiesInferenceTime("19h watering plants", tempTime, delegate(System.Object o, EventArgs e)
-        {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
-
-            m_inferenceManager.unregisterInference("19h watering plants");
-            s_inference19h00?.Invoke(o, e);
-        });
+        m_inference19h00 = new MouseUtilitiesInferenceTime("19h watering plants", tempTime, callbackWateringThePlants);
         m_inferenceManager.registerInference(m_inference19h00);
 
         //// Asssitance to water the plants state machine
@@ -372,6 +366,19 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
             m_numberOfPlantsWatered = m_sIntermediateWateringPlants.getNbOfStatesWhoCalled();
                                                                                                             MouseUtilitiesContextualInferencesFactory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", callbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
         }
+    }
+
+    void callbackWateringThePlants(System.Object o, EventArgs e)
+    {
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        m_inferenceManager.unregisterInference("19h watering plants");
+        s_inference19h00?.Invoke(o, e);
+    }
+
+    public MouseUtilitiesInferenceTime getInference()
+    {
+        return (MouseUtilitiesInferenceTime) m_inferenceManager.getInference("19h watering plants");
     }
 }
 

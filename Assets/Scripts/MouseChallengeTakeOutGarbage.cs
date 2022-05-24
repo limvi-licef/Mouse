@@ -206,4 +206,14 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
 
         s_inference19h30?.Invoke(this, EventArgs.Empty);
     }
+
+    public MouseUtilitiesInferenceTime getInference19h()
+    {
+        return m_inference19h00;
+    }
+
+    public MouseUtilitiesInferenceTime getInference19h30()
+    {
+        return m_inference19h30;
+    }
 }
