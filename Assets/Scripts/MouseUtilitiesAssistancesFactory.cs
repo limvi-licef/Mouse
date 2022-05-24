@@ -128,7 +128,6 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
     {
         MouseAssistanceBasic cube = createCube(texture, parent);
         cube.setAdjustHeightOnShow(adjustHeight);
-        cube.setMaterialToChild(texture);
         cube.setScale(scale);
         cube.setLocalPosition(localPosition);
         cube.setBillboard(enableBillboard);
