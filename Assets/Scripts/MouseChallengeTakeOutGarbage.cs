@@ -169,7 +169,6 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         MouseUtilitiesGradationAssistance sSuccess = m_gradationManager.addNewAssistanceGradation("Success");
         sSuccess.setFunctionHideAndShow(successController);
 
-        
         // Connections between states
         s_inference19h00 += sStandBy.goToState(sHighlightGarbage);
         garbageInteractionSurfaceController.m_eventInteractionSurfaceTableTouched += sStandBy.goToState(/*sSuccess*/sGarbageGrabbed);

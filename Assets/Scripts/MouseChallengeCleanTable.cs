@@ -58,6 +58,17 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     public MouseUtilitiesContextualInferences m_inferenceEngine;
 
+    EventHandler s_time20h;
+    EventHandler s_ignoreRedSurface;
+    EventHandler s_ignoreExclamationMark;
+    EventHandler s_dialogSecondButtonOk;
+    EventHandler s_dialogSecondButtonNok;
+    EventHandler s_dialogSecondButtonLeave;
+    EventHandler s_backToTable;
+    EventHandler s_caregiverCall;
+
+    MouseUtilitiesInferenceTime m_inference20h;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -83,8 +94,20 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
         m_assistanceGradationManager = new MouseUtilitiesGradationAssistanceManager();
 
+        DateTime tempTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 19, 0, 0);
+        m_inference20h = new MouseUtilitiesInferenceTime("time 20h", tempTime, callbackInferenceTime20h);
+
         // Initialization of the scenario
-        initializeScenario();
+        initializeScenariov2();
+
+        // Drawing the graph
+        //m_displayGraphController.setManager(m_assistanceGradationManager);
+    }
+
+    void callbackInferenceTime20h(System.Object o, EventArgs e)
+    {
+        m_inferenceEngine.unregisterInference(m_inference20h);
+        s_time20h?.Invoke(o, e);
     }
 
     // Update is called once per frame
@@ -93,7 +116,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
     }
 
-    void initializeScenario()
+    void initializeScenariov1()
     {
         /** Initializing the assistances we will be needing **/
         // First interaction surface, i.e. for the table
@@ -130,7 +153,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
         // Cueing for the beginning of the scenario
         GameObject initialCueingView = Instantiate(m_refAssistanceDialog, interactionTableView.transform);
         MouseAssistanceDialog initialCueingController = initialCueingView.GetComponent<MouseAssistanceDialog>();
-        initialCueingController.setDescription("Que faites-vous typiquement après manger?", 0.2f);
+        initialCueingController.setDescription("Que faites-vous typiquement après manger?");
         initialCueingController.addButton("Je ne sais pas", true, 0.2f);
         initialCueingController.enableBillboard(true);
 
@@ -203,11 +226,190 @@ public class MouseChallengeCleanTable : MonoBehaviour
         m_reminderController.m_eventHologramWindowButtonBackTouched += sReminder.setGradationPrevious();
         m_reminderController.m_eventHologramWindowButtonOkTouched += sReminder.goToState(sStandBy);
 
-        // Drawing the graph
-        m_displayGraphController.setManager(m_assistanceGradationManager);
+        
 
         // Add button to reset scenario
         MouseUtilitiesAdminMenu.Instance.addButton("Reset clean table challenge", delegate () { m_assistanceGradationManager.goBackToOriginalState(); });
+    }
+
+    void initializeScenariov2()
+    {
+        // Interaction surface table
+        MouseInteractionSurface interactionSurfaceTable = MouseUtilitiesAssistancesFactory.Instance.createInteractionSurface("table v2", MouseUtilitiesAdminMenu.Panels.Default, new Vector3(1.1f, 0.02f, 0.7f), "Mouse_Cyan_Glowing", true, true, MouseUtilities.getEventHandlerEmpty(), transform);
+        //interactionSurfaceTable.setLocalPosition(new Vector3(0.949f, -0.017f, 1.117f));
+        interactionSurfaceTable.setPreventResizeY(true);
+        interactionSurfaceTable.transform.position = new Vector3(0.8258258700370789f, 0.4396502375602722f, 2.451075315475464f);
+
+        // Interaction surface rag
+        MouseInteractionSurface interactionSurfaceRag = MouseUtilitiesAssistancesFactory.Instance.createInteractionSurface("rag v2", MouseUtilitiesAdminMenu.Panels.Default, new Vector3(0.2f, 0.01f, 0.2f), "Mouse_Orange_Glowing", true, true, MouseUtilities.getEventHandlerEmpty(), transform);
+        interactionSurfaceRag.transform.localPosition = new Vector3(0, -0.008f, 3.843f);
+        //interactionSurfaceRag.getInteractionSurface().transform.localPosition = new Vector3(0, -0.008f, 3.843f);
+
+
+        // Red surface on table
+        MouseAssistanceBasic redSurface = MouseUtilitiesAssistancesFactory.Instance.createFlatSurface("Mouse_Red_Glowing", new Vector3(interactionSurfaceTable.getLocalPosition().x, interactionSurfaceTable.getLocalPosition().y+0.02f, interactionSurfaceTable.getLocalPosition().z), interactionSurfaceTable.transform);
+        redSurface.setScale(interactionSurfaceTable.getLocalScale().x, redSurface.getScale().y, interactionSurfaceTable.getLocalScale().z);
+        interactionSurfaceTable.s_interactionSurfaceScaled += delegate { redSurface.setScale(new Vector3(interactionSurfaceTable.getInteractionSurface().localScale.x, redSurface.getScale().y, interactionSurfaceTable.getInteractionSurface().localScale.z)); };
+
+        // Exclamation mark
+        MouseAssistanceBasic exclamationMark = MouseUtilitiesAssistancesFactory.Instance.createCube("Mouse_Exclamation_Red", true, new Vector3(0.1f, 0.1f, 0.1f), new Vector3(0, 0, 0), true, interactionSurfaceTable.transform);
+
+        // First message
+        string firstMessage = "Que faites-vous normalement après manger?"; // Used in the first two dialogs
+        MouseAssistanceDialog firstDialog = MouseUtilitiesAssistancesFactory.Instance.createDialogNoButton("", firstMessage, interactionSurfaceTable.transform);
+
+        // Second dialog
+        MouseAssistanceDialog secondDialog = MouseUtilitiesAssistancesFactory.Instance.createDialogThreeButtons("", firstMessage, "Je sais!", delegate(System.Object o, EventArgs e) { s_dialogSecondButtonOk?.Invoke(this, e); }, "Je ne sais pas", delegate (System.Object o, EventArgs e) { s_dialogSecondButtonNok?.Invoke(this, e); }, "Cela ne m'intéresse pas", delegate (System.Object o, EventArgs e) { s_dialogSecondButtonLeave?.Invoke(this, e); }, interactionSurfaceTable.transform);
+
+        // Surface to clean
+        MouseChallengeCleanTableSurfaceToPopulateWithCubes surfaceToProcess = MouseUtilitiesAssistancesFactory.Instance.createSurfaceToProcess(interactionSurfaceTable.transform);
+        surfaceToProcess.transform.localScale = new Vector3(interactionSurfaceTable.getInteractionSurface().localScale.x, surfaceToProcess.transform.localScale.y, interactionSurfaceTable.getInteractionSurface().localScale.z);
+        interactionSurfaceTable.s_interactionSurfaceScaled += delegate (System.Object o, EventArgs e)
+        {
+            surfaceToProcess.transform.localScale = new Vector3(interactionSurfaceTable.getInteractionSurface().localScale.x, surfaceToProcess.transform.localScale.y, interactionSurfaceTable.getInteractionSurface().localScale.z);
+        };
+
+        // Dialog to ask to get the rag
+        MouseAssistanceDialog dialogRag = MouseUtilitiesAssistancesFactory.Instance.createDialogNoButton("", "Vous devez nettoyer la table avec un chiffon", interactionSurfaceTable.transform);
+
+        // Dialog to inform where the rag is
+        // To do later
+
+        // Calling the caregiver
+        MouseAssistanceDialog dialogCallCaregiver =  MouseUtilitiesAssistancesFactory.Instance.createDialogTwoButtons("", "Est-ce que j'appelle votre aidant?", "Oui", delegate(System.Object o, EventArgs e) { s_caregiverCall?.Invoke(this, e); }, "Non", delegate (System.Object o, EventArgs e) { s_caregiverCall?.Invoke(this, e); }, interactionSurfaceTable.transform);
+
+        // Success
+        MouseAssistanceBasic success = MouseUtilitiesAssistancesFactory.Instance.createCube("Mouse_Congratulation", interactionSurfaceTable.transform);
+
+        // Inferences
+        //MouseUtilitiesInferenceTime i20h = new MouseUtilitiesInferenceTime("")
+        /*MouseUtilitiesContextualInferencesFactory.Instance.createTemporalInferenceOneShot(m_inferenceEngine, "CleanTable20h", delegate (System.Object o, EventArgs e)
+        {
+            s_time20h?.Invoke(this, e);
+        }, 20);*/
+        m_inferenceEngine.registerInference(m_inference20h);
+        
+
+        MouseUtilitiesContextualInferencesFactory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "IgnoreRedSurfaceAndExclamationMark", delegate (System.Object o, EventArgs e)
+        {
+            s_ignoreRedSurface?.Invoke(this, e);
+        }/*s_ignoreExclamationMark*/, redSurface.gameObject);
+        
+        // States
+        MouseUtilitiesGradationAssistance sStandBy = m_assistanceGradationManager.addNewAssistanceGradation("Stand-by");
+        sStandBy.addFunctionShow(delegate (EventHandler e)
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Standby show function called");
+
+            //MouseUtilitiesInferenceTime i20h = new MouseUtilitiesInferenceTime("")
+            /*MouseUtilitiesContextualInferencesFactory.Instance.createTemporalInferenceOneShot(m_inferenceEngine, "CleanTable20h", delegate (System.Object o, EventArgs ee)
+            {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Callback for 20h called. Signal should be triggered ...");
+
+                s_time20h?.Invoke(this, ee);
+            }, 20);*/
+            m_inferenceEngine.registerInference(m_inference20h);
+        }, MouseUtilities.getEventHandlerEmpty());
+        sStandBy.setFunctionHide(delegate (EventHandler e)
+        { e?.Invoke(this, EventArgs.Empty); }, MouseUtilities.getEventHandlerEmpty());
+
+        MouseUtilitiesGradationAssistance sRedSurface = m_assistanceGradationManager.addNewAssistanceGradation("Red surface");
+        sRedSurface.setFunctionHideAndShow(redSurface);
+        sRedSurface.addFunctionShow(delegate (EventHandler eh)
+        {
+            MouseUtilitiesContextualInferencesFactory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "IgnoreRedSurface", delegate (System.Object o, EventArgs e)
+            {
+                s_ignoreRedSurface.Invoke(this, e);
+            }/*s_ignoreRedSurface*/, redSurface.gameObject);
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        MouseUtilitiesGradationAssistance sRedSurfaceAndExclamation = m_assistanceGradationManager.addNewAssistanceGradation("Red surface + exclamation mark");
+        sRedSurfaceAndExclamation.addFunctionShow(exclamationMark);
+        sRedSurfaceAndExclamation.addFunctionShow(redSurface);
+        sRedSurfaceAndExclamation.setFunctionHide(delegate (EventHandler e)
+        {
+            exclamationMark.hide(MouseUtilities.getEventHandlerEmpty());
+            redSurface.hide(MouseUtilities.getEventHandlerEmpty());
+
+            e?.Invoke(this, EventArgs.Empty);
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        MouseUtilitiesGradationAssistance sFirstDialog = m_assistanceGradationManager.addNewAssistanceGradation("First dialog");
+        sFirstDialog.setFunctionHideAndShow(firstDialog);
+        sFirstDialog.addFunctionShow(delegate (EventHandler e) {
+            MouseUtilitiesContextualInferencesFactory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
+            {
+                s_backToTable.Invoke(this, ee);
+            }, interactionSurfaceTable.gameObject);
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        MouseUtilitiesGradationAssistance sProcessSurface = m_assistanceGradationManager.addNewAssistanceGradation("Process surface");
+        sProcessSurface.addFunctionShow(surfaceToProcess.showInteractionCubesTablePanel, MouseUtilities.getEventHandlerEmpty());
+        sProcessSurface.setFunctionHide(surfaceToProcess.hide, MouseUtilities.getEventHandlerEmpty());
+
+        MouseUtilitiesGradationAssistance sSecondDialog = m_assistanceGradationManager.addNewAssistanceGradation("Second dialog");
+        sSecondDialog.setFunctionHideAndShow(secondDialog);
+
+        MouseUtilitiesGradationAssistance sDialogRag = m_assistanceGradationManager.addNewAssistanceGradation("Dialog rag");
+        sDialogRag.setFunctionHideAndShow(dialogRag);
+        sDialogRag.addFunctionShow(delegate (EventHandler e) {
+            MouseUtilitiesContextualInferencesFactory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
+            {
+                s_backToTable.Invoke(this, ee);
+            }/*s_ignoreExclamationMark*/, interactionSurfaceTable.gameObject);
+        }, MouseUtilities.getEventHandlerEmpty());
+
+        MouseUtilitiesGradationAssistance sSuccess = m_assistanceGradationManager.addNewAssistanceGradation("Success");
+        sSuccess.setFunctionHideAndShow(success);
+
+        MouseUtilitiesGradationAssistance sCaregiverCall = m_assistanceGradationManager.addNewAssistanceGradation("Caregiver call");
+        sCaregiverCall.setFunctionHideAndShow(dialogCallCaregiver);
+
+        // Set original state
+        m_assistanceGradationManager.setGradationInitial("Stand-by");
+
+        // Connecting the states
+        s_time20h += delegate (System.Object o, EventArgs e)
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Inference 20h for cleaning table called");
+        };
+        s_time20h += sStandBy.goToState(sRedSurface);
+        s_ignoreRedSurface += sRedSurface.goToState(sRedSurfaceAndExclamation);
+        exclamationMark.s_touched += sRedSurfaceAndExclamation.goToState(sFirstDialog);
+
+        interactionSurfaceRag.m_eventInteractionSurfaceTableTouched += delegate (System.Object o, EventArgs e)
+        {
+            m_inferenceEngine.unregisterInference("BackToTable");
+            m_inferenceEngine.unregisterInference("BackToTableInternal");
+        };
+        interactionSurfaceRag.m_eventInteractionSurfaceTableTouched += sRedSurface.goToState(sProcessSurface);
+        interactionSurfaceRag.m_eventInteractionSurfaceTableTouched += sRedSurfaceAndExclamation.goToState(sProcessSurface);
+        interactionSurfaceRag.m_eventInteractionSurfaceTableTouched += sFirstDialog.goToState(sProcessSurface);
+        interactionSurfaceRag.m_eventInteractionSurfaceTableTouched += sDialogRag.goToState(sProcessSurface);
+
+        s_backToTable += sFirstDialog.goToState(sSecondDialog);
+
+        s_dialogSecondButtonOk += sSecondDialog.goToState(sProcessSurface);
+        s_dialogSecondButtonOk += delegate (System.Object o, EventArgs e)
+        {
+            MouseUtilitiesContextualInferencesFactory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
+            {
+                s_backToTable.Invoke(this, e);
+            }/*s_ignoreExclamationMark*/, interactionSurfaceTable.gameObject);
+        };
+        
+        s_backToTable += sProcessSurface.goToState(sDialogRag);
+        
+        s_dialogSecondButtonNok += sSecondDialog.goToState(sDialogRag);
+        s_dialogSecondButtonLeave += sSecondDialog.goToState(sStandBy);
+
+        surfaceToProcess.m_eventSurfaceCleaned += sProcessSurface.goToState(sSuccess);
+
+        s_backToTable += sDialogRag.goToState(sCaregiverCall);
+        s_caregiverCall += sCaregiverCall.goToState(sStandBy);
+
+        success.s_touched += sSuccess.goToState(sStandBy);
+
     }
 
     void callbackInferenceDistanceAssistanceStimulateLevel1(System.Object sender, EventArgs args)

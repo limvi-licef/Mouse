@@ -142,6 +142,11 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
         m_childScaleOrigin = m_childView.transform.localScale;
     }
 
+    public Vector3 getScale()
+    {
+        return m_childView.transform.localScale;
+    }
+
     public void setLocalPosition(float x, float y, float z)
     {
         //m_childView.transform.localPosition = new Vector3(x, y, z);
@@ -151,6 +156,11 @@ public class MouseAssistanceBasic : MouseAssistanceAbstract
     public void setLocalPosition(Vector3 localPosition)
     {
         m_childView.transform.localPosition = localPosition;
+    }
+
+    public Vector3 getLocalPosition()
+    {
+        return m_childView.transform.localPosition;
     }
 
     public void setBillboard(bool enable)

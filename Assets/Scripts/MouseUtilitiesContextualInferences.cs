@@ -92,6 +92,18 @@ public class MouseUtilitiesContextualInferences : MonoBehaviour
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "No inference registered - nothing to do");
         }
     }
+
+    public MouseUtilitiesInferenceAbstract getInference(string id)
+    {
+        MouseUtilitiesInferenceAbstract toReturn = null;
+
+        if (m_inferences.ContainsKey(id))
+        {
+            toReturn = m_inferences[id];
+        }
+
+        return toReturn;
+    }
 }
 
 public abstract class MouseUtilitiesInferenceAbstract

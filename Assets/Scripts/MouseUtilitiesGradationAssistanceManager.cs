@@ -121,7 +121,7 @@ public class MouseUtilitiesGradationAssistanceManager
 
         fShows.Add(delegate (EventHandler e)
         {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Setting the new current: current>previous: " + m_gradationCurrent + " next>current: " + m_gradationNext);
+            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Setting the new current: current>previous: " + m_gradationCurrent + " next>current: " + m_gradationNext);
 
 
             m_gradationPrevious = m_gradationCurrent;
@@ -143,7 +143,7 @@ public class MouseUtilitiesGradationAssistanceManager
 
             if (caller.getId() == m_gradationCurrent)
             { // A same trigger can call several time the same event for different objects (typically, the reminder one for instance, which is present at different stages of the scenario). So here we take into account only the trigger sent from the current gradation level.
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Caller: " + caller.getId() + " | next state: " + args.m_nextState);
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Caller: " + caller.getId() + " | next state: " + args.m_nextState);
 
                 goToNextState(args.m_nextState);
             }
@@ -179,7 +179,7 @@ public class MouseUtilitiesGradationAssistanceManager
 
             state.setFunctionShow(delegate (EventHandler e)
             {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - intermediate show function trigerring the event for the graph display");
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - intermediate show function trigerring the event for the graph display");
 
                 m_gradationPrevious = m_gradationCurrent;
                 m_gradationCurrent = m_gradationNext;
@@ -227,7 +227,7 @@ public class MouseUtilitiesGradationAssistanceManager
         else
         {
             m_gradationNext = stateNext.getId();
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + stateCurrent.getId() + " to " + stateNext.getId() + ". Number of show functions to call: " + stateNext.getFunctionsShow().Count);
+            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Transitions from " + stateCurrent.getId() + " to " + stateNext.getId() + ". Number of show functions to call: " + stateNext.getFunctionsShow().Count);
 
             goToState(stateCurrent, stateNext);
 
@@ -248,7 +248,7 @@ public class MouseUtilitiesGradationAssistanceManager
     // Be careful with this function ! Should not be called directly if you do not know what your are doing. It is a short function but can mess up many things.
     void goToState(MouseUtilitiesGradationAssistanceAbstract current, MouseUtilitiesGradationAssistanceAbstract next)
     { // Current: will call hide function; Next: will call show functions
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. Going from " + current.getId() + " to " + next.getId());
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called. Going from " + current.getId() + " to " + next.getId());
 
         raiseEventsGradation(current.getFunctionHide(), current.getFunctionHideEventHandler(), next.getFunctionsShow(), next.getFunctionsShowEventHandlers());
     }
@@ -262,7 +262,7 @@ public class MouseUtilitiesGradationAssistanceManager
         {
             for (int i = 0; i < fShows.Count; i ++)
             {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Function show " + i + " is going to be called");
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Function show " + i + " is going to be called");
 
                 fShows[i](fShowsEventHandler[i]);
             }
@@ -516,14 +516,14 @@ public class MouseUtilitiesGradationAssistanceIntermediateState: MouseUtilitiesG
 
             if (pair.Value == false)
             {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "State " + pair.Key + " called");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "State " + pair.Key + " NOT called");
 
                 triggerNextState = false;
                 //break; // No need to continue the loop
             }
             else
             {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "State " + pair.Key + " NOT called");
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "State " + pair.Key + " called");
 
                 nbStatesCalled++;
             }

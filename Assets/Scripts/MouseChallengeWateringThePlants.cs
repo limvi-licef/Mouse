@@ -65,7 +65,15 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         m_plantsManager = new PlantsManager(m_graphPlants, transform);
 
         // Add buttons to admin menu
-        MouseUtilitiesAdminMenu.Instance.addButton("Add plant", callbackAddPlant);
+        MouseUtilitiesAdminMenu.Instance.addButton("Add plant", callbackAddPlant, MouseUtilitiesAdminMenu.Panels.Obstacles);
+        MouseUtilitiesAdminMenu.Instance.addButton("Clear plant paths", delegate ()
+        {
+            for (int i = 0; i < m_plantsManager.getNbPlants(); i ++)
+            {
+                m_plantsManager.getLineRenderer(i).positionCount = 0;
+            }
+        }, MouseUtilitiesAdminMenu.Panels.Obstacles);
+
 
         // Initialize scenario
         initializeScenario();
@@ -101,8 +109,14 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
             e?.Invoke(this, EventArgs.Empty);
         }, MouseUtilities.getEventHandlerEmpty());
-        p.getInteractionSurface().m_eventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(p.getState());
+        
+        //EventHandler temp = m_sIntermediateWateringPlants.addState(p.getState());
         p.getInteractionSurface().m_eventInteractionSurfaceTableTouched += p.gotoStateHighlightWatered(); // If we remain in the default attention state, it will just not go there, so should be safe
+        p.getInteractionSurface().m_eventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(p.getState());
+        p.getInteractionSurface().m_eventInteractionSurfaceTableTouched += delegate (System.Object o, EventArgs e)
+        {
+            m_plantsManager.getLineRenderer(plantId).positionCount = 0;
+        };
 
         // Add plant to the GUI
         m_dialogAssistanceWaterHelp.addButton("Plante " + (plantId + 1), false);
@@ -268,7 +282,7 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
 
         s_assistanceWaterNeedHelp += delegate (System.Object o, EventArgs e)
         {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - preparing lines display for the plants");
+            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - preparing lines display for the plants");
 
             int indexPlant = 0;
             for (indexPlant = 0; indexPlant < m_plantsManager.getNbPlants(); indexPlant++)
@@ -277,13 +291,22 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
                 Plant plant = m_plantsManager.getPlant(indexPlant);
 
                 MouseAssistanceButton plantButton = m_dialogAssistanceWaterHelp.m_buttonsController[indexPlant];
-                
-                plantButton.checkButton(m_sIntermediateWateringPlants.checkStateCalled(plant.getState()));
 
-                plant.getInteractionSurface().m_eventInteractionSurfaceTableTouched += plant.gotoStateHighlightWatered();
+                bool plantAlreadyWatered = m_sIntermediateWateringPlants.checkStateCalled(plant.getState());
+
+                plantButton.checkButton(plantAlreadyWatered);
+
+                //plant.getInteractionSurface().m_eventInteractionSurfaceTableTouched += plant.gotoStateHighlightWatered();
+
+                // If the plant has already been watered, artifically triger the event so that the state of the plant goes to "highlightWatered"
+                if (plantAlreadyWatered)
+                {
+                    plant.getInteractionSurface().triggerTouchEvent();
+                }
+
                 plant.getInteractionSurface().m_eventInteractionSurfaceTableTouched += delegate (System.Object oo, EventArgs ee)
                 {
-                    MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called for plant index " + indexPlant);
+                    //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called for plant index " + indexPlant);
 
                     line.positionCount = 0;
                     plantButton.checkButton(true);
@@ -479,6 +502,7 @@ public class Plant
 
         sDefault.addFunctionShow(delegate (EventHandler e)
         {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Plant " + m_id + " is going to default state");
         }, MouseUtilities.getEventHandlerEmpty());
         sDefault.setFunctionHide(delegate (EventHandler e)
         {
@@ -498,6 +522,8 @@ public class Plant
 
         sHighlightWatered.addFunctionShow(delegate (EventHandler e)
         {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Plant " + m_id + " has been watered");
+
             m_highlight.setMaterialToChild("Mouse_Green_Glowing");
         }, MouseUtilities.getEventHandlerEmpty());
         sHighlightWatered.setFunctionHide(delegate (EventHandler e)
@@ -508,7 +534,7 @@ public class Plant
             e?.Invoke(this, EventArgs.Empty);
         }, MouseUtilities.getEventHandlerEmpty());
 
-        m_grabAttentionManager.setGradationInitial("default");s
+        m_grabAttentionManager.setGradationInitial("default");
     }
 
     public string getId ()
@@ -533,7 +559,24 @@ public class Plant
 
     public EventHandler gotoStateHighlightWatered()
     {
-        return getState("highlight").goToState(getState("highlightWatered"));
+        MouseUtilitiesGradationAssistance state = getState("highlightWatered");
+        //state.addFunctionShow(e, MouseUtilities.getEventHandlerEmpty());
+
+        /*state.addFunctionShow(delegate (EventHandler e)
+        {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Plant " + m_id + " has been watered");
+
+            m_highlight.setMaterialToChild("Mouse_Green_Glowing");
+        }, callback);
+        state.setFunctionHide(delegate (EventHandler e)
+        {
+            m_highlight.setMaterialToChild("Mouse_Yellow_Glowing");
+            m_highlight.hide(MouseUtilities.getEventHandlerEmpty());
+
+            e?.Invoke(this, EventArgs.Empty);
+        }, MouseUtilities.getEventHandlerEmpty());*/
+
+        return getState("highlight").goToState(state);
     }
 
     public EventHandler gotoStateDefaultFromHighlight()

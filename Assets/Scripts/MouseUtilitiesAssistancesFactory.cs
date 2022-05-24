@@ -31,6 +31,7 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
     public MouseAssistanceBasic m_refCube;
     public MouseAssistanceDialog m_refCheckListAssistance;
     public MouseInteractionSurface m_refInteractionSurface;
+    public MouseChallengeCleanTableSurfaceToPopulateWithCubes m_refSurfaceToProcess;
 
     private void Awake()
     {
@@ -96,6 +97,24 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
         return dialogController;
     }
 
+    public MouseAssistanceDialog createDialogThreeButtons(string title, string description, string textButton1, EventHandler callbackButton1, string textButton2, EventHandler callbackButton2, string textButton3, EventHandler callbackButton3, Transform parent)
+    {
+        Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
+        MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
+        dialogController.setTitle(title);
+        float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+        dialogController.setDescription(description, sizeDescriptionText);
+        dialogController.enableBillboard(true);
+        dialogController.addButton(textButton1, true);
+        dialogController.addButton(textButton2, true);
+        dialogController.addButton(textButton3, true);
+        dialogController.m_buttonsController[0].s_buttonClicked += callbackButton1;
+        dialogController.m_buttonsController[1].s_buttonClicked += callbackButton2;
+        dialogController.m_buttonsController[2].s_buttonClicked += callbackButton3;
+
+        return dialogController;
+    }
+
     public MouseAssistanceBasic createCube(string texture, Transform parent)
     {
         Transform cubeView = Instantiate(m_refCube.transform, parent);
@@ -108,11 +127,18 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
     public MouseAssistanceBasic createCube(string texture, bool adjustHeight, Vector3 scale, Vector3 localPosition, bool enableBillboard, Transform parent)
     {
         MouseAssistanceBasic cube = createCube(texture, parent);
-        cube.setAdjustHeightOnShow(false);
-        cube.setMaterialToChild("Mouse_Yellow_Glowing");
+        cube.setAdjustHeightOnShow(adjustHeight);
+        cube.setMaterialToChild(texture);
         cube.setScale(scale);
         cube.setLocalPosition(localPosition);
         cube.setBillboard(enableBillboard);
+
+        return cube;
+    }
+
+    public MouseAssistanceBasic createFlatSurface(string texture, Vector3 localPosition, Transform parent)
+    {
+        MouseAssistanceBasic cube = createCube(texture, false, new Vector3(1.0f, 0.01f, 1.0f), localPosition, false, parent);
 
         return cube;
     }
@@ -131,5 +157,15 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
         return controller;
     }
 
+    // CONTINUER LA AUSSI
+    public MouseChallengeCleanTableSurfaceToPopulateWithCubes createSurfaceToProcess(Transform parent)
+    {
+        Transform view = Instantiate(m_refSurfaceToProcess.transform, parent);
+
+        MouseChallengeCleanTableSurfaceToPopulateWithCubes controller = view.GetComponent<MouseChallengeCleanTableSurfaceToPopulateWithCubes>();
+
+        //MouseChallengeleanTableSurfaceToPopulateWithCubes
+        return controller ;
+    }
 
 }

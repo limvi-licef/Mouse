@@ -85,6 +85,21 @@ public class MouseInteractionSurface : MonoBehaviour
         m_interactionSurfaceView.localScale = scaling;
     }
 
+    public void setLocalPosition(Vector3 position)
+    {
+        m_interactionSurfaceView.localPosition = position;
+    }
+
+    public Vector3 getLocalPosition()
+    {
+        return m_interactionSurfaceView.localPosition;
+    }
+
+    public Vector3 getLocalScale()
+    {
+        return m_interactionSurfaceView.localScale;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -133,8 +148,9 @@ public class MouseInteractionSurface : MonoBehaviour
 
     public void callbackBring()
     {
-        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called");
         gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
+
+        MouseDebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", MouseDebugMessagesManager.MessageLevel.Info, "Called - Camera position: " + Camera.main.transform.position + " New position of the object: " + gameObject.transform.position);
     }
 
     public void setAdminButtons(string interfaceSurfaceId, MouseUtilitiesAdminMenu.Panels panel = MouseUtilitiesAdminMenu.Panels.Default)
@@ -168,5 +184,13 @@ public class MouseInteractionSurface : MonoBehaviour
         {
             m_interactionSurfaceView.GetComponent<BoundsControl>().FlattenAxis = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.FlattenModeType.DoNotFlatten;
         }
+    }
+
+    /**
+     * Trigger the touch event from the script.
+     * */
+    public void triggerTouchEvent()
+    {
+        m_eventInteractionSurfaceTableTouched?.Invoke(this, EventArgs.Empty);
     }
 }

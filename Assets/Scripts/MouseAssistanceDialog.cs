@@ -165,7 +165,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     bool m_mutexShow = false;
     public override void show (EventHandler eventHandler)
     {
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
         if (m_mutexShow == false)
         {
@@ -174,7 +174,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
             MouseUtilities.adjustObjectHeightToHeadHeight(transform);
 
             MouseUtilities.animateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal, delegate {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Background shown");
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Background shown");
 
                 MouseUtilities.animateAppearInPlace(m_titleView.gameObject);
                 MouseUtilities.animateAppearInPlace(m_buttonsParentView.gameObject);

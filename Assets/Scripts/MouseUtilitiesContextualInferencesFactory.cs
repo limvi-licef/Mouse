@@ -80,6 +80,16 @@ public class MouseUtilitiesContextualInferencesFactory : MonoBehaviour
         }, refObject, trigerringDistanceLeaving);
     }
 
+    public void createTemporalInferenceOneShot(MouseUtilitiesContextualInferences inferenceManager, string inferenceId, EventHandler toTrigger, int hour)
+    {
+        DateTime tempTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hour, 0, 0);
+        MouseUtilitiesInferenceTime inference = new MouseUtilitiesInferenceTime(inferenceId, tempTime, delegate (System.Object o, EventArgs e)
+        {
+            inferenceManager.unregisterInference(inferenceId);
+            toTrigger?.Invoke(o, e);
+        });
+        inferenceManager.registerInference(inference);
+    }
 
     // Start is called before the first frame update
     void Start()
