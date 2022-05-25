@@ -22,7 +22,7 @@ using System.Timers;
 using System.Reflection;
 using System.Linq;
 
-public class MouseChallengeWateringThePlants : MonoBehaviour
+public class MouseChallengeWateringThePlants : MouseChallengeAbstract
 {
     public MouseUtilitiesPathFinding m_pathFinderEngine;
     public Transform m_refInteractionSurface;
@@ -204,7 +204,9 @@ public class MouseChallengeWateringThePlants : MonoBehaviour
         //// Asssitance to water the plants state machine
         MouseUtilitiesGradationAssistance sAssistanceWaterPlantsStandBy = m_stateMachineAssistanceWateringPlants.addNewAssistanceGradation("standBy");
         sAssistanceWaterPlantsStandBy.addFunctionShow(delegate (EventHandler e)
-        {}, MouseUtilities.getEventHandlerEmpty());
+        {
+            onChallengeStandBy();
+        }, MouseUtilities.getEventHandlerEmpty());
         sAssistanceWaterPlantsStandBy.setFunctionHide(delegate (EventHandler e)
         { e?.Invoke(this, EventArgs.Empty); }, MouseUtilities.getEventHandlerEmpty());
 

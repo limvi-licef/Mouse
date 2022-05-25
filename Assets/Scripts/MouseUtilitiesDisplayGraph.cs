@@ -80,6 +80,7 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
 
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Original state: " + m_initialState.getId());
         displayStates(m_initialState, 0);
+        //displayStatesV2();
 
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Table surface should be touchable again");
 
@@ -87,18 +88,45 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         m_manager.s_newStateSelected += callbackNewStateSelected;
     }
 
+    void displayStatesV2()
+    {
+        foreach(MouseUtilitiesGradationAssistanceAbstract state in m_manager.getListOfStates())
+        {
+            addState(state);
+        }
+
+        foreach (MouseUtilitiesGradationAssistanceAbstract currentState in m_manager.getListOfStates())
+        {
+            foreach (MouseUtilitiesGradationAssistanceAbstract nextState in currentState.getNextStates().Values.ToList())
+            {
+                addConnector(currentState, nextState);
+            }
+        }
+    }
+
+
     void displayStates(MouseUtilitiesGradationAssistanceAbstract currentstate, int nbLevels)
     {
+        //m_manager.get
+
         addState(currentstate);
 
         foreach (KeyValuePair<string, MouseUtilitiesGradationAssistanceAbstract> nextState in currentstate.getNextStates())
         {
-            if(nextState.Key != m_initialState.getId())
+            /*if(nextState.Key != m_initialState.getId())
             {
                 displayStates(nextState.Value, nbLevels+1);
             }
+            
+            addConnector(currentstate, nextState.Value)
+             */
 
-            addConnector(currentstate, nextState.Value);
+            addState(nextState.Value);
+
+            if (addConnector(currentstate, nextState.Value))
+            {
+                displayStates(nextState.Value, nbLevels + 1);
+            }
         }
     }
 
@@ -117,8 +145,13 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
         }
     }
 
-    void addConnector(MouseUtilitiesGradationAssistanceAbstract stateStart, MouseUtilitiesGradationAssistanceAbstract stateEnd)
+    /**
+     * Return true if the connector has been added, false otherwise
+     **/
+    bool addConnector(MouseUtilitiesGradationAssistanceAbstract stateStart, MouseUtilitiesGradationAssistanceAbstract stateEnd)
     {
+        bool toReturn = true;
+
         if (m_connectors.ContainsKey((stateStart.getId(), stateEnd.getId())) == false)
         {
             Transform temp = Instantiate(m_refConnectorView, gameObject.transform);
@@ -130,6 +163,12 @@ public class MouseUtilitiesDisplayGraph : MonoBehaviour
             line.drawLineWithArrow(m_states[stateStart.getId()], m_states[stateEnd.getId()]);
                 m_connectors.Add((stateStart.getId(), stateEnd.getId()), temp.gameObject);
         }
+        else
+        {
+            toReturn = false;
+        }
+
+        return toReturn;
     }
 
     public void callbackNewStateSelected(System.Object o, EventArgs args)

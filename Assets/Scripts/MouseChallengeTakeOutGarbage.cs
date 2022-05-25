@@ -22,7 +22,7 @@ using System.Timers;
 using System.Reflection;
 using System.Linq;
 
-public class MouseChallengeTakeOutGarbage : MonoBehaviour
+public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
 {
     public MouseUtilitiesContextualInferences m_inferenceManager;
     public MouseUtilitiesDisplayGraph m_graph;
@@ -135,6 +135,7 @@ public class MouseChallengeTakeOutGarbage : MonoBehaviour
         sStandBy.addFunctionShow(delegate (EventHandler e)
         {
             m_inferenceManager.registerInference(m_inference19h00);
+            onChallengeStandBy();
         }, MouseUtilities.getEventHandlerEmpty());
         sStandBy.setFunctionHide(delegate (EventHandler e)
         {

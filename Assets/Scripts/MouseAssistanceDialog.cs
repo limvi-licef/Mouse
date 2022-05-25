@@ -40,12 +40,15 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     Vector3 m_descriptionScalingOriginal;
     List<Vector3> m_buttonsScalingOriginal;
 
+    public bool m_adjustToHeight { get; set; } = true;
+
     private void Awake()
     {
         // Instantiate variables
         m_buttonsView = new List<Transform>();
         m_buttonsController = new List<MouseAssistanceButton>();
-        m_buttonsScalingOriginal = new List<Vector3>();  
+        m_buttonsScalingOriginal = new List<Vector3>();
+        //m_adjustToHeight = true;
 
         // Children
         m_buttonsParentView = transform.Find("ButtonParent");
@@ -107,10 +110,11 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         ButtonConfigHelper configHelper = newButton.GetComponent<ButtonConfigHelper>();
         configHelper.MainLabelText = text;
 
+        TextMeshPro tmp = newButton.Find("IconAndText").Find("TextMeshPro").GetComponent<TextMeshPro>();
+
         // Get the text mesh pro component to set the fontsize
         if (fontSize > 0.0f)
-        {
-            TextMeshPro tmp = newButton.Find("IconAndText").Find("TextMeshPro").GetComponent<TextMeshPro>();
+        {    
             tmp.fontSize = fontSize;
         }
 
@@ -124,12 +128,15 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         if (autoScaling)
         {
             scalingx = 1.0f / (float)(m_buttonsView.Count());
+            tmp.margin = new Vector4(tmp.margin.x*scalingx, tmp.margin.y, tmp.margin.z * scalingx, tmp.margin.w);
         }
         
 
         foreach (Transform b in m_buttonsView)
         {
             b.localScale = new Vector3(scalingx, b.localScale.y, b.localScale.z);
+            Transform textButton = b.Find("IconAndText");
+            textButton.localScale = new Vector3(1.0f / scalingx, textButton.localScale.y, textButton.localScale.z);
         }        
 
         // Store button scaling
@@ -171,7 +178,11 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         {
             m_mutexShow = true; 
 
-            MouseUtilities.adjustObjectHeightToHeadHeight(transform);
+            if ( m_adjustToHeight )
+            {
+                MouseUtilities.adjustObjectHeightToHeadHeight(transform);
+            }
+            
 
             MouseUtilities.animateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal, delegate {
                 //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Background shown");

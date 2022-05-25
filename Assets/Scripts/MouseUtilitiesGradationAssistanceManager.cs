@@ -52,6 +52,11 @@ public class MouseUtilitiesGradationAssistanceManager
         return m_gradationPrevious;
     }
 
+    public List<MouseUtilitiesGradationAssistanceAbstract> getListOfStates()
+    {
+        return m_assistanceGradation.Values.ToList();
+    }
+
     /**
      * Do not forget to call this function at the end of the setup, otherwise, the object will most likely not work properly
      * */

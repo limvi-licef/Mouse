@@ -23,7 +23,7 @@ using System.Reflection;
 using System.Linq;
 
 
-public class MouseChallengeCleanTable : MonoBehaviour
+public class MouseChallengeCleanTable : MouseChallengeAbstract
 {
     public int m_numberOfCubesToAddInRow;
     public int m_numberOfCubesToAddInColumn;
@@ -306,6 +306,8 @@ public class MouseChallengeCleanTable : MonoBehaviour
         {
             MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Standby show function called");
 
+            onChallengeStandBy();
+
             //MouseUtilitiesInferenceTime i20h = new MouseUtilitiesInferenceTime("")
             /*MouseUtilitiesContextualInferencesFactory.Instance.createTemporalInferenceOneShot(m_inferenceEngine, "CleanTable20h", delegate (System.Object o, EventArgs ee)
             {
@@ -415,6 +417,7 @@ public class MouseChallengeCleanTable : MonoBehaviour
 
         success.s_touched += sSuccess.goToState(sStandBy);
 
+        m_displayGraphController.setManager(m_assistanceGradationManager);
     }
 
     void callbackInferenceDistanceAssistanceStimulateLevel1(System.Object sender, EventArgs args)

@@ -62,7 +62,8 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
         Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
         MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
         dialogController.setTitle(title);
-        float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+        //float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+        float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
         dialogController.setDescription(description, sizeDescriptionText);
         dialogController.enableBillboard(true);
 
@@ -74,7 +75,7 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
         Transform dialogView = Instantiate(m_refCheckListAssistance.transform, parent);
         MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
         dialogController.setTitle(title);
-        float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+        float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
         dialogController.setDescription(description, sizeDescriptionText);
         dialogController.enableBillboard(true);
 
@@ -83,14 +84,18 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
 
     public MouseAssistanceDialog createDialogTwoButtons(string title, string description, string textButton1, EventHandler callbackButton1, string textButton2, EventHandler callbackButton2, Transform parent)
     {
-        Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
-        MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
-        dialogController.setTitle(title);
-        float sizeDescriptionText = -0.002f * description.Length + 0.38f;
-        dialogController.setDescription(description, sizeDescriptionText);
-        dialogController.enableBillboard(true);
-        dialogController.addButton(textButton1, true);
-        dialogController.addButton(textButton2, true);
+        //Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
+        //MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
+        //dialogController.setTitle(title);
+        //float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+        //dialogController.setDescription(description, sizeDescriptionText);
+        //dialogController.enableBillboard(true);
+        MouseAssistanceDialog dialogController = createDialogNoButton(title, description, parent);
+
+        float sizeDescriptionText = -0.016666667f * textButton1.Length + 0.366666667f;
+        dialogController.addButton(textButton1, true, sizeDescriptionText);
+        sizeDescriptionText = -0.016666667f * textButton2.Length + 0.366666667f;
+        dialogController.addButton(textButton2, true, sizeDescriptionText);
         dialogController.m_buttonsController[0].s_buttonClicked += callbackButton1;
         dialogController.m_buttonsController[1].s_buttonClicked += callbackButton2;
 
@@ -99,12 +104,13 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
 
     public MouseAssistanceDialog createDialogThreeButtons(string title, string description, string textButton1, EventHandler callbackButton1, string textButton2, EventHandler callbackButton2, string textButton3, EventHandler callbackButton3, Transform parent)
     {
-        Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
-        MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
-        dialogController.setTitle(title);
-        float sizeDescriptionText = -0.002f * description.Length + 0.38f;
-        dialogController.setDescription(description, sizeDescriptionText);
-        dialogController.enableBillboard(true);
+        //Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
+        //MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
+        //dialogController.setTitle(title);
+        //float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+        //dialogController.setDescription(description, sizeDescriptionText);
+        //dialogController.enableBillboard(true);
+        MouseAssistanceDialog dialogController = createDialogNoButton(title, description, parent);
         dialogController.addButton(textButton1, true);
         dialogController.addButton(textButton2, true);
         dialogController.addButton(textButton3, true);
