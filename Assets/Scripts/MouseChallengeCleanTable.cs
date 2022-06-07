@@ -69,6 +69,12 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
 
     MouseUtilitiesInferenceTime m_inference20h;
 
+    private void Awake()
+    {
+        // Initialize variables
+        setId("Nettoyer la table");
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -125,7 +131,7 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
     {
         /** Initializing the assistances we will be needing **/
 
-        MouseScenarioManager.Instance.addScenario(this,"Nettoyer la table");
+        MouseScenarioManager.Instance.addScenario(this);
 
         // First interaction surface, i.e. for the table
         GameObject interactionTableView = Instantiate(m_refInteractionSurface, gameObject.transform);
@@ -242,7 +248,7 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
 
     void initializeScenariov2()
     {
-        MouseScenarioManager.Instance.addScenario(this, "Nettoyer la table");
+        MouseScenarioManager.Instance.addScenario(this);
 
         // Interaction surface table
         MouseInteractionSurface interactionSurfaceTable = MouseUtilitiesAssistancesFactory.Instance.createInteractionSurface("table v2", MouseUtilitiesAdminMenu.Panels.Default, new Vector3(1.1f, 0.02f, 0.7f), "Mouse_Cyan_Glowing", true, true, MouseUtilities.getEventHandlerEmpty(), transform);

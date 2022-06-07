@@ -49,14 +49,11 @@ public  class MouseScenarioManager : MonoBehaviour
             _instance = this;
         }
         MouseScenarioManager.Instance.s_scenarioAdded += m_todo.callbackAddNewButton; //Try to put this line in GlobalInitializer !!!
-        MouseScenarioManager.Instance.s_scenarioChecked += m_todo.callbackCheckButton; //If the task is finished => NOTHING !!! Try to put this line in GlobalInitializer like scenarioAdded!!!
-        MouseScenarioManager.Instance.s_scenarioStart += m_todo.callbackStartButton;
     }
 
     public EventHandler s_scenarioAdded;
-    public EventHandler s_scenarioChecked;
-    public EventHandler s_scenarioStart;
-    public void addScenario(MouseChallengeAbstract scenario,string id)
+
+    public void addScenario(MouseChallengeAbstract scenario)
     {
         bool absent = true;
         foreach (MouseChallengeAbstract challenge in m_scenarios)
@@ -70,30 +67,11 @@ public  class MouseScenarioManager : MonoBehaviour
         if (absent)
         { 
             m_scenarios.Add(scenario); //add scenario in the list of scenarios
-            //string name = getId(scenario);
-            MouseEventHandlerArgString arg = new MouseEventHandlerArgString(id); //set a name to the scenario
+            MouseEventHandlerArgString arg = new MouseEventHandlerArgString(scenario.getId()); //set a name to the scenario
             s_scenarioAdded?.Invoke(this, arg); //send information of new scenario => callback (MouseGlobalInitializer) => add new button (MouseAssistanceDialog)
 
-            scenario.s_challengeOnSuccess += sendCallBackCheck;
-            scenario.s_challengeOnStart += sendCallBackStart;
-            /*
-            SINON, passer la variable de la première inférence temporelle de chaque scénario en paramètre de addScenario
-            Ajouter cette variable au MouseEventHandlerArgString comme l'id
-            Quand l'heure de la todolist = heure du MouseEventHandlerArgString, passer le bouton en cyan
-            Quand l'heure de la todolist = heure du MouseEventHandlerArgString + 1h, passer le bouton en rouge
-            */
-            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Button added");
-
-
-            void sendCallBackCheck(object o, EventArgs e) //change the scenario e in MouseEventHandlerArgString arg for the id
-            {
-                s_scenarioChecked?.Invoke(this, arg);
-            }
-
-            void sendCallBackStart(object o, EventArgs e)
-            {
-                s_scenarioStart?.Invoke(this, arg);
-            }
+            scenario.s_challengeOnSuccess += m_todo.callbackCheckButton;
+            scenario.s_challengeOnStart += m_todo.callbackStartButton;        
         }
     }
 
@@ -108,25 +86,5 @@ public  class MouseScenarioManager : MonoBehaviour
     void Update()
     {
 
-    }
-
-    /*
-    public string getId(MouseChallengeAbstract scenario)
-    {
-        
-        string name = "";
-        string temp = scenario.name;
-        temp = Regex.Replace(temp, "Mouse","");
-        temp = Regex.Replace(temp, "Challenge", "");
-        foreach (Match matchs in Regex.Matches(temp, @"[A-Z][a-z]+"))
-        {
-            name = name+ " " + matchs.Value;
-        }
-       
-
-        return name;
-    }
-    */
-   
-    
+    }    
 }

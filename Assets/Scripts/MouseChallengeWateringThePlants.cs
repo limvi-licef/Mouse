@@ -55,6 +55,12 @@ public class MouseChallengeWateringThePlants : MouseChallengeAbstract
 
     MouseUtilitiesGradationAssistanceIntermediateState m_sIntermediateWateringPlants; // This particular state is a class variable as it is used in a callback
 
+    private void Awake()
+    {
+        // Initialize variables
+        setId("Arroser les plantes");
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -134,7 +140,7 @@ public class MouseChallengeWateringThePlants : MouseChallengeAbstract
      * */
     void initializeScenario()
     {
-        MouseScenarioManager.Instance.addScenario(this,"Arroser les plantes");
+        MouseScenarioManager.Instance.addScenario(this);
         // Object required
         m_pointOfReferenceForPaths = Instantiate(m_refInteractionSurface, transform);
         MouseInteractionSurface interactionSurfaceController = m_pointOfReferenceForPaths.GetComponent<MouseInteractionSurface>();

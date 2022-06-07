@@ -44,6 +44,7 @@ public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
     {
         // Initialize variables
         m_gradationManager = new MouseUtilitiesGradationAssistanceManager();
+        setId("Sortir les poubelles");
     }
 
     // Start is called before the first frame update
@@ -67,7 +68,7 @@ public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
     void initializeScenario()
     {
 
-        MouseScenarioManager.Instance.addScenario(this, "Sortir les poubelles");
+        MouseScenarioManager.Instance.addScenario(this);
 
 
         // Instanciate assistances

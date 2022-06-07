@@ -25,23 +25,39 @@ using System.Linq;
 
 public abstract class MouseChallengeAbstract : MonoBehaviour
 {
+
+    string m_scenarioId;
+
     public event EventHandler s_challengeOnStandBy;
     public event EventHandler s_challengeOnSuccess;
     public event EventHandler s_challengeOnStart;
 
+    public string getId()
+    {
+        return this.m_scenarioId;
+    }
+
+    public void setId(string id)
+    {
+        this.m_scenarioId=id;
+    }
+
     protected void onChallengeStandBy()
     {
-        s_challengeOnStandBy?.Invoke(this, EventArgs.Empty);
+        MouseEventHandlerArgString arg = new MouseEventHandlerArgString(m_scenarioId);
+        s_challengeOnStandBy?.Invoke(this, arg);
     }
 
     protected void onChallengeSuccess()
     {
-        s_challengeOnSuccess?.Invoke(this, EventArgs.Empty);
+        MouseEventHandlerArgString arg = new MouseEventHandlerArgString(m_scenarioId);
+        s_challengeOnSuccess?.Invoke(this, arg);
     }
 
     protected void onChallengeStart()
     {
-        s_challengeOnStart?.Invoke(this, EventArgs.Empty);
+        MouseEventHandlerArgString arg = new MouseEventHandlerArgString(m_scenarioId);
+        s_challengeOnStart?.Invoke(this, arg);
     }
 
     // Start is called before the first frame update
