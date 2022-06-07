@@ -103,7 +103,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     /**
      * If fontSize < 0.0f, means keep the default value of the button's size. Hence the default value.
      * */
-    public void addButton(string text/*, EventHandler eventHandler*/, bool autoScaling, float fontSize = -1.0f)
+    public MouseAssistanceButton addButton(string text/*, EventHandler eventHandler*/, bool autoScaling, float fontSize = -1.0f)
     {
         // Instantiate the button
         Transform newButton = Instantiate(m_refButtonView, m_buttonsParentView);
@@ -146,6 +146,8 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         m_buttonsView.Last().gameObject.SetActive(true);
 
         m_buttonsParentView.GetComponent<GridObjectCollection>().UpdateCollection();
+
+        return tempButtonController;
     }
 
     bool m_mutexHide = false;
@@ -224,7 +226,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         addButton(arg.m_text, false, 0.1f);
     }
     
-    public void callbackCheckButton(System.Object o, EventArgs e)
+    /*public void callbackCheckButton(System.Object o, EventArgs e)
     {
         MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e;
         foreach (Transform child in transform.GetChild(3))
@@ -235,9 +237,9 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
                 child.gameObject.transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Green_Glowing", typeof(Material)) as Material;
             }
         }
-    }
+    }*/
 
-    public void callbackStartButton(System.Object o, EventArgs e)
+    /*public void callbackStartButton(System.Object o, EventArgs e)
     {
         MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e;
         foreach (Transform child in transform.GetChild(3))
@@ -247,6 +249,6 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
                 child.gameObject.transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Cyan_Glowing", typeof(Material)) as Material;
             }
         }
-    }
+    }*/
 
 }

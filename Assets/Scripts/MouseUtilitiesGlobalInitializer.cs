@@ -57,6 +57,35 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
         //MouseScenarioManager.Instance.s_scenarioAdded += m_todo.callbackAddNewButton;
         
         m_todo.setTitle("Choses à faire",0.15f);
+
+        initializeTodoList();
+    }
+
+    void initializeTodoList()
+    {
+        // First: check if some scenarios have been added, and if yes, add them to the GUI
+        List<MouseChallengeAbstract> scenarios = MouseScenarioManager.Instance.getScenarios();
+        foreach (MouseChallengeAbstract scenario in scenarios)
+        {
+            addScenarioToGUI(scenario);
+        }
+
+        // Second: be prepared in case new scenarios are added
+        MouseScenarioManager.Instance.s_scenarioAdded += callbackNewScenarioInManager;
+    }
+
+    void callbackNewScenarioInManager(System.Object o, EventArgs e)
+    {
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
+
+        addScenarioToGUI(MouseScenarioManager.Instance.getScenarios().Last());
+    }
+
+    void addScenarioToGUI(MouseChallengeAbstract scenario)
+    {
+        MouseAssistanceButton button = m_todo.addButton(scenario.getId(), true);
+        scenario.s_challengeOnStart += button.callbackSetButtonBackgroundCyan; //m_todo.callbackStartButton;
+        scenario.s_challengeOnSuccess += button.callbackSetButtonBackgroundGreen; //m_todo.callbackCheckButton;
     }
 
     // Update is called once per frame

@@ -28,7 +28,7 @@ using System.Text.RegularExpressions;
  * */
 public  class MouseScenarioManager : MonoBehaviour
 {
-    public MouseAssistanceDialog m_todo; //try to remove this line
+    //public MouseAssistanceDialog m_todo; //try to remove this line
 
     private List<MouseChallengeAbstract> m_scenarios; //List of scenario
 
@@ -48,7 +48,7 @@ public  class MouseScenarioManager : MonoBehaviour
 
             _instance = this;
         }
-        MouseScenarioManager.Instance.s_scenarioAdded += m_todo.callbackAddNewButton; //Try to put this line in GlobalInitializer !!!
+        //MouseScenarioManager.Instance.s_scenarioAdded += m_todo.callbackAddNewButton; //Try to put this line in GlobalInitializer !!!
     }
 
     public EventHandler s_scenarioAdded;
@@ -70,8 +70,8 @@ public  class MouseScenarioManager : MonoBehaviour
             MouseEventHandlerArgString arg = new MouseEventHandlerArgString(scenario.getId()); //set a name to the scenario
             s_scenarioAdded?.Invoke(this, arg); //send information of new scenario => callback (MouseGlobalInitializer) => add new button (MouseAssistanceDialog)
 
-            scenario.s_challengeOnSuccess += m_todo.callbackCheckButton;
-            scenario.s_challengeOnStart += m_todo.callbackStartButton;        
+            //scenario.s_challengeOnSuccess += m_todo.callbackCheckButton;
+            //scenario.s_challengeOnStart += m_todo.callbackStartButton;        
         }
     }
 
@@ -86,5 +86,26 @@ public  class MouseScenarioManager : MonoBehaviour
     void Update()
     {
 
-    }    
+    }
+
+    public List<MouseChallengeAbstract> getScenarios()
+    {
+        return m_scenarios;
+    }
+
+    /*
+    public string getId(MouseChallengeAbstract scenario)
+    {
+        
+        string name = "";
+        string temp = scenario.name;
+        temp = Regex.Replace(temp, "Mouse","");
+        temp = Regex.Replace(temp, "Challenge", "");
+        foreach (Match matchs in Regex.Matches(temp, @"[A-Z][a-z]+"))
+        {
+            name = name+ " " + matchs.Value;
+        }
+       
+
+    }    */
 }

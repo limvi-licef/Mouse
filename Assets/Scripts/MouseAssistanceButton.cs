@@ -78,4 +78,14 @@ public class MouseAssistanceButton : MouseAssistanceButtonAbstract
     {
         return m_checked;
     }
+
+    public void callbackSetButtonBackgroundCyan(System.Object o, EventArgs e)
+    {
+        transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Cyan_Glowing", typeof(Material)) as Material;
+    }
+
+    public void callbackSetButtonBackgroundGreen(System.Object o, EventArgs e)
+    {
+        transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Green_Glowing", typeof(Material)) as Material;
+    }
 }
