@@ -44,8 +44,6 @@ public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
     {
         // Initialize variables
         m_gradationManager = new MouseUtilitiesGradationAssistanceManager();
-
-        
     }
 
     // Start is called before the first frame update
@@ -68,6 +66,10 @@ public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
 
     void initializeScenario()
     {
+
+        MouseScenarioManager.Instance.addScenario(this, "Sortir les poubelles");
+
+
         // Instanciate assistances
         GameObject garbageInteractionSurfaceView = Instantiate(m_refInteractionSurface, gameObject.transform);
         MouseInteractionSurface garbageInteractionSurfaceController = garbageInteractionSurfaceView.GetComponent<MouseInteractionSurface>();
@@ -146,6 +148,7 @@ public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
         sHighlightGarbage.addFunctionShow(delegate (EventHandler e)
         {
             m_inferenceManager.registerInference(m_inference19h30);
+            onChallengeStart();
         }, MouseUtilities.getEventHandlerEmpty());
         MouseUtilitiesGradationAssistance sExclamationMark = m_gradationManager.addNewAssistanceGradation("ExclamationMark");
         sExclamationMark.addFunctionShow(exclamationMarkController);
@@ -169,6 +172,10 @@ public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
         }, MouseUtilities.getEventHandlerEmpty());
         MouseUtilitiesGradationAssistance sSuccess = m_gradationManager.addNewAssistanceGradation("Success");
         sSuccess.setFunctionHideAndShow(successController);
+        sSuccess.addFunctionShow(delegate (EventHandler e)
+        {
+            onChallengeSuccess();
+        }, MouseUtilities.getEventHandlerEmpty());
 
         // Connections between states
         s_inference19h00 += sStandBy.goToState(sHighlightGarbage);
@@ -185,6 +192,8 @@ public class MouseChallengeTakeOutGarbage : MouseChallengeAbstract
         successController.s_touched += sSuccess.goToState(sStandBy);
 
         m_gradationManager.setGradationInitial("StandBy");
+
+        
 
         // Display graph
         m_graph.setManager(m_gradationManager);

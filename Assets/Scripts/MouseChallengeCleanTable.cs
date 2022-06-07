@@ -124,6 +124,9 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
     void initializeScenariov1()
     {
         /** Initializing the assistances we will be needing **/
+
+        MouseScenarioManager.Instance.addScenario(this,"Nettoyer la table");
+
         // First interaction surface, i.e. for the table
         GameObject interactionTableView = Instantiate(m_refInteractionSurface, gameObject.transform);
         MouseInteractionSurface interactionTableController = interactionTableView.GetComponent<MouseInteractionSurface>();
@@ -239,6 +242,8 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
 
     void initializeScenariov2()
     {
+        MouseScenarioManager.Instance.addScenario(this, "Nettoyer la table");
+
         // Interaction surface table
         MouseInteractionSurface interactionSurfaceTable = MouseUtilitiesAssistancesFactory.Instance.createInteractionSurface("table v2", MouseUtilitiesAdminMenu.Panels.Default, new Vector3(1.1f, 0.02f, 0.7f), "Mouse_Cyan_Glowing", true, true, MouseUtilities.getEventHandlerEmpty(), transform);
         //interactionSurfaceTable.setLocalPosition(new Vector3(0.949f, -0.017f, 1.117f));
@@ -324,6 +329,7 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
         sRedSurface.setFunctionHideAndShow(redSurface);
         sRedSurface.addFunctionShow(delegate (EventHandler eh)
         {
+            onChallengeStart();
             MouseUtilitiesContextualInferencesFactory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "IgnoreRedSurface", delegate (System.Object o, EventArgs e)
             {
                 s_ignoreRedSurface.Invoke(this, e);
@@ -368,6 +374,10 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
 
         MouseUtilitiesGradationAssistance sSuccess = m_assistanceGradationManager.addNewAssistanceGradation("Success");
         sSuccess.setFunctionHideAndShow(success);
+        sSuccess.addFunctionShow(delegate (EventHandler e)
+        {
+            onChallengeSuccess();
+        }, MouseUtilities.getEventHandlerEmpty());
 
         MouseUtilitiesGradationAssistance sCaregiverCall = m_assistanceGradationManager.addNewAssistanceGradation("Caregiver call");
         sCaregiverCall.setFunctionHideAndShow(dialogCallCaregiver);

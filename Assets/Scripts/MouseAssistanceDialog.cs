@@ -107,11 +107,11 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     {
         // Instantiate the button
         Transform newButton = Instantiate(m_refButtonView, m_buttonsParentView);
+        newButton.name = text;
         ButtonConfigHelper configHelper = newButton.GetComponent<ButtonConfigHelper>();
         configHelper.MainLabelText = text;
-
         TextMeshPro tmp = newButton.Find("IconAndText").Find("TextMeshPro").GetComponent<TextMeshPro>();
-
+        
         // Get the text mesh pro component to set the fontsize
         if (fontSize > 0.0f)
         {    
@@ -215,4 +215,38 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     {
         gameObject.GetComponent<Billboard>().enabled = enable;
     }
+
+    public void callbackAddNewButton(System.Object o, EventArgs e)
+    {
+        // Add new button to the interface
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Call back !");
+        MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e; //cast
+        addButton(arg.m_text, false, 0.1f);
+    }
+    
+    public void callbackCheckButton(System.Object o, EventArgs e)
+    {
+        MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e;
+        foreach (Transform child in transform.GetChild(3))
+        {
+            if (child.gameObject.name==arg.m_text)
+            {
+                //checkButton(child, true); //Try to use this
+                child.gameObject.transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Green_Glowing", typeof(Material)) as Material;
+            }
+        }
+    }
+
+    public void callbackStartButton(System.Object o, EventArgs e)
+    {
+        MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e;
+        foreach (Transform child in transform.GetChild(3))
+        {
+            if (child.gameObject.name == arg.m_text)
+            {
+                child.gameObject.transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Cyan_Glowing", typeof(Material)) as Material;
+            }
+        }
+    }
+
 }

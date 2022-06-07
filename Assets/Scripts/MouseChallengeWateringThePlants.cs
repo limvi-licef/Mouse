@@ -134,6 +134,7 @@ public class MouseChallengeWateringThePlants : MouseChallengeAbstract
      * */
     void initializeScenario()
     {
+        MouseScenarioManager.Instance.addScenario(this,"Arroser les plantes");
         // Object required
         m_pointOfReferenceForPaths = Instantiate(m_refInteractionSurface, transform);
         MouseInteractionSurface interactionSurfaceController = m_pointOfReferenceForPaths.GetComponent<MouseInteractionSurface>();
@@ -149,6 +150,10 @@ public class MouseChallengeWateringThePlants : MouseChallengeAbstract
 
         MouseUtilitiesGradationAssistance sSuccess = m_stateMachineMain.addNewAssistanceGradation("Success");
         sSuccess.setFunctionHideAndShow(successController);
+        sSuccess.addFunctionShow(delegate (EventHandler e)
+        {
+            onChallengeSuccess();
+        }, MouseUtilities.getEventHandlerEmpty());
 
         m_sIntermediateWateringPlants = m_stateMachineMain.addIntermediateState("WateringPlants", sSuccess);
 
@@ -243,6 +248,7 @@ public class MouseChallengeWateringThePlants : MouseChallengeAbstract
         sDialogFirst.addFunctionShow(delegate (EventHandler e)
         {
             MouseUtilitiesContextualInferencesFactory.Instance.createDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceFirstDialog", s_dialogFirstUserFar, dialogSecond.gameObject);
+            onChallengeStart();
         }, MouseUtilities.getEventHandlerEmpty());
 
         MouseUtilitiesGradationAssistance sDialogSecond = m_stateMachineMain.addNewAssistanceGradation("DialogSecond");

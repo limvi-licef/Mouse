@@ -22,39 +22,26 @@ using System.Timers;
 using System.Reflection;
 using System.Linq;
 
-
-public abstract class MouseChallengeAbstract : MonoBehaviour
+/**
+ * Used to have a lighting object to point to a provided gameobject, from the same direction than the user's gaze
+ * */
+public class MouseEventHandlerArgString : EventArgs
 {
-    public event EventHandler s_challengeOnStandBy;
-    public event EventHandler s_challengeOnSuccess;
-    public event EventHandler s_challengeOnStart;
+    public string m_text;
 
-    protected void onChallengeStandBy()
+    public MouseEventHandlerArgString(string text)
     {
-        s_challengeOnStandBy?.Invoke(this, EventArgs.Empty);
+        m_text = text;
     }
 
-    protected void onChallengeSuccess()
-    {
-        s_challengeOnSuccess?.Invoke(this, EventArgs.Empty);
-    }
-
-    protected void onChallengeStart()
-    {
-        s_challengeOnStart?.Invoke(this, EventArgs.Empty);
-    }
-
-    // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
 
-    
+    }
 }

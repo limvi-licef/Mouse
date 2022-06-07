@@ -15,45 +15,42 @@ limitations under the License.*/
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Timers;
 using System.Reflection;
 using System.Linq;
+using TMPro;
 
 
-public abstract class MouseChallengeAbstract : MonoBehaviour
+
+public class MouseUserToDoList : MonoBehaviour //MouseAssistanceDialog
 {
-    public event EventHandler s_challengeOnStandBy;
-    public event EventHandler s_challengeOnSuccess;
-    public event EventHandler s_challengeOnStart;
 
-    protected void onChallengeStandBy()
+    void Awake()
     {
-        s_challengeOnStandBy?.Invoke(this, EventArgs.Empty);
-    }
-
-    protected void onChallengeSuccess()
-    {
-        s_challengeOnSuccess?.Invoke(this, EventArgs.Empty);
-    }
-
-    protected void onChallengeStart()
-    {
-        s_challengeOnStart?.Invoke(this, EventArgs.Empty);
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        MouseUtilitiesAdminMenu.Instance.addButton("Bring ToDo List window", callbackBringAgenda);
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+    public void callbackBringAgenda()
+    {
+        gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 0.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+        gameObject.transform.LookAt(Camera.main.transform);
+        gameObject.transform.Rotate(new Vector3(0, 1, 0), 180);
     }
 
     
