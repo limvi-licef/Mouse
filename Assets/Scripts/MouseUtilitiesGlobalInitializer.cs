@@ -29,11 +29,11 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
 {
     public MouseUtilitiesAdminMenu m_adminMenu;
     public GameObject m_virtualRoom;
-    public MouseAssistanceDialog m_todo; //Référence vers le gameObject représentant l'agenda
+    MouseAssistanceDialog m_todo;
 
     private void Awake()
     {
-        
+        m_todo = MouseUtilitiesAssistancesFactory.Instance.createToDoList("Choses à faire", ""); //create to do list
     }
 
 
@@ -51,16 +51,11 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
             m_adminMenu.m_menuStatic = false;
             m_virtualRoom.SetActive(false); // In the editor, the user does what he wants, but in the hololens, this should surely be disabled.
         }
-
-        // Make links between classes if required
-
-        //MouseScenarioManager.Instance.s_scenarioAdded += m_todo.callbackAddNewButton;
-        
-        m_todo.setTitle("Choses à faire",0.15f);
-
+        MouseUtilitiesAdminMenu.Instance.addButton("Bring to do list window", delegate () { MouseUtilities.bringObject(m_todo.transform); }); //add button to the admin menu
+        MouseUtilitiesAdminMenu.Instance.addSwitchButton("Lock To Do List", callbackLockToDo);
         initializeTodoList();
     }
-
+  
     void initializeTodoList()
     {
         // First: check if some scenarios have been added, and if yes, add them to the GUI
@@ -83,7 +78,7 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
 
     void addScenarioToGUI(MouseChallengeAbstract scenario)
     {
-        MouseAssistanceButton button = m_todo.addButton(scenario.getId(), true);
+        MouseAssistanceButton button = m_todo.addButton(scenario.getId(), true); //add button
         scenario.s_challengeOnStart += button.callbackSetButtonBackgroundCyan; //m_todo.callbackStartButton;
         scenario.s_challengeOnSuccess += button.callbackSetButtonBackgroundGreen; //m_todo.callbackCheckButton;
     }
@@ -91,7 +86,7 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ToDoListConfig();
+        ToDoListConfig(); //config of the todo list for update the time
     }
     
     void ToDoListConfig()
@@ -108,5 +103,13 @@ public class MouseUtilitiesGlobalInitializer : MonoBehaviour
         else if (value < 9.23) return "Été";
         else return "Automne";
     }
-    
+
+    void callbackLockToDo()
+    {
+        if (m_todo.GetComponent<ObjectManipulator>().enabled)
+            m_todo.GetComponent<ObjectManipulator>().enabled = false;
+        else
+            m_todo.GetComponent<ObjectManipulator>().enabled = true;
+    }
+
 }

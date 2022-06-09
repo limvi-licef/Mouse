@@ -157,6 +157,7 @@ static class MouseUtilities
     {
         gameobject.GetComponent<Renderer>().enabled = show; // To hide the surface while keeping it interactable, then the renderer is disabled if show==false;
         gameobject.GetComponent<BoundsControl>().enabled = show;
+        gameobject.GetComponent<ObjectManipulator>().enabled = show;
     }
 
     public static void setColor(Transform gameobject, string colorName)

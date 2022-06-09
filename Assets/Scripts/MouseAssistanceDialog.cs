@@ -217,7 +217,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
     {
         gameObject.GetComponent<Billboard>().enabled = enable;
     }
-
+    /*
     public void callbackAddNewButton(System.Object o, EventArgs e)
     {
         // Add new button to the interface
@@ -225,7 +225,7 @@ public class MouseAssistanceDialog : MouseAssistanceAbstract
         MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e; //cast
         addButton(arg.m_text, false, 0.1f);
     }
-    
+    */
     /*public void callbackCheckButton(System.Object o, EventArgs e)
     {
         MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e;

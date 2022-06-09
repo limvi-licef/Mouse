@@ -32,6 +32,7 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
     public MouseAssistanceDialog m_refCheckListAssistance;
     public MouseInteractionSurface m_refInteractionSurface;
     public MouseChallengeCleanTableSurfaceToPopulateWithCubes m_refSurfaceToProcess;
+    public MouseAssistanceDialog m_refToDoListAssistance;
 
     private void Awake()
     {
@@ -173,4 +174,15 @@ public class MouseUtilitiesAssistancesFactory : MonoBehaviour
         return controller ;
     }
 
+    public MouseAssistanceDialog createToDoList(string title, string description)
+    {
+        Transform dialogView = Instantiate(m_refToDoListAssistance.transform);
+        MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
+        dialogController.setTitle(title, 0.15f);
+        float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
+        dialogController.setDescription(description, sizeDescriptionText);
+        dialogController.enableBillboard(false);
+
+        return dialogController;
+    }
 }

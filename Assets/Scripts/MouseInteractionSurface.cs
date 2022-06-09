@@ -144,6 +144,7 @@ public class MouseInteractionSurface : MonoBehaviour
 
         m_interactionSurfaceView.GetComponent<Renderer>().enabled = show; // To hide the surface while keeping it interactable, then the renderer is disabled if show==false;
         m_interactionSurfaceView.GetComponent<BoundsControl>().enabled = show;
+        m_interactionSurfaceView.GetComponent<ObjectManipulator>().enabled = show;
     }
 
     public void callbackBring()
