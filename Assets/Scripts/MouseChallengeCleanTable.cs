@@ -98,7 +98,8 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
         m_inference20h = new MouseUtilitiesInferenceTime("time 20h", tempTime, callbackInferenceTime20h);
 
         // Initialization of the scenario
-        initializeScenariov2();
+        initializeScenariov1();
+        //initializeScenariov2();
 
         // Drawing the graph
         //m_displayGraphController.setManager(m_assistanceGradationManager);
@@ -158,14 +159,16 @@ public class MouseChallengeCleanTable : MouseChallengeAbstract
         // Cueing for the beginning of the scenario
         GameObject initialCueingView = Instantiate(m_refAssistanceDialog, interactionTableView.transform);
         MouseAssistanceDialog initialCueingController = initialCueingView.GetComponent<MouseAssistanceDialog>();
-        initialCueingController.setDescription("Que faites-vous typiquement après manger?");
-        initialCueingController.addButton("Je ne sais pas", true, 0.2f);
+        //initialCueingController.setDescription("Que faites-vous typiquement après manger?");
+        initialCueingController.setDescription("What do you typically do after eating?", 0.15f);
+        initialCueingController.addButton("I do not know", true, 0.2f);
         initialCueingController.enableBillboard(true);
 
         // Cueing for the solution
         GameObject solutionView = Instantiate(m_refAssistanceDialog, interactionRagView.transform);
         MouseAssistanceDialog solutionController = solutionView.GetComponent<MouseAssistanceDialog>();
-        solutionController.setDescription("Ne serait-ce pas un bon moment pour nettoyer la table? \n Vous avez pour cela besoin du chiffon ci - dessous.", 0.15f);
+        //solutionController.setDescription("Ne serait-ce pas un bon moment pour nettoyer la table? \n Vous avez pour cela besoin du chiffon ci - dessous.", 0.15f);
+        solutionController.setDescription("Wouldn't this be a good time to clean the table? \nYou will need the rag below.", 0.15f);
         solutionController.enableBillboard(true);
 
         // Setting the parents, the connections for the objects briding other objects etc. (the idea being to leave that to a software dedicated to configure the scenarios)

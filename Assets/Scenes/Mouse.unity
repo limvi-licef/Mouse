@@ -6520,8 +6520,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4495402723351015991, guid: dafddd60b67d2984fb7b3093f32c33ab, type: 3}
       propertyPath: m_text
-      value: "Parfait!\nVous allez dans un premier temps devoir aller au bout de
-        cette fl\xE8che bleue"
+      value: 'Perfect!
+
+        You will first have to go to the end of this blue
+        arrow.'
       objectReference: {fileID: 0}
     - target: {fileID: 4495402723351015991, guid: dafddd60b67d2984fb7b3093f32c33ab, type: 3}
       propertyPath: m_fontSize
