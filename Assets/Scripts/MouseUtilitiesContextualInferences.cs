@@ -225,3 +225,44 @@ public class MouseUtilitiesInferenceTime : MouseUtilitiesInferenceAbstract
         m_useOneMinuteTrigger = true;
     }
 }
+
+public class MouseUtilitiesInferenceObjectInInteractionSurface : MouseUtilitiesInferenceAbstract
+{
+    MouseInteractionSurface m_surface;
+    MousePhysicalObjectInformation m_objectdetected;
+    Collider m_Collider;
+
+    public MouseUtilitiesInferenceObjectInInteractionSurface(string id, EventHandler callback, string objectName, MouseInteractionSurface surface) : base(id, callback)
+    {
+        m_surface = surface;
+        
+        m_objectdetected = null;   
+        m_Collider = m_surface.gameObject.AddComponent<Collider>(); //m_surface.GetComponent<Collider>();
+
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Inference Object Launched");
+        MouseUtilitiesObjectInformation.Instance.registerCallbackToObject(objectName, callbackObjectDetection);
+    }
+
+    public override bool evaluate()
+    {
+        bool toReturn = false;
+        //Debug.Log("Collider.enabled = " + m_Collider.enabled);
+        if (m_objectdetected != null)
+        {
+            if (m_Collider.bounds.Contains(m_objectdetected.getCenter())) //check if the center of the object is in the surface area
+            {
+                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Object in bounds detected");
+                toReturn = true;
+            }
+        }
+
+        return toReturn;
+    }
+
+    public void callbackObjectDetection(System.Object o, EventArgs e)
+    {
+        MouseEventHandlerArgObject objectInfo = (MouseEventHandlerArgObject)e;
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "MouseUtilitiesContextualInference callback sent");
+        m_objectdetected = objectInfo.m_object;
+    }
+}
