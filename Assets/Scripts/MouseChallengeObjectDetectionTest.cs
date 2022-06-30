@@ -43,9 +43,6 @@ public class MouseChallengeObjectDetectionTest : MouseChallengeAbstract
     {
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Scenario Test start");
         m_storage = MouseUtilitiesAssistancesFactory.Instance.createInteractionSurface("Storage", default, new Vector3(0.4f, 0.4f, 0.4f), "Mouse_purple_Glowing", true, true, MouseUtilities.getEventHandlerEmpty(), transform);
-        
-        //m_storage.GetComponent<Collider>().enabled = true;
-        //m_storage.getInteractionSurface().gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
         m_inferenceObjectDetected = new MouseUtilitiesInferenceObjectInInteractionSurface("Test",callbackDetected, "tv", m_storage);
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Scenario Test started");
         initializeScenario();
@@ -63,17 +60,18 @@ public class MouseChallengeObjectDetectionTest : MouseChallengeAbstract
 
         MouseUtilitiesAdminMenu.Instance.addSwitchButton("Storage ignore raycast", callbackIgnore);
         //inference
-        MouseUtilitiesObjectInformation.Instance.s_objectDetectedInDictionary += callbackTouch; //lancer l'inférence si objet = tv ?
+        //MouseUtilitiesObjectInformation.Instance.s_objectDetectedInDictionary += callbackTouch; //lancer l'inférence si objet = tv ?
 
     }
     void callbackDetected(System.Object o, EventArgs e)
     {
-        m_inferenceManager.unregisterInference(m_inferenceObjectDetected);
+        //m_inferenceManager.unregisterInference(m_inferenceObjectDetected);
 
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Callback object detected");
-        
 
         s_inferenceObjectDetected?.Invoke(this, EventArgs.Empty);
+
+        //m_inferenceManager.registerInference(m_inferenceObjectDetected);
     }
     
     
@@ -85,7 +83,16 @@ public class MouseChallengeObjectDetectionTest : MouseChallengeAbstract
     
     void callbackIgnore()
     {
-        m_storage.getInteractionSurface().gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        
+        if (m_storage.getInteractionSurface().gameObject.layer == LayerMask.NameToLayer("Ignore Raycast"))
+        {
+            m_storage.getInteractionSurface().gameObject.layer = LayerMask.NameToLayer("Default");
+        }
+        else
+        {
+            m_storage.getInteractionSurface().gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        }
+
     }
     
 }

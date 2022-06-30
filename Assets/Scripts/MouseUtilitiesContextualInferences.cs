@@ -230,14 +230,15 @@ public class MouseUtilitiesInferenceObjectInInteractionSurface : MouseUtilitiesI
 {
     MouseInteractionSurface m_surface;
     MousePhysicalObjectInformation m_objectdetected;
-    Collider m_Collider;
+    BoxCollider m_Collider;
 
     public MouseUtilitiesInferenceObjectInInteractionSurface(string id, EventHandler callback, string objectName, MouseInteractionSurface surface) : base(id, callback)
     {
         m_surface = surface;
         
-        m_objectdetected = null;   
-        m_Collider = m_surface.gameObject.AddComponent<Collider>(); //m_surface.GetComponent<Collider>();
+        m_objectdetected = null;
+        m_objectdetected = new MousePhysicalObjectInformation(); //FOR TEST
+        m_objectdetected.setObjectParams("TEst", new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0)); //FOR TEST
 
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Inference Object Launched");
         MouseUtilitiesObjectInformation.Instance.registerCallbackToObject(objectName, callbackObjectDetection);
@@ -246,23 +247,27 @@ public class MouseUtilitiesInferenceObjectInInteractionSurface : MouseUtilitiesI
     public override bool evaluate()
     {
         bool toReturn = false;
-        //Debug.Log("Collider.enabled = " + m_Collider.enabled);
+
+        m_Collider = m_surface.getInteractionSurface().gameObject.GetComponent<BoxCollider>();
+
         if (m_objectdetected != null)
         {
+            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Finally, object detected : "+ m_objectdetected.getObjectName() + " with the center "+ m_objectdetected.getCenter()+". Center of storage : "+m_Collider.bounds.center);
             if (m_Collider.bounds.Contains(m_objectdetected.getCenter())) //check if the center of the object is in the surface area
             {
-                MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Object in bounds detected");
                 toReturn = true;
             }
         }
-
         return toReturn;
     }
 
     public void callbackObjectDetection(System.Object o, EventArgs e)
     {
         MouseEventHandlerArgObject objectInfo = (MouseEventHandlerArgObject)e;
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "MouseUtilitiesContextualInference callback sent");
+        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "MouseUtilitiesContextualInference callback sent");
+        
+        m_objectdetected = new MousePhysicalObjectInformation();
         m_objectdetected = objectInfo.m_object;
+        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "MouseUtilitiesContextualInference callback sent : "+ m_objectdetected.getObjectName());
     }
 }
