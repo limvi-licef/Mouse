@@ -74,7 +74,7 @@ public class MouseChallengeRidTable : MouseChallengeAbstract
 
 
         //Inferences
-        m_inferenceObjectInPlateArea = new MouseUtilitiesInferenceObjectInInteractionSurface("In Plate Area", callbackDetectedInPlateArea, "frisbee", m_platearea);
+        m_inferenceObjectInPlateArea = new MouseUtilitiesInferenceObjectInInteractionSurface("In Plate Area", callbackDetectedInPlateArea, "frisbee", m_platearea); //frisbee = plate
         m_inferenceManager.registerInference(m_inferenceObjectInPlateArea);
 
         //*States*//
@@ -139,25 +139,25 @@ public class MouseChallengeRidTable : MouseChallengeAbstract
         m_graph.setManager(m_gradationManager);
 
     }
-    void callbackDetectedInPlateArea(System.Object o, EventArgs e)
+    void callbackDetectedInPlateArea(System.Object o, EventArgs e) //Callback emitted when the object is in the plate area
     {
         m_inferenceManager.unregisterInference(m_inferenceObjectInPlateArea);
         s_inferenceObjectDetectedInPlateArea?.Invoke(this, EventArgs.Empty);
     }
 
-    void callbackDetectedInDishWasher(System.Object o, EventArgs e)
+    void callbackDetectedInDishWasher(System.Object o, EventArgs e) //Callback emitted when the object is in the dish washer area
     {
         m_inferenceManager.unregisterInference(m_inferenceObjectInDishWasher);
         s_inferenceObjectDetectedInDishWasher?.Invoke(this, EventArgs.Empty);
     }
 
-    void callbackDetectedOutPlateArea(System.Object o, EventArgs e)
+    void callbackDetectedOutPlateArea(System.Object o, EventArgs e) //Callback emitted when the object is out of the plate area
     {
         m_inferenceManager.unregisterInference(m_inferenceObjectOutPlateArea);
         s_inferenceObjectDetectedOutPlateArea?.Invoke(this, EventArgs.Empty);
     }
         
-    void callbackIgnore()
+    void callbackIgnore() //callback emitted when the button is clicked : necessary for the proper functioning of the scenario
     {
         
         if (m_dishwasher.getInteractionSurface().gameObject.layer == LayerMask.NameToLayer("Ignore Raycast"))

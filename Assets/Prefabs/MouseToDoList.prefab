@@ -238,7 +238,7 @@ MonoBehaviour:
   radius: 2
   radialRange: 180
   distance: 0
-  rows: 3
+  rows: 10
   columns: 1
   cellWidth: 0.11
   cellHeight: 0.04
@@ -266,7 +266,7 @@ MonoBehaviour:
   m_CellSize: {x: 100, y: 100}
   m_Spacing: {x: 200, y: 200}
   m_Constraint: 1
-  m_ConstraintCount: 3
+  m_ConstraintCount: 1
 --- !u!1 &6768878959026650934
 GameObject:
   m_ObjectHideFlags: 0
