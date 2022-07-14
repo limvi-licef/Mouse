@@ -81,7 +81,7 @@ namespace MATCH
             m_triggerWateringPlants.show(Utilities.Utility.getEventHandlerEmpty());
             m_triggerWateringPlants.s_touched += delegate (System.Object o, EventArgs e)
             {
-                m_challengeWatering.getInference().CallbackOneMinuteTrigger();
+                m_challengeWatering.GetInference().CallbackOneMinuteTrigger();
                 m_triggerWateringPlants.SetMaterialToChild("Mouse_Flower_Pressed");
             };
 
