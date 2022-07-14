@@ -26,47 +26,53 @@ using Newtonsoft.Json.Linq;
 /**
  * Used to have a lighting object to point to a provided gameobject, from the same direction than the user's gaze
  * */
-public class MouseEventHandlerArgObjectsList : EventArgs
+namespace MATCH
 {
-    public List<MousePhysicalObjectInformation> m_objectList;
-
-    public MouseEventHandlerArgObjectsList(List<MousePhysicalObjectInformation> listofobjects)
+    namespace Utilities
     {
-        m_objectList = listofobjects;
+        public class EventHandlerArgObjectsList : EventArgs
+        {
+            public List<PhysicalObjectInformation> m_objectList;
+
+            public EventHandlerArgObjectsList(List<PhysicalObjectInformation> listofobjects)
+            {
+                m_objectList = listofobjects;
+            }
+
+            void Start()
+            {
+
+            }
+
+            // Update is called once per frame
+            void Update()
+            {
+
+            }
+        }
+
+        public class EventHandlerArgObject : EventArgs
+        {
+            public PhysicalObjectInformation m_object;
+
+            public EventHandlerArgObject(PhysicalObjectInformation obj)
+            {
+                m_object = obj;
+            }
+
+            void Start()
+            {
+
+            }
+
+            // Update is called once per frame
+            void Update()
+            {
+
+            }
+
+
+
+        }
     }
-
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-}
-
-public class MouseEventHandlerArgObject : EventArgs
-{
-    public MousePhysicalObjectInformation m_object;
-
-    public MouseEventHandlerArgObject(MousePhysicalObjectInformation obj)
-    {
-        m_object = obj;
-    }
-
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-
-
 }

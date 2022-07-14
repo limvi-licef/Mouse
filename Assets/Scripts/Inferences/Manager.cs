@@ -114,11 +114,13 @@ namespace MATCH
         {
             public string Id { get; private set; }
             public event EventHandler Callbacks;
+			protected EventArgs m_callbackArgs;
 
             protected Inference(string id, EventHandler callback)
             {
                 Id = id;
                 Callbacks += callback;
+				m_callbackArgs = EventArgs.Empty;
             }
 
             protected Inference(string id)
@@ -134,7 +136,7 @@ namespace MATCH
             public abstract bool Evaluate();
 
             //public string getId() => m_id;
-            public void TriggerCallback() => Callbacks?.Invoke(this, EventArgs.Empty);
+            public void TriggerCallback() => Callbacks?.Invoke(this, m_callbackArgs);
 
             ~Inference()
             {
@@ -256,6 +258,117 @@ namespace MATCH
                 m_useOneMinuteTrigger = true;
             }
         }
+
+
+        public class MouseUtilitiesInferenceObjectInInteractionSurface : Inference
+        {
+            Assistances.InteractionSurface m_surface;
+            Utilities.PhysicalObjectInformation m_objectdetected;
+            BoxCollider m_Collider;
+
+            string lastObject;
+
+            public MouseUtilitiesInferenceObjectInInteractionSurface(string id, EventHandler callback, string objectName, Assistances.InteractionSurface surface) : base(id, callback)
+            {
+                m_surface = surface;
+
+                //m_objectdetected = null;
+                lastObject = null;
+                m_objectdetected = null;
+                //m_objectdetected.setObjectParams("TEst", new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0)); //FOR TEST
+
+                DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Inference Object Launched");
+                ObjectRecognition.ObjectInformation.Instance.unregisterCallbackToObject(objectName);
+                ObjectRecognition.ObjectInformation.Instance.registerCallbackToObject(objectName, callbackObjectDetection);
+            }
+
+            //In the evaluate, the last object is saved for avoid spam when an object is in a surface. The return true is sent just one time (the first time that the object is detected in the surface).
+            public override bool Evaluate()
+            {
+                bool toReturn = false;
+                m_Collider = m_surface.GetInteractionSurface().gameObject.GetComponent<BoxCollider>();
+                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Evaluate ok");
+                if (m_objectdetected != null)
+                {
+                    //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Object name ok");
+                    if (m_Collider.bounds.Contains(m_objectdetected.getCenter())) //check if the center of the object is in the surface area
+                    {
+                        //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "In collider");
+                        if (m_objectdetected.getObjectName() != lastObject) //last object for avoid spam when an object is in a surface
+                        {
+                            toReturn = true;
+                            lastObject = m_objectdetected.getObjectName();
+                            //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Finally, object detected : " + m_objectdetected.getObjectName() + " with the center " + m_objectdetected.getCenter() + ". Center of storage : " + m_Collider.bounds.center);
+                        }
+                    }
+                    else // the object isn't in the surface
+                    {
+                        lastObject = null;
+                    }
+                }
+                return toReturn;
+            }
+
+            public void callbackObjectDetection(System.Object o, EventArgs e)
+            {
+                Utilities.EventHandlerArgObject objectInfo = (Utilities.EventHandlerArgObject)e;
+
+                m_objectdetected = new Utilities.PhysicalObjectInformation();
+                m_objectdetected = objectInfo.m_object;
+
+            }
+        }
+
+
+public class MouseUtilitiesInferenceObjectOutInteractionSurface : Inferences.Inference
+{
+    Assistances.InteractionSurface m_surface;
+    Utilities.PhysicalObjectInformation m_objectdetected;
+    BoxCollider m_Collider;
+
+    string lastObject;
+
+    public MouseUtilitiesInferenceObjectOutInteractionSurface(string id, EventHandler callback, string objectName, Assistances.InteractionSurface surface) : base(id, callback)
+    {
+        m_surface = surface;
+        lastObject = null;
+        m_objectdetected = null;
+        ObjectRecognition.ObjectInformation.Instance.unregisterCallbackToObject(objectName);
+        ObjectRecognition.ObjectInformation.Instance.registerCallbackToObject(objectName, callbackObjectDetection);
     }
 
+    public override bool Evaluate()
+    {
+        bool toReturn = false;
+        m_Collider = m_surface.GetInteractionSurface().gameObject.GetComponent<BoxCollider>();
+
+        if (m_objectdetected != null)
+        {
+            if (!m_Collider.bounds.Contains(m_objectdetected.getCenter()))
+            {
+                if (m_objectdetected.getObjectName() != lastObject) //last object for avoid spam when an object is out of a surface
+                {
+                    toReturn = true;
+                    lastObject = m_objectdetected.getObjectName();
+                }
+            }
+            else // the object is in the surface
+            {
+                lastObject = null;
+            }
+        }
+        return toReturn;
+    }
+
+    public void callbackObjectDetection(System.Object o, EventArgs e)
+    {
+        Utilities.EventHandlerArgObject objectInfo = (Utilities.EventHandlerArgObject)e;
+        //m_objectdetected = new MousePhysicalObjectInformation();
+        m_objectdetected = objectInfo.m_object;
+        m_callbackArgs = new Utilities.EventHandlerArgObject(m_objectdetected);
+    }
 }
+
+	
+}
+    }
