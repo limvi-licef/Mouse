@@ -110,17 +110,19 @@ public abstract class MouseUtilitiesInferenceAbstract
 {
     string m_id;
     EventHandler m_callback;
+    protected EventArgs m_callbackArgs;
 
     protected MouseUtilitiesInferenceAbstract(string id, EventHandler callback)
     {
         m_id = id;
         m_callback = callback;
+        m_callbackArgs = EventArgs.Empty;
     }
 
     public abstract bool evaluate();
 
     public string getId() => m_id;
-    public void triggerCallback() => m_callback?.Invoke(this, EventArgs.Empty);
+    public void triggerCallback() => m_callback?.Invoke(this, m_callbackArgs);
 }
 
 public class MouseUtilitiesInferenceDistanceLeaving : MouseUtilitiesInferenceAbstract
@@ -240,7 +242,7 @@ public class MouseUtilitiesInferenceObjectInInteractionSurface : MouseUtilitiesI
         
         //m_objectdetected = null;
         lastObject = null;
-        m_objectdetected = new MousePhysicalObjectInformation();
+        m_objectdetected = null;
         //m_objectdetected.setObjectParams("TEst", new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0)); //FOR TEST
 
         MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Inference Object Launched");
@@ -254,7 +256,7 @@ public class MouseUtilitiesInferenceObjectInInteractionSurface : MouseUtilitiesI
         bool toReturn = false;
         m_Collider = m_surface.getInteractionSurface().gameObject.GetComponent<BoxCollider>();
         //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Evaluate ok");
-        if (m_objectdetected.getObjectName() != null) 
+        if (m_objectdetected != null) 
         {
             //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Object name ok");
             if (m_Collider.bounds.Contains(m_objectdetected.getCenter())) //check if the center of the object is in the surface area
@@ -278,15 +280,10 @@ public class MouseUtilitiesInferenceObjectInInteractionSurface : MouseUtilitiesI
     public void callbackObjectDetection(System.Object o, EventArgs e)
     {
         MouseEventHandlerArgObject objectInfo = (MouseEventHandlerArgObject)e;
-        MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "MouseUtilitiesContextualInference callback sent");
-
+        
         m_objectdetected = new MousePhysicalObjectInformation();
         m_objectdetected = objectInfo.m_object;
-        if (m_objectdetected.getObjectName() != null)
-        {
-            MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "MouseUtilitiesContextualInference callback sent : " + m_objectdetected.getObjectName());
-
-        }
+        
     }
 }
 
@@ -302,7 +299,7 @@ public class MouseUtilitiesInferenceObjectOutInteractionSurface : MouseUtilities
     {
         m_surface = surface;
         lastObject = null;
-        m_objectdetected = new MousePhysicalObjectInformation();
+        m_objectdetected = null;
         MouseUtilitiesObjectInformation.Instance.unregisterCallbackToObject(objectName);
         MouseUtilitiesObjectInformation.Instance.registerCallbackToObject(objectName, callbackObjectDetection);
     }
@@ -312,7 +309,7 @@ public class MouseUtilitiesInferenceObjectOutInteractionSurface : MouseUtilities
         bool toReturn = false;
         m_Collider = m_surface.getInteractionSurface().gameObject.GetComponent<BoxCollider>();
 
-        if (m_objectdetected.getObjectName() != null)
+        if (m_objectdetected != null)
         {
             if (!m_Collider.bounds.Contains(m_objectdetected.getCenter()))
             {
@@ -333,7 +330,103 @@ public class MouseUtilitiesInferenceObjectOutInteractionSurface : MouseUtilities
     public void callbackObjectDetection(System.Object o, EventArgs e)
     {
         MouseEventHandlerArgObject objectInfo = (MouseEventHandlerArgObject)e;
+        //m_objectdetected = new MousePhysicalObjectInformation();
+        m_objectdetected = objectInfo.m_object;
+        m_callbackArgs = new MouseEventHandlerArgObject(m_objectdetected);
+    }
+}
+
+/*
+public class MouseUtilitiesInferenceSetInteractionSurfaceToObject : MouseUtilitiesInferenceAbstract
+{
+    MouseInteractionSurface m_surface;
+    MousePhysicalObjectInformation m_objectdetected;
+
+    public MouseUtilitiesInferenceSetInteractionSurfaceToObject(string id, EventHandler callback, string objectName, MouseInteractionSurface surface) : base(id, callback)
+    {
+        m_surface = surface;
+        m_objectdetected = new MousePhysicalObjectInformation();
+        MouseUtilitiesObjectInformation.Instance.unregisterCallbackObjectPosition(objectName);
+        MouseUtilitiesObjectInformation.Instance.registerCallbackObjectPosition(objectName, callbackObjectDetection);
+    }
+
+    public override bool evaluate()
+    {
+        bool toReturn = false;
+
+        if (m_objectdetected.getObjectName() != null)
+        {
+            m_surface.transform.localPosition = m_objectdetected.getCenter();
+            toReturn = true;
+        }
+        return toReturn;
+    }
+
+    public void callbackObjectDetection(System.Object o, EventArgs e)
+    {
+        MouseEventHandlerArgObject objectInfo = (MouseEventHandlerArgObject)e;
         m_objectdetected = new MousePhysicalObjectInformation();
         m_objectdetected = objectInfo.m_object;
     }
 }
+
+*/
+
+
+
+/*
+
+public class MouseUtilitiesInferenceNearObject : MouseUtilitiesInferenceAbstract
+{
+    MousePhysicalObjectInformation m_objectdetected;
+    float m_minDistanceToTrigger; //distance with camera
+
+    public MouseUtilitiesInferenceNearObject(string id, EventHandler callback, string objectName, float minDistanceToTrigger) : base(id, callback)
+    {
+        m_minDistanceToTrigger = minDistanceToTrigger;
+        //register objectname with position in the dictionnary
+    }
+
+    public override bool evaluate()
+    {
+        bool toReturn = false;
+
+        float tempDistance = Vector3.Distance(Camera.main.transform.position, m_objectdetected.getCenter()); //distance object/camera
+
+        if (tempDistance < m_minDistanceToTrigger)
+        {
+            toReturn = true;
+        }
+
+        return toReturn;
+    }
+
+}
+
+/*
+public class MouseUtilitiesInferenceDistanceComing : MouseUtilitiesInferenceAbstract
+{
+    GameObject m_gameObject;
+    float m_minDistanceToTrigger;
+
+    public MouseUtilitiesInferenceDistanceComing(string id, EventHandler callback, GameObject gameObject, float minDistanceToTrigger) : base(id, callback)
+    {
+        m_gameObject = gameObject;
+        m_minDistanceToTrigger = minDistanceToTrigger;
+    }
+
+    public override bool evaluate()
+    {
+        bool toReturn = false;
+
+        float tempDistance = Vector3.Distance(Camera.main.transform.position, m_gameObject.transform.position);
+
+        if (tempDistance < m_minDistanceToTrigger)
+        {
+            toReturn = true;
+        }
+
+        return toReturn;
+    }
+}
+*/

@@ -6256,7 +6256,6 @@ GameObject:
   - component: {fileID: 905422099}
   - component: {fileID: 905422097}
   - component: {fileID: 905422096}
-  - component: {fileID: 905422100}
   - component: {fileID: 905422101}
   - component: {fileID: 905422095}
   m_Layer: 0
@@ -6381,18 +6380,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &905422100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 905422093}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b077167a5c4c954fad09456278101ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &905422101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6408,6 +6395,8 @@ MonoBehaviour:
   cursor: {fileID: 1201469526}
   labelPrefab: {fileID: 2009890198100327608, guid: 3f4d21d3b5b9b6e4a829301710e5fb52, type: 3}
   labelPrefab2: {fileID: 6302486266631575340, guid: 9087a80db6839ca498345e10b5c5cac6, type: 3}
+  _labelObject: {fileID: 0}
+  _cube: {fileID: 0}
   lastLabelPlaced: {fileID: 0}
   lastLabelPlaced2: {fileID: 0}
   lastLabelPlacedText: {fileID: 0}
@@ -12196,7 +12185,7 @@ GameObject:
   - component: {fileID: 1685509970}
   - component: {fileID: 1685509969}
   m_Layer: 0
-  m_Name: MouseChallengeRidTable
+  m_Name: MouseChallengeTidy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12479,7 +12468,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8960806095337252836, guid: a7621b8a06b7e7d468a552fe17a92105, type: 3}
       propertyPath: m_Name
-      value: AssistancesOverviewRidTable
+      value: AssistancesOverviewTidy
       objectReference: {fileID: 0}
     - target: {fileID: 8960806095337252845, guid: a7621b8a06b7e7d468a552fe17a92105, type: 3}
       propertyPath: m_Pivot.x
@@ -13417,8 +13406,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1845109307}
-  - component: {fileID: 1845109308}
   - component: {fileID: 1845109309}
+  - component: {fileID: 1845109310}
   m_Layer: 0
   m_Name: tcpchannel
   m_TagString: Untagged
@@ -13440,23 +13429,6 @@ Transform:
   m_Father: {fileID: 1329727692}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1845109308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1845109306}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d1dc0a653777a247925849b3a6111e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WebsocketAddress: 10.44.161.38:25003
-  connectionIP: 10.44.161.38
-  connectionPort: 25001
-  connectionPort_back: 25002
-  label: {fileID: 6302486266631575343, guid: 9087a80db6839ca498345e10b5c5cac6, type: 3}
 --- !u!114 &1845109309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13471,6 +13443,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WebsocketAddress: 
   connectionIP: 
+--- !u!114 &1845109310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845109306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0b70826404c2824294184f51b635c00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1851939768
 GameObject:
   m_ObjectHideFlags: 0
@@ -14222,7 +14206,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 102000010767390410, guid: 2d145caa42b44bd42aac79a42eba3d7c, type: 3}
       propertyPath: m_Text
-      value: 10.44.161.26
+      value: 10.44.161.21
       objectReference: {fileID: 0}
     - target: {fileID: 102000010767390410, guid: 2d145caa42b44bd42aac79a42eba3d7c, type: 3}
       propertyPath: m_OffsetZ
