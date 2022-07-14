@@ -48,7 +48,7 @@ namespace MATCH
 
             EventHandler s_dialogFirstUserFar;
             EventHandler s_dialogSecondUserFar;
-            EventHandler s_dialogThirdUserFar;
+            readonly EventHandler s_dialogThirdUserFar;
             EventHandler s_assistanceWaterNoPlantWatered;
             EventHandler s_assistanceWaterNeedHelp;
             EventHandler s_assistanceWaterNoNeedForHelp;
@@ -75,57 +75,51 @@ namespace MATCH
                 m_plantsManager = new PlantsManager(m_graphPlants, transform);
 
                 // Add buttons to admin menu
-                AdminMenu.Instance.addButton("Add plant", callbackAddPlant, AdminMenu.Panels.Obstacles);
+                AdminMenu.Instance.addButton("Add plant", CallbackAddPlant, AdminMenu.Panels.Obstacles);
                 AdminMenu.Instance.addButton("Clear plant paths", delegate ()
                 {
-                    for (int i = 0; i < m_plantsManager.getNbPlants(); i++)
+                    for (int i = 0; i < m_plantsManager.GetNbPlants(); i++)
                     {
-                        m_plantsManager.getLineRenderer(i).positionCount = 0;
+                        m_plantsManager.GetLineRenderer(i).positionCount = 0;
                     }
                 }, AdminMenu.Panels.Obstacles);
 
 
                 // Initialize scenario
-                initializeScenario();
+                InitializeScenario();
             }
 
-            // Update is called once per frame
-            void Update()
+            void CallbackAddPlant()
             {
-
-            }
-
-            void callbackAddPlant()
-            {
-                int plantId = m_plantsManager.addPlant();
-                Plant p = m_plantsManager.getPlant(plantId);
+                int plantId = m_plantsManager.AddPlant();
+                Plant p = m_plantsManager.GetPlant(plantId);
                 p.s_moved += delegate (System.Object o, EventArgs e)
                 { // Maybe this part will have to be updated , in the case I add a functionality to remove plants (which is unlikely but we never know).
-                    drawLineForPlant(plantId);
+                    DrawLineForPlant(plantId);
                 };
 
                 // Adding the information to the state machine and the interactions
-                p.setState(m_stateMachineMain.addNewAssistanceGradation(p.getId()));
-                p.getState().addFunctionShow(delegate (EventHandler e)
+                p.SetState(m_stateMachineMain.addNewAssistanceGradation(p.GetId()));
+                p.GetState().addFunctionShow(delegate (EventHandler e)
                 { }, Utilities.Utility.getEventHandlerEmpty());
-                p.getState().setFunctionHide(delegate (EventHandler e)
+                p.GetState().setFunctionHide(delegate (EventHandler e)
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Called for plant index " + plantId);
 
-                    p.getHighlight().Hide(Utilities.Utility.getEventHandlerEmpty());
+                    p.GetHighlight().Hide(Utilities.Utility.getEventHandlerEmpty());
 
                     // Setting the color back to unwatered
-                    p.getHighlight().SetMaterialToChild("Mouse_Yellow_Glowing");
+                    p.GetHighlight().SetMaterialToChild("Mouse_Yellow_Glowing");
 
                     e?.Invoke(this, EventArgs.Empty);
                 }, Utilities.Utility.getEventHandlerEmpty());
 
                 //EventHandler temp = m_sIntermediateWateringPlants.addState(p.getState());
-                p.getInteractionSurface().EventInteractionSurfaceTableTouched += p.gotoStateHighlightWatered(); // If we remain in the default attention state, it will just not go there, so should be safe
-                p.getInteractionSurface().EventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(p.getState());
-                p.getInteractionSurface().EventInteractionSurfaceTableTouched += delegate (System.Object o, EventArgs e)
+                p.GetInteractionSurface().EventInteractionSurfaceTableTouched += p.GotoStateHighlightWatered(); // If we remain in the default attention state, it will just not go there, so should be safe
+                p.GetInteractionSurface().EventInteractionSurfaceTableTouched += m_sIntermediateWateringPlants.addState(p.GetState());
+                p.GetInteractionSurface().EventInteractionSurfaceTableTouched += delegate (System.Object o, EventArgs e)
                 {
-                    m_plantsManager.getLineRenderer(plantId).positionCount = 0;
+                    m_plantsManager.GetLineRenderer(plantId).positionCount = 0;
                 };
 
                 // Add plant to the GUI
@@ -134,7 +128,7 @@ namespace MATCH
                 {
                     if (m_dialogAssistanceWaterHelp.m_buttonsController[plantId].isChecked() == false)
                     {
-                        drawLineForPlant(plantId);
+                        DrawLineForPlant(plantId);
                     }
                 };
             }
@@ -142,7 +136,7 @@ namespace MATCH
             /**
              * The code of this function is a mess ... to be restructured
              * */
-            void initializeScenario()
+            void InitializeScenario()
             {
                 Manager.Instance.addScenario(this);
                 // Object required
@@ -170,24 +164,24 @@ namespace MATCH
                 m_dialogAssistanceWaterHelp = Assistances.Factory.Instance.CreateCheckListNoButton("", "Voici les plantes qu'il vous reste à arroser. Si vous touchez une des plantes, un chemin au sol vous y guidera.", m_pointOfReferenceForPaths);
 
                 // Setting 3 cubes to evaluate if the intermediate state thing works
-                callbackAddPlant();
-                callbackAddPlant();
-                callbackAddPlant();
+                CallbackAddPlant();
+                CallbackAddPlant();
+                CallbackAddPlant();
 
                 // The next lines are to fit with the "virtual room" stuff
-                Plant plant1 = m_plantsManager.getPlant(0);
-                Plant plant2 = m_plantsManager.getPlant(1);
-                Plant plant3 = m_plantsManager.getPlant(2);
+                Plant plant1 = m_plantsManager.GetPlant(0);
+                Plant plant2 = m_plantsManager.GetPlant(1);
+                Plant plant3 = m_plantsManager.GetPlant(2);
 
-                plant1.getInteractionSurface().SetScaling(new Vector3(0.3f, 0.02f, 0.3f));
-                plant1.getHighlight().SetScale(plant1.getInteractionSurface().GetInteractionSurface().localScale.x, plant1.getHighlight().GetChildTransform().localScale.y, plant1.getInteractionSurface().GetInteractionSurface().localScale.z);
-                plant1.getInteractionSurface().transform.position = new Vector3(3.31499958f, 0.347000003f, 5.22099972f);
-                plant2.getInteractionSurface().SetScaling(new Vector3(0.3f, 0.02f, 0.3f));
-                plant2.getHighlight().SetScale(plant2.getInteractionSurface().GetInteractionSurface().localScale.x, plant2.getHighlight().GetChildTransform().localScale.y, plant2.getInteractionSurface().GetInteractionSurface().localScale.z);
-                plant2.getInteractionSurface().transform.position = new Vector3(-1.38000059f, 0.35800001f, 1.05400014f);
-                plant3.getInteractionSurface().SetScaling(new Vector3(0.3f, 0.02f, 0.3f));
-                plant3.getHighlight().SetScale(plant3.getInteractionSurface().GetInteractionSurface().localScale.x, plant3.getHighlight().GetChildTransform().localScale.y, plant3.getInteractionSurface().GetInteractionSurface().localScale.z);
-                plant3.getInteractionSurface().transform.position = new Vector3(3.35499954f, 0.331999987f, 1.5990001f);
+                plant1.GetInteractionSurface().SetScaling(new Vector3(0.3f, 0.02f, 0.3f));
+                plant1.GetHighlight().SetScale(plant1.GetInteractionSurface().GetInteractionSurface().localScale.x, plant1.GetHighlight().GetChildTransform().localScale.y, plant1.GetInteractionSurface().GetInteractionSurface().localScale.z);
+                plant1.GetInteractionSurface().transform.position = new Vector3(3.31499958f, 0.347000003f, 5.22099972f);
+                plant2.GetInteractionSurface().SetScaling(new Vector3(0.3f, 0.02f, 0.3f));
+                plant2.GetHighlight().SetScale(plant2.GetInteractionSurface().GetInteractionSurface().localScale.x, plant2.GetHighlight().GetChildTransform().localScale.y, plant2.GetInteractionSurface().GetInteractionSurface().localScale.z);
+                plant2.GetInteractionSurface().transform.position = new Vector3(-1.38000059f, 0.35800001f, 1.05400014f);
+                plant3.GetInteractionSurface().SetScaling(new Vector3(0.3f, 0.02f, 0.3f));
+                plant3.GetHighlight().SetScale(plant3.GetInteractionSurface().GetInteractionSurface().localScale.x, plant3.GetHighlight().GetChildTransform().localScale.y, plant3.GetInteractionSurface().GetInteractionSurface().localScale.z);
+                plant3.GetInteractionSurface().transform.position = new Vector3(3.35499954f, 0.331999987f, 1.5990001f);
 
                 Transform faucetView = Instantiate(m_refInteractionSurface, transform);
                 Assistances.InteractionSurface faucetController = faucetView.GetComponent<Assistances.InteractionSurface>();
@@ -213,7 +207,7 @@ namespace MATCH
 
                 //// Inferences
                 DateTime tempTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 19, 0, 0);
-                m_inference19h00 = new MATCH.Inferences.Time("19h watering plants", tempTime, callbackWateringThePlants);
+                m_inference19h00 = new MATCH.Inferences.Time("19h watering plants", tempTime, CallbackWateringThePlants);
                 m_inferenceManager.RegisterInference(m_inference19h00);
 
                 //// Asssitance to water the plants state machine
@@ -228,7 +222,7 @@ namespace MATCH
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sAssistanceWaterStart = m_stateMachineAssistanceWateringPlants.addNewAssistanceGradation("ready");
                 sAssistanceWaterStart.addFunctionShow(delegate (EventHandler e)
                 {
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", callbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
+                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", CallbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
 
                 }, Utilities.Utility.getEventHandlerEmpty());
                 sAssistanceWaterStart.setFunctionHide(delegate (EventHandler e)
@@ -287,7 +281,7 @@ namespace MATCH
                 faucetController.EventInteractionSurfaceTableTouched += sAssistanceWaterPlantsStandBy.goToState(sAssistanceWaterStart); // Enabling the nested state machine
 
                 s_assistanceWaterNoPlantWatered += sAssistanceWaterStart.goToState(sAssistanceWaterDialogFirst);
-                foreach (EventHandler handler in m_plantsManager.gotoStateHighlight(/*s_assistanceWaterNeedHelp*/))
+                foreach (EventHandler handler in m_plantsManager.GotoStateHighlight(/*s_assistanceWaterNeedHelp*/))
                 {
                     s_assistanceWaterNeedHelp += handler;
                 }
@@ -297,14 +291,14 @@ namespace MATCH
                     //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called - preparing lines display for the plants");
 
                     int indexPlant = 0;
-                    for (indexPlant = 0; indexPlant < m_plantsManager.getNbPlants(); indexPlant++)
+                    for (indexPlant = 0; indexPlant < m_plantsManager.GetNbPlants(); indexPlant++)
                     {
-                        LineRenderer line = m_plantsManager.getLineRenderer(indexPlant);
-                        Plant plant = m_plantsManager.getPlant(indexPlant);
+                        LineRenderer line = m_plantsManager.GetLineRenderer(indexPlant);
+                        Plant plant = m_plantsManager.GetPlant(indexPlant);
 
                         Assistances.Buttons.Basic plantButton = m_dialogAssistanceWaterHelp.m_buttonsController[indexPlant];
 
-                        bool plantAlreadyWatered = m_sIntermediateWateringPlants.checkStateCalled(plant.getState());
+                        bool plantAlreadyWatered = m_sIntermediateWateringPlants.checkStateCalled(plant.GetState());
 
                         plantButton.checkButton(plantAlreadyWatered);
 
@@ -313,10 +307,10 @@ namespace MATCH
                         // If the plant has already been watered, artifically triger the event so that the state of the plant goes to "highlightWatered"
                         if (plantAlreadyWatered)
                         {
-                            plant.getInteractionSurface().TriggerTouchEvent();
+                            plant.GetInteractionSurface().TriggerTouchEvent();
                         }
 
-                        plant.getInteractionSurface().EventInteractionSurfaceTableTouched += delegate (System.Object oo, EventArgs ee)
+                        plant.GetInteractionSurface().EventInteractionSurfaceTableTouched += delegate (System.Object oo, EventArgs ee)
                         {
                             //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called for plant index " + indexPlant);
 
@@ -330,7 +324,7 @@ namespace MATCH
 
                 m_sIntermediateWateringPlants.s_eventNextState += sAssistanceWaterDialogFirst.goToState(sAssistanceWaterPlantsStandBy);
                 m_sIntermediateWateringPlants.s_eventNextState += sAssistanceWaterDialogSecond.goToState(sAssistanceWaterPlantsStandBy);
-                foreach (EventHandler handler in m_plantsManager.gotoStateDefaultFromHighlightWatered())
+                foreach (EventHandler handler in m_plantsManager.GotoStateDefaultFromHighlightWatered())
                 {
                     m_sIntermediateWateringPlants.s_eventNextState += handler;
                 }
@@ -343,20 +337,20 @@ namespace MATCH
                 // Display graphs
                 m_graphMain.setManager(m_stateMachineMain);
                 m_graphHelp.setManager(m_stateMachineAssistanceWateringPlants);
-                m_plantsManager.displayGraphLastPlant();
+                m_plantsManager.DisplayGraphLastPlant();
 
                 DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Current state: " + m_stateMachineMain.getGradationCurrent());
             }
 
-            void drawLineForPlant(int index)
+            void DrawLineForPlant(int index)
             {
                 DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Called");
 
-                Plant p = m_plantsManager.getPlant(index);
+                Plant p = m_plantsManager.GetPlant(index);
 
-                Vector3[] corners = m_pathFinderEngine.computePath(m_pointOfReferenceForPaths, p.getInteractionSurface().transform);
+                Vector3[] corners = m_pathFinderEngine.computePath(m_pointOfReferenceForPaths, p.GetInteractionSurface().transform);
 
-                LineRenderer lineRenderer = m_plantsManager.getLineRenderer(index);
+                LineRenderer lineRenderer = m_plantsManager.GetLineRenderer(index);
                 lineRenderer.positionCount = corners.Length;
 
                 for (int i = 0; i < corners.Length; i++)
@@ -373,7 +367,7 @@ namespace MATCH
              * This callback is aimed to be called when the person left to water plants and comes back.
              * If the person did not water plants in the meantime, then an event is trigerred
              * */
-            void callbackAssistanceWateringCheckIfPlantWatered(System.Object o, EventArgs e)
+            void CallbackAssistanceWateringCheckIfPlantWatered(System.Object o, EventArgs e)
             {
                 if (m_sIntermediateWateringPlants.getNbOfStatesWhoCalled() == m_numberOfPlantsWatered)
                 { // Then no plants have been watered > trigger event to request additional assistance
@@ -382,11 +376,11 @@ namespace MATCH
                 else
                 { // At least one plant has been watered > update the number of watered plants
                     m_numberOfPlantsWatered = m_sIntermediateWateringPlants.getNbOfStatesWhoCalled();
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", callbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
+                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", CallbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
                 }
             }
 
-            void callbackWateringThePlants(System.Object o, EventArgs e)
+            void CallbackWateringThePlants(System.Object o, EventArgs e)
             {
                 DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Called");
 
@@ -394,7 +388,7 @@ namespace MATCH
                 s_inference19h00?.Invoke(o, e);
             }
 
-            public MATCH.Inferences.Time getInference()
+            public MATCH.Inferences.Time GetInference()
             {
                 return (MATCH.Inferences.Time)m_inferenceManager.GetInference("19h watering plants");
             }
@@ -402,10 +396,10 @@ namespace MATCH
 
         public class PlantsManager
         {
-            List<Plant> m_plants;
-            List<LineRenderer> m_plantsLines;
-            Transform m_parent;
-            FiniteStateMachine.Display m_graph;
+            private readonly List<Plant> m_plants;
+            private readonly List<LineRenderer> m_plantsLines;
+            private readonly Transform m_parent;
+            private readonly FiniteStateMachine.Display m_graph;
 
             public PlantsManager(FiniteStateMachine.Display graph, Transform parent)
             {
@@ -420,7 +414,7 @@ namespace MATCH
             /**
              * Returns the id of the plant
              * */
-            public int addPlant()
+            public int AddPlant()
             {
 
                 string plantId = "Plante " + (m_plants.Count + 1).ToString(); //+1 because the new plant is not yet added to the list of plants
@@ -441,61 +435,61 @@ namespace MATCH
                 return indexPlant;
             }
 
-            public Plant getPlant(int index)
+            public Plant GetPlant(int index)
             {
                 return m_plants[index];
             }
 
-            public LineRenderer getLineRenderer(int index)
+            public LineRenderer GetLineRenderer(int index)
             {
                 return m_plantsLines[index];
             }
 
-            public int getNbPlants()
+            public int GetNbPlants()
             {
                 return m_plants.Count;
             }
 
-            public List<EventHandler> gotoStateHighlight()
+            public List<EventHandler> GotoStateHighlight()
             {
                 List<EventHandler> handlers = new List<EventHandler>();
 
                 foreach (Plant p in m_plants)
                 {
-                    handlers.Add(p.gotoStateHighlight());
+                    handlers.Add(p.GotoStateHighlight());
                 }
 
                 return handlers;
             }
 
-            public List<EventHandler> gotoStateDefaultFromHighlightWatered()
+            public List<EventHandler> GotoStateDefaultFromHighlightWatered()
             {
                 List<EventHandler> handlers = new List<EventHandler>();
 
                 foreach (Plant p in m_plants)
                 {
-                    handlers.Add(p.gotoStateDefaultFromHighlightWatered());
+                    handlers.Add(p.GotoStateDefaultFromHighlightWatered());
                 }
 
                 return handlers;
             }
 
-            public void displayGraphLastPlant()
+            public void DisplayGraphLastPlant()
             {
-                m_plants.Last().displayGraph(m_graph);
+                m_plants.Last().DisplayGraph(m_graph);
             }
         }
 
         public class Plant
         {
-            FiniteStateMachine.Manager m_grabAttentionManager;
+            readonly FiniteStateMachine.Manager m_grabAttentionManager;
 
-            Assistances.InteractionSurface m_interactionSurface;
-            Assistances.Basic m_highlight;
+            readonly Assistances.InteractionSurface InteractionSurface;
+            readonly Assistances.Basic Highlight;
 
-            FiniteStateMachine.MouseUtilitiesGradationAssistance m_state; // State to be used in the main state machine
+            FiniteStateMachine.MouseUtilitiesGradationAssistance State; // State to be used in the main state machine
 
-            string m_id;
+            readonly string Id;
 
             public EventHandler s_moved;
             public EventHandler s_scaled;
@@ -505,20 +499,20 @@ namespace MATCH
                 // Variables
                 m_grabAttentionManager = new FiniteStateMachine.Manager();
 
-                m_id = id;
+                Id = id;
 
-                m_interactionSurface = Assistances.Factory.Instance.CreateInteractionSurface(id, AdminMenu.Panels.Obstacles, new Vector3(0.1f, 0.1f, 0.1f), "Mouse_Yellow_Glowing", true, true, delegate (System.Object o, EventArgs e)
+                InteractionSurface = Assistances.Factory.Instance.CreateInteractionSurface(id, AdminMenu.Panels.Obstacles, new Vector3(0.1f, 0.1f, 0.1f), "Mouse_Yellow_Glowing", true, true, delegate (System.Object o, EventArgs e)
                 {
                     s_moved?.Invoke(this, EventArgs.Empty);
                 }, parent);
 
-                m_highlight = Assistances.Factory.Instance.CreateCube("Mouse_Yellow_Glowing", false, new Vector3(m_interactionSurface.GetInteractionSurface().localScale.x, 0.6f, m_interactionSurface.GetInteractionSurface().localScale.z), new Vector3(0, -0.35f, 0), false, m_interactionSurface.transform);
+                Highlight = Assistances.Factory.Instance.CreateCube("Mouse_Yellow_Glowing", false, new Vector3(InteractionSurface.GetInteractionSurface().localScale.x, 0.6f, InteractionSurface.GetInteractionSurface().localScale.z), new Vector3(0, -0.35f, 0), false, InteractionSurface.transform);
 
-                m_interactionSurface.EventInteractionSurfaceScaled += delegate
+                InteractionSurface.EventInteractionSurfaceScaled += delegate
                 {
-                    m_highlight.SetScale(m_interactionSurface.GetInteractionSurface().localScale.x,
-                        m_highlight.GetChildTransform().localScale.y,
-                        m_interactionSurface.GetInteractionSurface().localScale.z);
+                    Highlight.SetScale(InteractionSurface.GetInteractionSurface().localScale.x,
+                        Highlight.GetChildTransform().localScale.y,
+                        InteractionSurface.GetInteractionSurface().localScale.z);
                 };
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sDefault = m_grabAttentionManager.addNewAssistanceGradation("default");
@@ -527,7 +521,7 @@ namespace MATCH
 
                 sDefault.addFunctionShow(delegate (EventHandler e)
                 {
-                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + m_id + " is going to default state");
+                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + Id + " is going to default state");
                 }, Utilities.Utility.getEventHandlerEmpty());
                 sDefault.setFunctionHide(delegate (EventHandler e)
                 {
@@ -536,9 +530,9 @@ namespace MATCH
 
                 sHighlight.addFunctionShow(delegate (EventHandler e)
                 {
-                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + m_id + " is going to be highlighted");
+                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + Id + " is going to be highlighted");
 
-                    m_highlight.show(Utilities.Utility.getEventHandlerEmpty());
+                    Highlight.show(Utilities.Utility.getEventHandlerEmpty());
                 }, Utilities.Utility.getEventHandlerEmpty());
                 sHighlight.setFunctionHide(delegate (EventHandler e)
                 {
@@ -547,14 +541,14 @@ namespace MATCH
 
                 sHighlightWatered.addFunctionShow(delegate (EventHandler e)
                 {
-                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + m_id + " has been watered");
+                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + Id + " has been watered");
 
-                    m_highlight.SetMaterialToChild("Mouse_Green_Glowing");
+                    Highlight.SetMaterialToChild("Mouse_Green_Glowing");
                 }, Utilities.Utility.getEventHandlerEmpty());
                 sHighlightWatered.setFunctionHide(delegate (EventHandler e)
                 {
-                    m_highlight.SetMaterialToChild("Mouse_Yellow_Glowing");
-                    m_highlight.Hide(Utilities.Utility.getEventHandlerEmpty());
+                    Highlight.SetMaterialToChild("Mouse_Yellow_Glowing");
+                    Highlight.Hide(Utilities.Utility.getEventHandlerEmpty());
 
                     e?.Invoke(this, EventArgs.Empty);
                 }, Utilities.Utility.getEventHandlerEmpty());
@@ -562,29 +556,29 @@ namespace MATCH
                 m_grabAttentionManager.setGradationInitial("default");
             }
 
-            public string getId()
+            public string GetId()
             {
-                return m_id;
+                return Id;
             }
 
-            public Assistances.InteractionSurface getInteractionSurface()
+            public Assistances.InteractionSurface GetInteractionSurface()
             {
-                return m_interactionSurface;
+                return InteractionSurface;
             }
 
-            public Assistances.Basic getHighlight()
+            public Assistances.Basic GetHighlight()
             {
-                return m_highlight;
+                return Highlight;
             }
 
-            public EventHandler gotoStateHighlight()
+            public EventHandler GotoStateHighlight()
             {
-                return getState("default").goToState(getState("highlight"));
+                return GetState("default").goToState(GetState("highlight"));
             }
 
-            public EventHandler gotoStateHighlightWatered()
+            public EventHandler GotoStateHighlightWatered()
             {
-                FiniteStateMachine.MouseUtilitiesGradationAssistance state = getState("highlightWatered");
+                FiniteStateMachine.MouseUtilitiesGradationAssistance state = GetState("highlightWatered");
                 //state.addFunctionShow(e, MouseUtilities.getEventHandlerEmpty());
 
                 /*state.addFunctionShow(delegate (EventHandler e)
@@ -601,35 +595,35 @@ namespace MATCH
                     e?.Invoke(this, EventArgs.Empty);
                 }, MouseUtilities.getEventHandlerEmpty());*/
 
-                return getState("highlight").goToState(state);
+                return GetState("highlight").goToState(state);
             }
 
-            public EventHandler gotoStateDefaultFromHighlight()
+            public EventHandler GotoStateDefaultFromHighlight()
             {
-                return getState("default").goToState(getState("highlight"));
+                return GetState("default").goToState(GetState("highlight"));
             }
 
-            public EventHandler gotoStateDefaultFromHighlightWatered()
+            public EventHandler GotoStateDefaultFromHighlightWatered()
             {
-                return getState("highlightWatered").goToState(getState("default"));
+                return GetState("highlightWatered").goToState(GetState("default"));
             }
 
-            FiniteStateMachine.MouseUtilitiesGradationAssistance getState(string id)
+            FiniteStateMachine.MouseUtilitiesGradationAssistance GetState(string id)
             {
                 return (FiniteStateMachine.MouseUtilitiesGradationAssistance)m_grabAttentionManager.getAssistance(id);
             }
 
-            public void setState(FiniteStateMachine.MouseUtilitiesGradationAssistance state)
+            public void SetState(FiniteStateMachine.MouseUtilitiesGradationAssistance state)
             {
-                m_state = state;
+                State = state;
             }
 
-            public FiniteStateMachine.MouseUtilitiesGradationAssistance getState()
+            public FiniteStateMachine.MouseUtilitiesGradationAssistance GetState()
             {
-                return m_state;
+                return State;
             }
 
-            public void displayGraph(FiniteStateMachine.Display graph)
+            public void DisplayGraph(FiniteStateMachine.Display graph)
             {
                 graph.setManager(m_grabAttentionManager);
             }
