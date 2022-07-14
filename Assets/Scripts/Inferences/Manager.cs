@@ -363,7 +363,6 @@ public class MouseUtilitiesInferenceObjectOutInteractionSurface : Inferences.Inf
     public void callbackObjectDetection(System.Object o, EventArgs e)
     {
         Utilities.EventHandlerArgObject objectInfo = (Utilities.EventHandlerArgObject)e;
-        //m_objectdetected = new MousePhysicalObjectInformation();
         m_objectdetected = objectInfo.m_object;
         m_callbackArgs = new Utilities.EventHandlerArgObject(m_objectdetected);
     }
