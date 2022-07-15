@@ -21,8 +21,9 @@ namespace MATCH
                 Conditions["ObjectStored"] = false;
                 Conditions["PersonPassedByObject"] = false;
                 Conditions["PersonGrabbedObject"] = false;
+                Conditions["ObjectNotStored"] = false;
 
-                MATCH.Inferences.Time inferenceObjectSorted = new Inferences.Time("Object sorted",
+                MATCH.Inferences.Time inferenceObjectSorted = new Inferences.Time("Object stored",
                     new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 19, 35, 0));
                 inferenceObjectSorted.AddCallback(CallbackObjectStored);
 
@@ -34,15 +35,43 @@ namespace MATCH
                     new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 19, 35, 0));
                 inferencePersonGrabbedObject.AddCallback(CallbackPersonGrabbedObject);
 
+                MATCH.Inferences.Time inferenceObjectPickedButNotSorted = new Inferences.Time("Person put the object in a wrong place",
+                    new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 19, 35, 0));
+                inferenceObjectPickedButNotSorted.AddCallback(CallbackObjectNotStored);
+
                 InferenceManager.RegisterInference(inferenceObjectSorted);
                 InferenceManager.RegisterInference(inferencePersonPassedByObject);
                 InferenceManager.RegisterInference(inferencePersonGrabbedObject);
+                InferenceManager.RegisterInference(inferenceObjectPickedButNotSorted);
 
                 /*Tree = new Root(
                     new Action(() => Debug.Log("Hello world!")));*/
 
                 //new Action()
 
+                Tree = new Root(Conditions,
+                    new Selector(
+                        new BlackboardCondition("ObjectStored", Operator.IS_EQUAL, false, Stops.IMMEDIATE_RESTART, //?
+                            new Sequence(//->
+                                new Selector(
+                                    new BlackboardCondition("PersonGrabbedObject", Operator.IS_EQUAL, false, Stops.IMMEDIATE_RESTART,//?
+                                        new Sequence(
+                                            new BlackboardCondition("PersonPassedByObject", Operator.IS_EQUAL, true, Stops.IMMEDIATE_RESTART,//->
+                                                new Sequence(
+                                                    new NPBehave.Action(() => Debug.Log("Assistance 1")),
+                                                    new WaitUntilStopped()))))),
+                                new Sequence(
+                                    new BlackboardCondition("ObjectNotStored", Operator.IS_EQUAL, true, Stops.IMMEDIATE_RESTART,
+                                    new Sequence(
+                                        new NPBehave.Action(() => Debug.Log("Assistance 2")),
+                                        new WaitUntilStopped()))),
+                                new Sequence(
+                                    new NPBehave.Action(() => Debug.Log("Succès")),
+                                    new WaitUntilStopped())))));
+
+
+
+                /*
                 Tree = new Root(Conditions,
                     new Selector(
                         new BlackboardCondition("ObjectStored", Operator.IS_EQUAL, true, Stops.IMMEDIATE_RESTART,
@@ -58,6 +87,7 @@ namespace MATCH
                                     new BlackboardCondition("PersonGrabbedObject", Operator.IS_EQUAL, true, Stops.IMMEDIATE_RESTART, new Sequence(
                                     new NPBehave.Action(() => Debug.Log("Hide all assistances!")),
                                     new WaitUntilStopped())))))));
+                */
 
 //#if UNITY_EDITOR
                 NPBehave.Debugger debugger = (Debugger)this.gameObject.AddComponent(typeof(Debugger));
@@ -80,6 +110,11 @@ namespace MATCH
             void CallbackPersonGrabbedObject(System.Object o, EventArgs e)
             {
                 Conditions["PersonGrabbedObject"] = true;
+            }
+
+            void CallbackObjectNotStored(System.Object o, EventArgs e)
+            {
+                Conditions["ObjectNotStored"] = true;
             }
         }
 
