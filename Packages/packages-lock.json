@@ -39,12 +39,6 @@
         "com.unity.textmeshpro": "2.1.4"
       }
     },
-    "com.microsoft.mixedreality.webrtc": {
-      "version": "file:C:/Users/marqu/Downloads/com.microsoft.mixedreality.webrtc-2.0.2.tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {}
-    },
     "com.microsoft.mixedreality.worldlockingtools": {
       "version": "file:MixedReality/com.microsoft.mixedreality.worldlockingtools-1.5.9.tgz",
       "depth": 0,
