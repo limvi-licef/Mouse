@@ -86,7 +86,7 @@ namespace MATCH
                         gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, m_positionEnd, step);
                     }
 
-                    if (m_scalingGrow && Utility.convertBitArrayToInt(m_scalingFinished) < 7) // < 7 because if the value is 7, that means the three bits (corresponding to x, y, z respectively) are set to 1, i.e. scaling is finished in the 3 directions.
+                    if (m_scalingGrow && Utility.ConvertBitArrayToInt(m_scalingFinished) < 7) // < 7 because if the value is 7, that means the three bits (corresponding to x, y, z respectively) are set to 1, i.e. scaling is finished in the 3 directions.
                     {
                         Vector3 newScaling = gameObject.transform.localScale; // current value by default, and changed below if necessary
 
@@ -104,7 +104,7 @@ namespace MATCH
 
                         gameObject.transform.localScale = newScaling;
                     }
-                    else if (m_scalingGrow == false && Utility.convertBitArrayToInt(m_scalingFinished) < 7)
+                    else if (m_scalingGrow == false && Utility.ConvertBitArrayToInt(m_scalingFinished) < 7)
                     {
                         Vector3 newScaling = gameObject.transform.localScale; // current value by default, and changed below if necessary
 
@@ -136,7 +136,7 @@ namespace MATCH
                     }
                     else if (m_triggerStopAnimation == ConditionStopAnimation.OnScaling)
                     {
-                        if (Utility.convertBitArrayToInt(m_scalingFinished) == 7)
+                        if (Utility.ConvertBitArrayToInt(m_scalingFinished) == 7)
                         {
                             // Animation is finished: trigger event
                             m_eventAnimationFinished?.Invoke(this, EventArgs.Empty);

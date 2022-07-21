@@ -28,24 +28,22 @@ namespace MATCH
     {
         public class Factory : MonoBehaviour
         {
-            private static Factory m_instance;
-            public static Factory Instance { get { return m_instance; } }
-
-            //public MouseAssistanceDialog m_refDialogAssistance;
+            private static Factory InstanceInternal;
+            public static Factory Instance { get { return InstanceInternal; } }
 
             private void Awake()
             {
-                if (m_instance != null && m_instance != this)
+                if (InstanceInternal != null && InstanceInternal != this)
                 {
                     Destroy(this);
                 }
                 else
                 {
-                    m_instance = this;
+                    InstanceInternal = this;
                 }
             }
 
-            public void createDistanceLeavingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistance = 2.0f)
+            public void CreateDistanceLeavingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistance = 2.0f)
             {
                 MATCH.Inferences.DistanceLeaving inference = new MATCH.Inferences.DistanceLeaving(inferenceId, delegate (System.Object o, EventArgs e)
                 {
@@ -55,7 +53,7 @@ namespace MATCH
                 inferenceManager.RegisterInference(inference);
             }
 
-            public void createDistanceComingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistance = 1.5f)
+            public void CreateDistanceComingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistance = 1.5f)
             {
                 MATCH.Inferences.DistanceComing inference = new MATCH.Inferences.DistanceComing(inferenceId, delegate (System.Object o, EventArgs e)
                 {
@@ -69,22 +67,22 @@ namespace MATCH
              * This inference creates 2 nested inferences: the first is trigerred when the user comes close to the object. It DOES NOT trigger the provided EventHandler yet. Instead, it creates a new inference trigerred if the user leave the place where the object is displayed. And here the EventHandler is triggered.
              * The reason to implement those inferences this way is that in case we have several assistances in a row that can trigger if the user is at a certain distance, then they will all trigger at once. With this way of doing, the next inference will be triggered only if the user first come closer and then leaves again
              * */
-            public void createDistanceComingAndLeavingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistanceComing = 1.5f, float trigerringDistanceLeaving = 2.0f)
+            public void CreateDistanceComingAndLeavingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistanceComing = 1.5f, float trigerringDistanceLeaving = 2.0f)
             {
-                createDistanceComingInferenceOneShot(inferenceManager, inferenceId, delegate (System.Object o, EventArgs e)
+                CreateDistanceComingInferenceOneShot(inferenceManager, inferenceId, delegate (System.Object o, EventArgs e)
                 {
-                    createDistanceLeavingInferenceOneShot(inferenceManager, inferenceId + "Internal", toTrigger, refObject, trigerringDistanceLeaving);
+                    CreateDistanceLeavingInferenceOneShot(inferenceManager, inferenceId + "Internal", toTrigger, refObject, trigerringDistanceLeaving);
                 }, refObject, trigerringDistanceComing);
             }
-            public void createDistanceLeavingAndComingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistanceComing = 1.5f, float trigerringDistanceLeaving = 2.0f)
+            public void CreateDistanceLeavingAndComingInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, GameObject refObject, float trigerringDistanceComing = 1.5f, float trigerringDistanceLeaving = 2.0f)
             {
-                createDistanceLeavingInferenceOneShot(inferenceManager, inferenceId, delegate (System.Object o, EventArgs e)
+                CreateDistanceLeavingInferenceOneShot(inferenceManager, inferenceId, delegate (System.Object o, EventArgs e)
                 {
-                    createDistanceComingInferenceOneShot(inferenceManager, inferenceId + "Internal", toTrigger, refObject, trigerringDistanceComing);
+                    CreateDistanceComingInferenceOneShot(inferenceManager, inferenceId + "Internal", toTrigger, refObject, trigerringDistanceComing);
                 }, refObject, trigerringDistanceLeaving);
             }
 
-            public void createTemporalInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, int hour)
+            public void CreateTemporalInferenceOneShot(MATCH.Inferences.Manager inferenceManager, string inferenceId, EventHandler toTrigger, int hour)
             {
                 DateTime tempTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hour, 0, 0);
                 MATCH.Inferences.Time inference = new MATCH.Inferences.Time(inferenceId, tempTime, delegate (System.Object o, EventArgs e)
@@ -93,18 +91,6 @@ namespace MATCH
                     toTrigger?.Invoke(o, e);
                 });
                 inferenceManager.RegisterInference(inference);
-            }
-
-            // Start is called before the first frame update
-            void Start()
-            {
-
-            }
-
-            // Update is called once per frame
-            void Update()
-            {
-
             }
         }
 

@@ -31,7 +31,7 @@ namespace MATCH
 {
     namespace Assistances
     {
-        public class Basic : Assistance
+        public class Basic : MonoBehaviour, IAssistance
         {
             public Transform m_childView;
 
@@ -60,10 +60,11 @@ namespace MATCH
                 {
                     interactions = m_childView.gameObject.AddComponent<Utilities.HologramInteractions>();
                 }
-                interactions.s_touched += delegate (System.Object sender, EventArgs args)
+                interactions.EventTouched += delegate (System.Object sender, EventArgs args)
                 {
                     s_touched?.Invoke(sender, args);
                 };
+                //interactions.s
 
                 AdjustHeightOnShow = true;
             }
@@ -81,7 +82,7 @@ namespace MATCH
             }*/
 
             bool m_mutexShow = false;
-            public override void show(EventHandler eventHandler)
+            public void Show(EventHandler eventHandler)
             {
                 if (m_mutexShow == false)
                 {
@@ -89,10 +90,10 @@ namespace MATCH
 
                     if (AdjustHeightOnShow)
                     {
-                        MATCH.Utilities.Utility.adjustObjectHeightToHeadHeight(transform);
+                        MATCH.Utilities.Utility.AdjustObjectHeightToHeadHeight(transform);
                     }
 
-                    MATCH.Utilities.Utility.animateAppearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
+                    MATCH.Utilities.Utility.AnimateAppearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
                     {
                         m_mutexShow = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
@@ -101,19 +102,29 @@ namespace MATCH
             }
 
             bool m_mutexHide = false;
-            public override void Hide(EventHandler eventHandler)
+            public void Hide(EventHandler eventHandler)
             {
                 if (m_mutexHide == false)
                 {
                     m_mutexHide = true;
 
-                    MATCH.Utilities.Utility.animateDisappearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
+                    MATCH.Utilities.Utility.AnimateDisappearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
                     {
                         m_childView.gameObject.transform.localScale = m_childScaleOrigin;
                         m_mutexHide = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
                     });
                 }
+            }
+
+            public void ShowHelp(bool show)
+            {
+                // Todo
+            }
+
+            public Transform GetTransform()
+            {
+                return m_childView;
             }
 
             public void SetMaterialToChild(string materialName)

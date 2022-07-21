@@ -28,7 +28,7 @@ namespace MATCH
         /**
  * Used as an "escape" where the user can ask to be reminded later about the challenge
  * */
-        public class ReminderOneClockMoving : Assistance
+        public class ReminderOneClockMoving : MonoBehaviour, IAssistance
         {
 
 
@@ -121,20 +121,24 @@ namespace MATCH
                     interactions = o.gameObject.AddComponent<Utilities.HologramInteractions>();
                 }
 
-                interactions.s_focusOn += CallbackOnObjectFocus;
+                interactions.EventFocusOn += CallbackOnObjectFocus;
             }
 
+            public Transform GetTransform()
+            {
+                return transform;
+            }
 
             void CallbackOnClockTouched(System.Object sender, EventArgs e)
             {// If a clock is touched, all other clocks are hidden
 
                 DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Clock touched callback called");
 
-                MATCH.Utilities.Utility.animateDisappearInPlace(m_clockView.gameObject, new Vector3(0.1f, 0.1f, 0.1f), delegate
+                MATCH.Utilities.Utility.AnimateDisappearInPlace(m_clockView.gameObject, new Vector3(0.1f, 0.1f, 0.1f), delegate
                 {
                     m_hologramWindowReminderView.position = new Vector3(m_hologramWindowReminderView.position.x, m_clockView.position.y, m_hologramWindowReminderView.position.z);
 
-                    m_dialogController.show(MATCH.Utilities.Utility.getEventHandlerEmpty());
+                    m_dialogController.Show(MATCH.Utilities.Utility.GetEventHandlerEmpty());
                     EventHologramClockTouched?.Invoke(this, EventArgs.Empty);
                 });
             }
@@ -169,7 +173,7 @@ namespace MATCH
             }*/
 
             bool m_mutexHide = false;
-            public override void Hide(EventHandler e)
+            public void Hide(EventHandler e)
             {
                 DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Called");
 
@@ -182,7 +186,7 @@ namespace MATCH
 
                     if (m_clockView.gameObject.activeSelf)
                     {
-                        MATCH.Utilities.Utility.animateDisappearInPlace(m_clockView.gameObject, new Vector3(0.1f, 0.1f, 0.1f), delegate
+                        MATCH.Utilities.Utility.AnimateDisappearInPlace(m_clockView.gameObject, new Vector3(0.1f, 0.1f, 0.1f), delegate
                         {
                             DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Mutex unlocked - clock hidden");
                             m_mutexHide = false;
@@ -205,7 +209,7 @@ namespace MATCH
 
             bool m_mutexShow = false;
             bool m_showFirstTime = false;
-            public override void show(EventHandler eventHandler)
+            public void Show(EventHandler eventHandler)
             {
                 m_clockScalingOriginal = new Vector3(0.1f, 0.1f, 0.1f);
                 DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Clock is going to appear to scaling: " + m_clockScalingOriginal);
@@ -216,7 +220,7 @@ namespace MATCH
 
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Mutex locked");
 
-                    MATCH.Utilities.Utility.adjustObjectHeightToHeadHeight(transform, m_yOffsetOrigin);
+                    MATCH.Utilities.Utility.AdjustObjectHeightToHeadHeight(transform, m_yOffsetOrigin);
 
                     MATCH.Utilities.Animation animator = m_clockView.gameObject.AddComponent<MATCH.Utilities.Animation>();
 
@@ -227,7 +231,7 @@ namespace MATCH
                         if (m_showFirstTime == false)
                         {
                             Utilities.HologramInteractions temp = m_clockView.GetComponent<Utilities.HologramInteractions>();
-                            temp.s_touched += CallbackOnClockTouched;
+                            temp.EventTouched += CallbackOnClockTouched;
 
                             m_showFirstTime = true;
                         }
@@ -241,6 +245,11 @@ namespace MATCH
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Mutex already locked - nothing to do");
                 }
+            }
+
+            public void ShowHelp(bool show)
+            {
+                // Todo
             }
 
             // Be aware that this function does not send the object back to its original position

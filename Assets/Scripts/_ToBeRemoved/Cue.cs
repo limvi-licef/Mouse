@@ -52,7 +52,7 @@ namespace MATCH
                 void Start()
                 {
                     // Callback
-                    MATCH.Utilities.Utility.mouseUtilitiesAddTouchCallback(m_hologramButtonClicked, callbackButtonHelpClicked);
+                    MATCH.Utilities.Utility.AddTouchCallback(m_hologramButtonClicked, callbackButtonHelpClicked);
                 }
 
                 void callbackButtonHelpClicked()
@@ -70,7 +70,7 @@ namespace MATCH
                     {
                         m_mutexShow = true;
 
-                        MATCH.Utilities.Utility.adjustObjectHeightToHeadHeight(transform);
+                        MATCH.Utilities.Utility.AdjustObjectHeightToHeadHeight(transform);
 
                         m_text.gameObject.AddComponent<MATCH.Utilities.Animation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e) {
                             EventHandler[] temp = new EventHandler[] {new EventHandler(delegate (System.Object oo, EventArgs ee) {

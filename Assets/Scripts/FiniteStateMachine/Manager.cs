@@ -143,7 +143,7 @@ namespace MATCH
                 });
 
                 List<EventHandler> actionsEventHandler = newItem.getFunctionsShowEventHandlers();
-                actionsEventHandler.Add(Utilities.Utility.getEventHandlerEmpty());
+                actionsEventHandler.Add(Utilities.Utility.GetEventHandlerEmpty());
 
                 newItem.m_triggerNext += new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -385,17 +385,17 @@ namespace MATCH
                 m_functionsShowEventHandlers.Add(handler);
             }
 
-            public void addFunctionShow(Assistances.Assistance assistance, EventHandler callback)
+            public void addFunctionShow(Assistances.IAssistance assistance, EventHandler callback)
             {
-                addFunctionShow(assistance.show, callback);
+                addFunctionShow(assistance.Show, callback);
             }
 
             /**
              * Then no callback trigerred when processed finished
              * */
-            public void addFunctionShow(Assistances.Assistance assistance)
+            public void addFunctionShow(Assistances.IAssistance assistance)
             {
-                addFunctionShow(assistance.show, Utilities.Utility.getEventHandlerEmpty());
+                addFunctionShow(assistance.Show, Utilities.Utility.GetEventHandlerEmpty());
             }
 
             public override List<Action<EventHandler>> getFunctionsShow()
@@ -414,17 +414,17 @@ namespace MATCH
                 m_functionHideEventHandler = handler;
             }
 
-            public void setFunctionHide(Assistances.Assistance assistance, EventHandler callback)
+            public void setFunctionHide(Assistances.IAssistance assistance, EventHandler callback)
             {
                 setFunctionHide(assistance.Hide, callback);
             }
 
-            public void setFunctionHide(Assistances.Assistance assistance)
+            public void setFunctionHide(Assistances.IAssistance assistance)
             {
-                setFunctionHide(assistance.Hide, Utilities.Utility.getEventHandlerEmpty());
+                setFunctionHide(assistance.Hide, Utilities.Utility.GetEventHandlerEmpty());
             }
 
-            public void setFunctionHideAndShow(Assistances.Assistance assistance)
+            public void setFunctionHideAndShow(Assistances.IAssistance assistance)
             {
                 setFunctionHide(assistance);
                 addFunctionShow(assistance);
@@ -605,7 +605,7 @@ namespace MATCH
                     toReturn.AddRange(assistance.Value.getFunctionsShowEventHandlers());
                 }
 
-                toReturn.Insert(0, Utilities.Utility.getEventHandlerEmpty()); // For internal purpose, to add extra process from the gradationmanager, although this is empty here. This is to remain consistant with the bunch of show functions, where the process is relevant.
+                toReturn.Insert(0, Utilities.Utility.GetEventHandlerEmpty()); // For internal purpose, to add extra process from the gradationmanager, although this is empty here. This is to remain consistant with the bunch of show functions, where the process is relevant.
 
                 return toReturn;
             }

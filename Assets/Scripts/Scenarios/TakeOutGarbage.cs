@@ -145,26 +145,26 @@ namespace MATCH
                 {
                     m_inferenceManager.RegisterInference(m_inference19h00);
                     onChallengeStandBy();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sStandBy.setFunctionHide(delegate (EventHandler e)
                 {
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sHighlightGarbage = m_gradationManager.addNewAssistanceGradation("HighlightGarbage");
                 sHighlightGarbage.setFunctionHideAndShow(highlightGarbageController);
                 sHighlightGarbage.addFunctionShow(delegate (EventHandler e)
                 {
                     m_inferenceManager.RegisterInference(m_inference19h30);
                     onChallengeStart();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sExclamationMark = m_gradationManager.addNewAssistanceGradation("ExclamationMark");
                 sExclamationMark.addFunctionShow(exclamationMarkController);
                 sExclamationMark.addFunctionShow(highlightGarbageVividController);
                 sExclamationMark.setFunctionHide(delegate (EventHandler e)
                 {
                     exclamationMarkController.Hide(e);
-                    highlightGarbageVividController.Hide(Utilities.Utility.getEventHandlerEmpty());
-                }, Utilities.Utility.getEventHandlerEmpty());
+                    highlightGarbageVividController.Hide(Utilities.Utility.GetEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 //sExclamationMark.setFunctionHideAndShow(exclamationMarkController);
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sSolution = m_gradationManager.addNewAssistanceGradation("Solution");
                 sSolution.setFunctionHideAndShow(solutionController);
@@ -172,17 +172,17 @@ namespace MATCH
                 sGarbageGrabbed.addFunctionShow(delegate (EventHandler e)
                 {
 
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sGarbageGrabbed.setFunctionHide(delegate (EventHandler e)
                 {
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sSuccess = m_gradationManager.addNewAssistanceGradation("Success");
                 sSuccess.setFunctionHideAndShow(successController);
                 sSuccess.addFunctionShow(delegate (EventHandler e)
                 {
                     onChallengeSuccess();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 // Connections between states
                 s_inference19h00 += sStandBy.goToState(sHighlightGarbage);

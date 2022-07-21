@@ -44,7 +44,7 @@ public class MouseRag : MonoBehaviour
         // Connect the callbacks
         //m_interactionSurfaceRagView.GetComponent<TapToPlace>().OnPlacingStopped.AddListener(callbackHologramRagInteractionSurfaceMovedFinished);
         m_interactionSurfaceRagView.GetComponent<BoundsControl>().ScaleStopped.AddListener(callbackHologramRagInteractionSurfaceMovedFinished);
-        MATCH.Utilities.Utility.mouseUtilitiesAddTouchCallback(m_interactionSurfaceRagView, delegate ()
+        MATCH.Utilities.Utility.AddTouchCallback(m_interactionSurfaceRagView, delegate ()
         {
             m_eventHologramInteractionSurfaceTouched?.Invoke(this, EventArgs.Empty);
         });

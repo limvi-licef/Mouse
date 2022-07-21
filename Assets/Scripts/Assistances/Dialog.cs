@@ -28,7 +28,7 @@ namespace MATCH
 {
     namespace Assistances
     {
-        public class Dialog : Assistance
+        public class Dialog : MonoBehaviour, IAssistance
         {
             Transform m_buttonsParentView;
             Transform m_refButtonView;
@@ -155,28 +155,28 @@ namespace MATCH
             }
 
             bool m_mutexHide = false;
-            public override void Hide(EventHandler eventHandler)
+            public void Hide(EventHandler eventHandler)
             {
                 if (m_mutexHide == false)
                 {
                     m_mutexHide = true;
 
-                    MATCH.Utilities.Utility.animateDisappearInPlace(m_titleView.gameObject, m_titleScalingOriginal, delegate
+                    MATCH.Utilities.Utility.AnimateDisappearInPlace(m_titleView.gameObject, m_titleScalingOriginal, delegate
                     {
                         m_mutexHide = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
                     });
 
-                    Utilities.Utility.animateDisappearInPlace(m_descriptionView.gameObject, m_descriptionScalingOriginal);
+                    Utilities.Utility.AnimateDisappearInPlace(m_descriptionView.gameObject, m_descriptionScalingOriginal);
 
-                    Utilities.Utility.animateDisappearInPlace(m_buttonsParentView.gameObject, m_buttonsParentScalingOriginal);
+                    Utilities.Utility.AnimateDisappearInPlace(m_buttonsParentView.gameObject, m_buttonsParentScalingOriginal);
 
-                    Utilities.Utility.animateDisappearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal);
+                    Utilities.Utility.AnimateDisappearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal);
                 }
             }
 
             bool m_mutexShow = false;
-            public override void show(EventHandler eventHandler)
+            public void Show(EventHandler eventHandler)
             {
                 //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Called");
 
@@ -186,16 +186,16 @@ namespace MATCH
 
                     if (m_adjustToHeight)
                     {
-                        Utilities.Utility.adjustObjectHeightToHeadHeight(transform);
+                        Utilities.Utility.AdjustObjectHeightToHeadHeight(transform);
                     }
 
 
-                    Utilities.Utility.animateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal, delegate {
+                    Utilities.Utility.AnimateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal, delegate {
                         //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Background shown");
 
-                        Utilities.Utility.animateAppearInPlace(m_titleView.gameObject);
-                        Utilities.Utility.animateAppearInPlace(m_buttonsParentView.gameObject);
-                        Utilities.Utility.animateAppearInPlace(m_descriptionView.gameObject);
+                        Utilities.Utility.AnimateAppearInPlace(m_titleView.gameObject);
+                        Utilities.Utility.AnimateAppearInPlace(m_buttonsParentView.gameObject);
+                        Utilities.Utility.AnimateAppearInPlace(m_descriptionView.gameObject);
 
                         m_mutexShow = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
@@ -206,6 +206,16 @@ namespace MATCH
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Warning, "Mutex locked, nothing will happen");
                 }
+            }
+
+            public void ShowHelp(bool show)
+            {
+                // Todo
+            }
+
+            public Transform GetTransform()
+            {
+                return transform;
             }
 
             /**

@@ -95,7 +95,7 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
         m_clocksView.Add(Instantiate(m_clockRefView));
 
         MATCH.Utilities.HologramInteractions temp = m_clocksView.Last().GetComponent<MATCH.Utilities.HologramInteractions>();
-        temp.s_touched += CallbackOnClockTouched;
+        temp.EventTouched += CallbackOnClockTouched;
 
         m_positionsLocalOrigin.Add(m_clocksView.Last().localPosition);
     }
@@ -115,7 +115,7 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
                     // When the clock has diseappeared, make the text appearing, after moving it to the place of the hidden clock
                     m_hologramWindowReminderView.position = clock.position;
                     MATCH.Utilities.Animation animatorText = m_hologramWindowReminderView.gameObject.AddComponent<MATCH.Utilities.Animation>();
-                    animatorText.animateAppearInPlace(MATCH.Utilities.Utility.getEventHandlerEmpty());
+                    animatorText.animateAppearInPlace(MATCH.Utilities.Utility.GetEventHandlerEmpty());
 
                     Destroy(clock.GetComponent<Animation>());
                 }));
@@ -211,7 +211,7 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
             {
                 if (clock.gameObject.activeSelf)
                 {
-                    MATCH.Utilities.Utility.adjustObjectHeightToHeadHeight(clock, m_positionsLocalOrigin[i].y);
+                    MATCH.Utilities.Utility.AdjustObjectHeightToHeadHeight(clock, m_positionsLocalOrigin[i].y);
 
                     EventHandler[] eventHandlers = new EventHandler[] {new EventHandler(delegate (System.Object o, EventArgs e)
                     {
@@ -248,7 +248,7 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
         // Only one clock is going to be shown to follow the user. We take the first one.
         Transform clockFollower = m_clocksView.First();
 
-        Show(MATCH.Utilities.Utility.getEventHandlerEmpty());
+        Show(MATCH.Utilities.Utility.GetEventHandlerEmpty());
 
         clockFollower.transform.localScale = m_clockScalingOriginal;
     }
@@ -273,7 +273,7 @@ public class MouseChallengeCleanTableReminderSeveralClocksFixed : MonoBehaviour
                     // When the clock has diseappeared, make the text appearing, after moving it to the place of the hidden clock
                     m_hologramWindowReminderView.position = clock.position;
                     MATCH.Utilities.Animation animatorText = m_hologramWindowReminderView.gameObject.AddComponent<MATCH.Utilities.Animation>();
-                    animatorText.animateAppearInPlace(MATCH.Utilities.Utility.getEventHandlerEmpty());
+                    animatorText.animateAppearInPlace(MATCH.Utilities.Utility.GetEventHandlerEmpty());
 
                     Destroy(clock.GetComponent<Animation>());
                 }));

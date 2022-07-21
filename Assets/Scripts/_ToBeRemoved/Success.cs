@@ -36,7 +36,7 @@ namespace MATCH
             void Start()
             {
                 // Callbacks
-                MATCH.Utilities.Utility.mouseUtilitiesAddTouchCallback(transform, delegate () { m_eventHologramTouched?.Invoke(this, EventArgs.Empty); });
+                MATCH.Utilities.Utility.AddTouchCallback(transform, delegate () { m_eventHologramTouched?.Invoke(this, EventArgs.Empty); });
             }
 
             // Update is called once per frame

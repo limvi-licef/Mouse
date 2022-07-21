@@ -29,13 +29,14 @@ namespace MATCH
 {
     public class GlobalInitializer : MonoBehaviour
     {
-        public AdminMenu m_adminMenu;
-        public GameObject m_virtualRoom;
-        MATCH.Assistances.Dialog m_todo;
+        public AdminMenu AdministrationMenu;
+        public GameObject VirtualRoom;
+        MATCH.Assistances.Dialog TodoList;
+        public GameObject ObjectRecognition;
 
         private void Awake()
         {
-            m_todo = MATCH.Assistances.Factory.Instance.CreateToDoList("Choses à faire", ""); //create to do list
+            TodoList = MATCH.Assistances.Factory.Instance.CreateToDoList("Choses à faire", ""); //create to do list
         }
 
 
@@ -46,14 +47,18 @@ namespace MATCH
             if (Utilities.Utility.IsEditorSimulator() || Utilities.Utility.IsEditorGameView())
             {
                 DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Editor simulator");
+                if (ObjectRecognition != null)
+                {
+                    ObjectRecognition.SetActive(false);
+                }
             }
             else
             { // Means running in the Hololens, so adjusting some parameters
                 DebugMessagesManager.Instance.m_displayOnConsole = false;
-                m_adminMenu.m_menuStatic = false;
-                m_virtualRoom.SetActive(false); // In the editor, the user does what he wants, but in the hololens, this should surely be disabled.
+                AdministrationMenu.m_menuStatic = false;
+                VirtualRoom.SetActive(false); // In the editor, the user does what he wants, but in the hololens, this should surely be disabled.
             }
-            AdminMenu.Instance.addButton("Bring to do list window", delegate () { Utilities.Utility.bringObject(m_todo.transform); }); //add button to the admin menu
+            AdminMenu.Instance.addButton("Bring to do list window", delegate () { Utilities.Utility.bringObject(TodoList.transform); }); //add button to the admin menu
             AdminMenu.Instance.addSwitchButton("Lock To Do List", callbackLockToDo);
             initializeTodoList();
         }
@@ -80,7 +85,7 @@ namespace MATCH
 
         void addScenarioToGUI(MATCH.Scenarios.Scenario scenario)
         {
-            MATCH.Assistances.Buttons.Basic button = m_todo.addButton(scenario.getId(), true); //add button
+            MATCH.Assistances.Buttons.Basic button = TodoList.addButton(scenario.getId(), true); //add button
             scenario.s_challengeOnStart += button.callbackSetButtonBackgroundCyan; //m_todo.callbackStartButton;
             scenario.s_challengeOnSuccess += button.callbackSetButtonBackgroundGreen; //m_todo.callbackCheckButton;
         }
@@ -95,7 +100,7 @@ namespace MATCH
         {
             string date = System.DateTime.Now.ToString("D", new System.Globalization.CultureInfo("fr-FR"));
             string hour = System.DateTime.Now.ToString("HH:mm");
-            m_todo.setDescription("Date : " + date + "                              Heure : " + hour + "\nSaison : " + getSeason(System.DateTime.Now) + "\n\nTâches à réaliser : ", 0.1f);
+            TodoList.setDescription("Date : " + date + "                              Heure : " + hour + "\nSaison : " + getSeason(System.DateTime.Now) + "\n\nTâches à réaliser : ", 0.1f);
         }
         string getSeason(DateTime date)
         {
@@ -108,10 +113,10 @@ namespace MATCH
 
         void callbackLockToDo()
         {
-            if (m_todo.GetComponent<ObjectManipulator>().enabled)
-                m_todo.GetComponent<ObjectManipulator>().enabled = false;
+            if (TodoList.GetComponent<ObjectManipulator>().enabled)
+                TodoList.GetComponent<ObjectManipulator>().enabled = false;
             else
-                m_todo.GetComponent<ObjectManipulator>().enabled = true;
+                TodoList.GetComponent<ObjectManipulator>().enabled = true;
         }
 
 

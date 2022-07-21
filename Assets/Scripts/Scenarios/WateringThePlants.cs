@@ -101,18 +101,18 @@ namespace MATCH
                 // Adding the information to the state machine and the interactions
                 p.SetState(m_stateMachineMain.addNewAssistanceGradation(p.GetId()));
                 p.GetState().addFunctionShow(delegate (EventHandler e)
-                { }, Utilities.Utility.getEventHandlerEmpty());
+                { }, Utilities.Utility.GetEventHandlerEmpty());
                 p.GetState().setFunctionHide(delegate (EventHandler e)
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Called for plant index " + plantId);
 
-                    p.GetHighlight().Hide(Utilities.Utility.getEventHandlerEmpty());
+                    p.GetHighlight().Hide(Utilities.Utility.GetEventHandlerEmpty());
 
                     // Setting the color back to unwatered
                     p.GetHighlight().SetMaterialToChild("Mouse_Yellow_Glowing");
 
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 //EventHandler temp = m_sIntermediateWateringPlants.addState(p.getState());
                 p.GetInteractionSurface().EventInteractionSurfaceTableTouched += p.GotoStateHighlightWatered(); // If we remain in the default attention state, it will just not go there, so should be safe
@@ -157,7 +157,7 @@ namespace MATCH
                 sSuccess.addFunctionShow(delegate (EventHandler e)
                 {
                     onChallengeSuccess();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 m_sIntermediateWateringPlants = m_stateMachineMain.addIntermediateState("WateringPlants", sSuccess);
 
@@ -215,18 +215,18 @@ namespace MATCH
                 sAssistanceWaterPlantsStandBy.addFunctionShow(delegate (EventHandler e)
                 {
                     onChallengeStandBy();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sAssistanceWaterPlantsStandBy.setFunctionHide(delegate (EventHandler e)
-                { e?.Invoke(this, EventArgs.Empty); }, Utilities.Utility.getEventHandlerEmpty());
+                { e?.Invoke(this, EventArgs.Empty); }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sAssistanceWaterStart = m_stateMachineAssistanceWateringPlants.addNewAssistanceGradation("ready");
                 sAssistanceWaterStart.addFunctionShow(delegate (EventHandler e)
                 {
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", CallbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
+                    Inferences.Factory.Instance.CreateDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", CallbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
 
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sAssistanceWaterStart.setFunctionHide(delegate (EventHandler e)
-                { e?.Invoke(this, EventArgs.Empty); }, Utilities.Utility.getEventHandlerEmpty());
+                { e?.Invoke(this, EventArgs.Empty); }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sAssistanceWaterDialogFirst = m_stateMachineAssistanceWateringPlants.addNewAssistanceGradation("dialogFirst");
                 sAssistanceWaterDialogFirst.setFunctionHideAndShow(dialogAssistanceWaterProposeHelp);
@@ -241,33 +241,33 @@ namespace MATCH
                 sStandBy.addFunctionShow(delegate (EventHandler e)
                 {
                     m_inferenceManager.RegisterInference(m_inference19h00);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sStandBy.setFunctionHide(delegate (EventHandler e)
                 {
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sDialogFirst = m_stateMachineMain.addNewAssistanceGradation("DialogFirst");
                 sDialogFirst.setFunctionHideAndShow(dialogFirst);
                 sDialogFirst.addFunctionShow(delegate (EventHandler e)
                 {
-                    Inferences.Factory.Instance.createDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceFirstDialog", s_dialogFirstUserFar, dialogSecond.gameObject);
+                    Inferences.Factory.Instance.CreateDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceFirstDialog", s_dialogFirstUserFar, dialogSecond.gameObject);
                     onChallengeStart();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sDialogSecond = m_stateMachineMain.addNewAssistanceGradation("DialogSecond");
                 sDialogSecond.setFunctionHideAndShow(dialogSecond);
                 sDialogSecond.addFunctionShow(delegate (EventHandler e)
                 {
-                    Inferences.Factory.Instance.createDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceSecondDialog", s_dialogSecondUserFar, dialogSecond.gameObject);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                    Inferences.Factory.Instance.CreateDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceSecondDialog", s_dialogSecondUserFar, dialogSecond.gameObject);
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sDialogThird = m_stateMachineMain.addNewAssistanceGradation("DialogThird");
                 sDialogThird.setFunctionHideAndShow(dialogThird);
                 sDialogThird.addFunctionShow(delegate (EventHandler e)
                 {
-                    Inferences.Factory.Instance.createDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceThirdDialog", s_dialogThirdUserFar, dialogThird.gameObject);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                    Inferences.Factory.Instance.CreateDistanceComingAndLeavingInferenceOneShot(m_inferenceManager, "inferenceDistanceThirdDialog", s_dialogThirdUserFar, dialogThird.gameObject);
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 // Set transitions and intermediate state
                 s_inference19h00 += sStandBy.goToState(sDialogFirst);
@@ -376,7 +376,7 @@ namespace MATCH
                 else
                 { // At least one plant has been watered > update the number of watered plants
                     m_numberOfPlantsWatered = m_sIntermediateWateringPlants.getNbOfStatesWhoCalled();
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", CallbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
+                    Inferences.Factory.Instance.CreateDistanceLeavingAndComingInferenceOneShot(m_inferenceManager, "AssistanceWateringLeavingAndComing", CallbackAssistanceWateringCheckIfPlantWatered, m_pointOfReferenceForPaths.gameObject);
                 }
             }
 
@@ -522,36 +522,36 @@ namespace MATCH
                 sDefault.addFunctionShow(delegate (EventHandler e)
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + Id + " is going to default state");
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sDefault.setFunctionHide(delegate (EventHandler e)
                 {
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 sHighlight.addFunctionShow(delegate (EventHandler e)
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + Id + " is going to be highlighted");
 
-                    Highlight.show(Utilities.Utility.getEventHandlerEmpty());
-                }, Utilities.Utility.getEventHandlerEmpty());
+                    Highlight.Show(Utilities.Utility.GetEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sHighlight.setFunctionHide(delegate (EventHandler e)
                 {
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 sHighlightWatered.addFunctionShow(delegate (EventHandler e)
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + Id + " has been watered");
 
                     Highlight.SetMaterialToChild("Mouse_Green_Glowing");
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sHighlightWatered.setFunctionHide(delegate (EventHandler e)
                 {
                     Highlight.SetMaterialToChild("Mouse_Yellow_Glowing");
-                    Highlight.Hide(Utilities.Utility.getEventHandlerEmpty());
+                    Highlight.Hide(Utilities.Utility.GetEventHandlerEmpty());
 
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 m_grabAttentionManager.setGradationInitial("default");
             }

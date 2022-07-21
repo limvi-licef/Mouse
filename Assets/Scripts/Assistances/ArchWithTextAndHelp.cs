@@ -43,7 +43,7 @@ namespace MATCH
                 // Children
                 m_hologramLineView = gameObject.transform.Find("Line");
                 m_hologramLineController = m_hologramLineView.GetComponent<LineToObject>();
-                m_hologramHelp = MATCH.Utilities.Utility.mouseUtilitiesFindChild(gameObject, "Help");
+                m_hologramHelp = MATCH.Utilities.Utility.FindChild(gameObject, "Help");
                 m_textView = gameObject.transform.Find("TextNew");
                 m_textController = m_textView.GetComponent<MATCH.Assistances.Dialog>();
 
@@ -59,7 +59,7 @@ namespace MATCH
                 }
 
                 // Callbacks
-                MATCH.Utilities.Utility.mouseUtilitiesAddTouchCallback(m_hologramHelp, callbackHelpTouched);
+                MATCH.Utilities.Utility.AddTouchCallback(m_hologramHelp, callbackHelpTouched);
             }
 
             // Update is called once per frame
@@ -90,11 +90,11 @@ namespace MATCH
                     m_mutexShow = true;
 
                     m_textView.position = m_hologramLineController.m_hologramOrigin.transform.position;
-                    MATCH.Utilities.Utility.adjustObjectHeightToHeadHeight(m_textView);
+                    MATCH.Utilities.Utility.AdjustObjectHeightToHeadHeight(m_textView);
                     // Trick to start the line to the text position, i.e. to start at user's head's position
                     m_hologramLineController.m_hologramOrigin.transform.position = m_textView.position;
 
-                    m_textController.show(delegate
+                    m_textController.Show(delegate
                     {
                         //m_textController.enableBillboard(true);
                         m_mutexShow = false;
@@ -111,7 +111,7 @@ namespace MATCH
                         m_mutexShow = false;
                     }, eventHandler };
 
-                        MATCH.Utilities.Utility.adjustObjectHeightToHeadHeight(m_hologramHelp);
+                        MATCH.Utilities.Utility.AdjustObjectHeightToHeadHeight(m_hologramHelp);
 
                         m_hologramHelp.gameObject.AddComponent<MATCH.Utilities.Animation>().animateAppearInPlaceToScaling(new Vector3(0.1f, 0.1f, 0.1f), temp);
                     });
@@ -130,7 +130,7 @@ namespace MATCH
                     m_mutexHide = true;
 
                     m_textController.Hide(eventHandler);
-                    MATCH.Utilities.Utility.animateDisappearInPlace(m_hologramHelp.gameObject, new Vector3(0.1f, 0.1f, 0.1f), delegate {
+                    MATCH.Utilities.Utility.AnimateDisappearInPlace(m_hologramHelp.gameObject, new Vector3(0.1f, 0.1f, 0.1f), delegate {
                         DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Mutex unlocked - all elements from the arch should be hidden");
                         m_mutexHide = false;
                     });
@@ -138,7 +138,7 @@ namespace MATCH
                     // Hiding line
                     if (m_hologramLineView.gameObject.activeSelf)
                     {
-                        m_hologramLineView.GetComponent<LineToObject>().hide(MATCH.Utilities.Utility.getEventHandlerEmpty()); // The eventhandler being already called above, we do not want it to be called twice, as this could create strange behaviors.
+                        m_hologramLineView.GetComponent<LineToObject>().hide(MATCH.Utilities.Utility.GetEventHandlerEmpty()); // The eventhandler being already called above, we do not want it to be called twice, as this could create strange behaviors.
                     }
                     else
                     {

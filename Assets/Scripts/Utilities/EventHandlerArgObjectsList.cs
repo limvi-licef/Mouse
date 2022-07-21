@@ -53,11 +53,11 @@ namespace MATCH
 
         public class EventHandlerArgObject : EventArgs
         {
-            public PhysicalObjectInformation m_object;
+            public PhysicalObjectInformation ObjectDetected;
 
             public EventHandlerArgObject(PhysicalObjectInformation obj)
             {
-                m_object = obj;
+                ObjectDetected = obj;
             }
 
             void Start()

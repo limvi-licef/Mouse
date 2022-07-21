@@ -32,7 +32,7 @@ namespace MATCH
         static class Utility
         {
             // Utilities functions: to be moved to a dedicated namespace later?
-            public static void mouseUtilitiesAddTouchCallback(Transform transform, UnityEngine.Events.UnityAction callback)
+            public static void AddTouchCallback(Transform transform, UnityEngine.Events.UnityAction callback)
             {
                 GameObject gameObject = transform.gameObject;
 
@@ -57,12 +57,12 @@ namespace MATCH
                 receiver.OnTouchStart.AddListener(callback);
             }
 
-            public static Transform mouseUtilitiesFindChild(GameObject parent, string childId)
+            public static Transform FindChild(GameObject parent, string childId)
             {
                 return parent.transform.Find(childId);
             }
 
-            public static EventHandler getEventHandlerEmpty()
+            public static EventHandler GetEventHandlerEmpty()
             {
                 return delegate
                 {
@@ -70,7 +70,7 @@ namespace MATCH
                 };
             }
 
-            public static EventHandler getEventHandlerWithDebugMessage(string debugMessage)
+            public static EventHandler GetEventHandlerWithDebugMessage(string debugMessage)
             {
                 return new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -78,7 +78,7 @@ namespace MATCH
                 });
             }
 
-            public static void adjustObjectHeightToHeadHeight(Transform t, float originalLocalHeightPos = 0.0f)
+            public static void AdjustObjectHeightToHeadHeight(Transform t, float originalLocalHeightPos = 0.0f)
             {
                 t.position = new Vector3(t.position.x, Camera.main.transform.position.y + originalLocalHeightPos - 0.2f, t.position.z); // The -0.2 is to be more aligned with the hololens.
             }
@@ -96,7 +96,7 @@ namespace MATCH
             /*
              * Add the animate component to the object, animate the object, and then destroy the component.
              * */
-            public static void animateDisappearInPlace(GameObject gameObject, Vector3 scalingOriginal, EventHandler eventHandler)
+            public static void AnimateDisappearInPlace(GameObject gameObject, Vector3 scalingOriginal, EventHandler eventHandler)
             {
                 gameObject.AddComponent<Animation>().animateDiseappearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
                 {
@@ -108,12 +108,12 @@ namespace MATCH
                     eventHandler?.Invoke(gameObject, EventArgs.Empty);
                 }));
             }
-            public static void animateDisappearInPlace(GameObject gameObject, Vector3 scalingOriginal)
+            public static void AnimateDisappearInPlace(GameObject gameObject, Vector3 scalingOriginal)
             {
-                animateDisappearInPlace(gameObject, scalingOriginal, getEventHandlerEmpty());
+                AnimateDisappearInPlace(gameObject, scalingOriginal, GetEventHandlerEmpty());
             }
 
-            public static void animateAppearInPlace(GameObject gameObject, EventHandler eventHandler)
+            public static void AnimateAppearInPlace(GameObject gameObject, EventHandler eventHandler)
             {
                 gameObject.SetActive(true);
                 gameObject.AddComponent<MATCH.Utilities.Animation>().animateAppearInPlace(new EventHandler(delegate (System.Object o, EventArgs e)
@@ -123,12 +123,12 @@ namespace MATCH
                     eventHandler?.Invoke(gameObject, EventArgs.Empty);
                 }));
             }
-            public static void animateAppearInPlace(GameObject gameObject)
+            public static void AnimateAppearInPlace(GameObject gameObject)
             {
-                animateAppearInPlace(gameObject, getEventHandlerEmpty());
+                AnimateAppearInPlace(gameObject, GetEventHandlerEmpty());
             }
 
-            public static void animateAppearInPlace(GameObject gameObject, Vector3 scaling, EventHandler eventHandler)
+            public static void AnimateAppearInPlace(GameObject gameObject, Vector3 scaling, EventHandler eventHandler)
             {
                 gameObject.SetActive(true);
 
@@ -145,9 +145,9 @@ namespace MATCH
                     eventHandler?.Invoke(gameObject, EventArgs.Empty);
                 });
             }
-            public static void animateAppearInPlace(GameObject gameObject, Vector3 scaling)
+            public static void AnimateAppearInPlace(GameObject gameObject, Vector3 scaling)
             {
-                animateAppearInPlace(gameObject, scaling, getEventHandlerEmpty());
+                AnimateAppearInPlace(gameObject, scaling, GetEventHandlerEmpty());
             }
 
             public static void bringObject(Transform t)
@@ -157,14 +157,14 @@ namespace MATCH
                 t.Rotate(new Vector3(0, 1, 0), 180);
             }
 
-            public static void showInteractionSurface(Transform gameobject, bool show)
+            public static void ShowInteractionSurface(Transform gameobject, bool show)
             {
                 gameobject.GetComponent<Renderer>().enabled = show; // To hide the surface while keeping it interactable, then the renderer is disabled if show==false;
                 gameobject.GetComponent<BoundsControl>().enabled = show;
                 gameobject.GetComponent<ObjectManipulator>().enabled = show;
             }
 
-            public static void setColor(Transform gameobject, string colorName)
+            public static void SetColor(Transform gameobject, string colorName)
             {
                 Renderer r = gameobject.GetComponent<Renderer>();
                 r.material = Resources.Load(colorName, typeof(Material)) as Material;
@@ -174,7 +174,7 @@ namespace MATCH
              * Convert a BitArray to int.
              * Be careful: the least significant bit is the first element of the array
              * */
-            public static int convertBitArrayToInt(BitArray array)
+            public static int ConvertBitArrayToInt(BitArray array)
             {
                 int[] arrayInt = new int[1];
                 array.CopyTo(arrayInt, 0);

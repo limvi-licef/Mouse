@@ -254,13 +254,13 @@ namespace MATCH
                 Manager.Instance.addScenario(this);
 
                 // Interaction surface table
-                Assistances.InteractionSurface interactionSurfaceTable = Assistances.Factory.Instance.CreateInteractionSurface("table v2", AdminMenu.Panels.Default, new Vector3(1.1f, 0.02f, 0.7f), "Mouse_Cyan_Glowing", true, true, Utilities.Utility.getEventHandlerEmpty(), transform);
+                Assistances.InteractionSurface interactionSurfaceTable = Assistances.Factory.Instance.CreateInteractionSurface("table v2", AdminMenu.Panels.Default, new Vector3(1.1f, 0.02f, 0.7f), "Mouse_Cyan_Glowing", true, true, Utilities.Utility.GetEventHandlerEmpty(), transform);
                 //interactionSurfaceTable.setLocalPosition(new Vector3(0.949f, -0.017f, 1.117f));
                 interactionSurfaceTable.SetPreventResizeY(true);
                 interactionSurfaceTable.transform.position = new Vector3(0.8258258700370789f, 0.4396502375602722f, 2.451075315475464f);
 
                 // Interaction surface rag
-                Assistances.InteractionSurface interactionSurfaceRag = Assistances.Factory.Instance.CreateInteractionSurface("rag v2", AdminMenu.Panels.Default, new Vector3(0.2f, 0.01f, 0.2f), "Mouse_Orange_Glowing", true, true, Utilities.Utility.getEventHandlerEmpty(), transform);
+                Assistances.InteractionSurface interactionSurfaceRag = Assistances.Factory.Instance.CreateInteractionSurface("rag v2", AdminMenu.Panels.Default, new Vector3(0.2f, 0.01f, 0.2f), "Mouse_Orange_Glowing", true, true, Utilities.Utility.GetEventHandlerEmpty(), transform);
                 interactionSurfaceRag.transform.localPosition = new Vector3(0, -0.008f, 3.843f);
                 //interactionSurfaceRag.getInteractionSurface().transform.localPosition = new Vector3(0, -0.008f, 3.843f);
 
@@ -309,7 +309,7 @@ namespace MATCH
                 m_inferenceEngine.RegisterInference(m_inference20h);
 
 
-                Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "IgnoreRedSurfaceAndExclamationMark", delegate (System.Object o, EventArgs e)
+                Inferences.Factory.Instance.CreateDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "IgnoreRedSurfaceAndExclamationMark", delegate (System.Object o, EventArgs e)
                 {
                     s_ignoreRedSurface?.Invoke(this, e);
                 }/*s_ignoreExclamationMark*/, redSurface.gameObject);
@@ -330,44 +330,44 @@ namespace MATCH
                         s_time20h?.Invoke(this, ee);
                     }, 20);*/
                     m_inferenceEngine.RegisterInference(m_inference20h);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
                 sStandBy.setFunctionHide(delegate (EventHandler e)
-                { e?.Invoke(this, EventArgs.Empty); }, Utilities.Utility.getEventHandlerEmpty());
+                { e?.Invoke(this, EventArgs.Empty); }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sRedSurface = m_assistanceGradationManager.addNewAssistanceGradation("Red surface");
                 sRedSurface.setFunctionHideAndShow(redSurface);
                 sRedSurface.addFunctionShow(delegate (EventHandler eh)
                 {
                     onChallengeStart();
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "IgnoreRedSurface", delegate (System.Object o, EventArgs e)
+                    Inferences.Factory.Instance.CreateDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "IgnoreRedSurface", delegate (System.Object o, EventArgs e)
                     {
                         s_ignoreRedSurface.Invoke(this, e);
                     }/*s_ignoreRedSurface*/, redSurface.gameObject);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sRedSurfaceAndExclamation = m_assistanceGradationManager.addNewAssistanceGradation("Red surface + exclamation mark");
                 sRedSurfaceAndExclamation.addFunctionShow(exclamationMark);
                 sRedSurfaceAndExclamation.addFunctionShow(redSurface);
                 sRedSurfaceAndExclamation.setFunctionHide(delegate (EventHandler e)
                 {
-                    exclamationMark.Hide(Utilities.Utility.getEventHandlerEmpty());
-                    redSurface.Hide(Utilities.Utility.getEventHandlerEmpty());
+                    exclamationMark.Hide(Utilities.Utility.GetEventHandlerEmpty());
+                    redSurface.Hide(Utilities.Utility.GetEventHandlerEmpty());
 
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sFirstDialog = m_assistanceGradationManager.addNewAssistanceGradation("First dialog");
                 sFirstDialog.setFunctionHideAndShow(firstDialog);
                 sFirstDialog.addFunctionShow(delegate (EventHandler e) {
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
+                    Inferences.Factory.Instance.CreateDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
                     {
                         s_backToTable.Invoke(this, ee);
                     }, interactionSurfaceTable.gameObject);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sProcessSurface = m_assistanceGradationManager.addNewAssistanceGradation("Process surface");
-                sProcessSurface.addFunctionShow(surfaceToProcess.ShowInteractionCubesTablePanel, Utilities.Utility.getEventHandlerEmpty());
-                sProcessSurface.setFunctionHide(surfaceToProcess.Hide, Utilities.Utility.getEventHandlerEmpty());
+                sProcessSurface.addFunctionShow(surfaceToProcess.ShowInteractionCubesTablePanel, Utilities.Utility.GetEventHandlerEmpty());
+                sProcessSurface.setFunctionHide(surfaceToProcess.Hide, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sSecondDialog = m_assistanceGradationManager.addNewAssistanceGradation("Second dialog");
                 sSecondDialog.setFunctionHideAndShow(secondDialog);
@@ -375,18 +375,18 @@ namespace MATCH
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sDialogRag = m_assistanceGradationManager.addNewAssistanceGradation("Dialog rag");
                 sDialogRag.setFunctionHideAndShow(dialogRag);
                 sDialogRag.addFunctionShow(delegate (EventHandler e) {
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
+                    Inferences.Factory.Instance.CreateDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
                     {
                         s_backToTable.Invoke(this, ee);
                     }/*s_ignoreExclamationMark*/, interactionSurfaceTable.gameObject);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sSuccess = m_assistanceGradationManager.addNewAssistanceGradation("Success");
                 sSuccess.setFunctionHideAndShow(success);
                 sSuccess.addFunctionShow(delegate (EventHandler e)
                 {
                     onChallengeSuccess();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 FiniteStateMachine.MouseUtilitiesGradationAssistance sCaregiverCall = m_assistanceGradationManager.addNewAssistanceGradation("Caregiver call");
                 sCaregiverCall.setFunctionHideAndShow(dialogCallCaregiver);
@@ -418,7 +418,7 @@ namespace MATCH
                 s_dialogSecondButtonOk += sSecondDialog.goToState(sProcessSurface);
                 s_dialogSecondButtonOk += delegate (System.Object o, EventArgs e)
                 {
-                    Inferences.Factory.Instance.createDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
+                    Inferences.Factory.Instance.CreateDistanceLeavingAndComingInferenceOneShot(m_inferenceEngine, "BackToTable", delegate (System.Object oo, EventArgs ee)
                     {
                         s_backToTable.Invoke(this, e);
                     }/*s_ignoreExclamationMark*/, interactionSurfaceTable.gameObject);
@@ -451,14 +451,14 @@ namespace MATCH
                 state.addFunctionShow(delegate (EventHandler e)
                 {
                     m_assistancePicturalController.SetGradationToMinimum();
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 state.setFunctionHide(delegate (EventHandler e)
                 {
                     // Play sound to get the user's attention from audio on top of visually
                     m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
                     e?.Invoke(this, EventArgs.Empty);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
             }
 
             void SetCubeRagTransitions(FiniteStateMachine.MouseUtilitiesGradationAssistance state)
@@ -471,29 +471,29 @@ namespace MATCH
                     MATCH.Inferences.DistanceLeaving inferenceAssistancePicturalDistance = new MATCH.Inferences.DistanceLeaving("inferenceAssistancePicturalDistance", CallbackInferenceDistanceAssistanceStimulateLevel1, m_assistancePicturalView.gameObject, 3.0f);
 
                     m_inferenceEngine.RegisterInference(inferenceAssistancePicturalDistance);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
                 state.setFunctionHide(delegate (EventHandler e)
                 {
-                    m_assistancePicturalController.Hide(Utilities.Utility.getEventHandlerEmpty());
+                    m_assistancePicturalController.Hide(Utilities.Utility.GetEventHandlerEmpty());
 
                     e?.Invoke(this, EventArgs.Empty);
 
                     m_inferenceEngine.UnregisterInference("inferenceAssistancePicturalDistance");
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
             }
 
             void SetReminderTransitions(FiniteStateMachine.MouseUtilitiesGradationAssistance state)
             {
-                state.setFunctionHide(m_reminderController.Hide, Utilities.Utility.getEventHandlerEmpty());
+                state.setFunctionHide(m_reminderController.Hide, Utilities.Utility.GetEventHandlerEmpty());
             }
 
             void SetConnectWithArchTransitions(FiniteStateMachine.MouseUtilitiesGradationAssistance state)
             {
-                state.addFunctionShow(m_assistanceConnectWithArchController.show, Utilities.Utility.getEventHandlerEmpty());
-                state.addFunctionShow(m_reminderController.show, Utilities.Utility.getEventHandlerEmpty());
+                state.addFunctionShow(m_assistanceConnectWithArchController.show, Utilities.Utility.GetEventHandlerEmpty());
+                state.addFunctionShow(m_reminderController.Show, Utilities.Utility.GetEventHandlerEmpty());
 
-                state.setFunctionHide(m_assistanceConnectWithArchController.hide, Utilities.Utility.getEventHandlerEmpty());
+                state.setFunctionHide(m_assistanceConnectWithArchController.hide, Utilities.Utility.GetEventHandlerEmpty());
             }
 
             void SetRagInteractionSurfaceTransitions(FiniteStateMachine.MouseUtilitiesGradationAssistance state)
@@ -501,12 +501,12 @@ namespace MATCH
                 state.addFunctionShow(delegate (EventHandler e)
                 {
                     m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
-                }, Utilities.Utility.getEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
-                state.addFunctionShow(m_assistanceSurfaceTouchedController.ShowInteractionCubesTablePanel, Utilities.Utility.getEventHandlerEmpty());
-                state.addFunctionShow(m_reminderController.show, Utilities.Utility.getEventHandlerEmpty());
+                state.addFunctionShow(m_assistanceSurfaceTouchedController.ShowInteractionCubesTablePanel, Utilities.Utility.GetEventHandlerEmpty());
+                state.addFunctionShow(m_reminderController.Show, Utilities.Utility.GetEventHandlerEmpty());
 
-                state.setFunctionHide(m_assistanceSurfaceTouchedController.Hide, Utilities.Utility.getEventHandlerEmpty());
+                state.setFunctionHide(m_assistanceSurfaceTouchedController.Hide, Utilities.Utility.GetEventHandlerEmpty());
             }
 
             void SetSuccessTransitions(FiniteStateMachine.MouseUtilitiesGradationAssistance state)
@@ -514,12 +514,12 @@ namespace MATCH
                 state.addFunctionShow(delegate (EventHandler e)
                 {
                     m_audioListener.GetComponent<AudioSource>().PlayOneShot(m_audioClipToPlayOnTouchInteractionSurface);
-                    m_reminderController.Hide(Utilities.Utility.getEventHandlerEmpty());
-                }, Utilities.Utility.getEventHandlerEmpty());
+                    m_reminderController.Hide(Utilities.Utility.GetEventHandlerEmpty());
+                }, Utilities.Utility.GetEventHandlerEmpty());
 
-                state.addFunctionShow(m_successController.show, Utilities.Utility.getEventHandlerEmpty());
+                state.addFunctionShow(m_successController.Show, Utilities.Utility.GetEventHandlerEmpty());
 
-                state.setFunctionHide(m_successController.Hide, Utilities.Utility.getEventHandlerEmpty());
+                state.setFunctionHide(m_successController.Hide, Utilities.Utility.GetEventHandlerEmpty());
             }
         }
 

@@ -106,7 +106,7 @@ namespace MATCH
                 animatorRightPart.m_animationSpeed = 0.5f;
 
 
-                animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, MATCH.Utilities.Utility.getEventHandlerEmpty());
+                animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, MATCH.Utilities.Utility.GetEventHandlerEmpty());
                 animatorRightPart.animateMoveToPosition(worldDestPosRightPart, new EventHandler(delegate (System.Object o, EventArgs e) { callback?.Invoke(this, EventArgs.Empty); }));
             }
 
@@ -131,7 +131,7 @@ namespace MATCH
                     animatorRightPart.m_animationSpeed = 0.5f;
 
 
-                    animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, MATCH.Utilities.Utility.getEventHandlerEmpty());
+                    animatorLeftPart.animateMoveToPosition(worldDestPosLeftPart, MATCH.Utilities.Utility.GetEventHandlerEmpty());
                     animatorRightPart.animateMoveToPosition(worldDestPosRightPart, new EventHandler(delegate (System.Object o, EventArgs e) {
                         MATCH.DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MATCH.DebugMessagesManager.MessageLevel.Info, "Cube closed ");
                         callback?.Invoke(this, EventArgs.Empty);

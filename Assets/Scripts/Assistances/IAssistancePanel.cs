@@ -25,24 +25,12 @@ namespace MATCH
 {
     namespace Assistances
     {
-        public abstract class Assistance : MonoBehaviour
+        public interface IAssistancePanel: IAssistance
         {
-            // Start is called before the first frame update
-            void Start()
-            {
-
-            }
-
-            // Update is called once per frame
-            void Update()
-            {
-
-            }
-
-            public abstract void show(EventHandler callback);
-            public abstract void Hide(EventHandler callback);
+            public void SetBackgroundColor(string colorName);
+            public void SetEdgeColor(string colorName);
+            public void SetEdgeThickness(float thickness);
+            public void EnableWeavingHand(bool enable);
         }
-
     }
 }
-

@@ -28,14 +28,14 @@ namespace MATCH
     {
         public class PhysicalObjectInformation
         {
-            string m_name; //object name
-            Vector3 m_coord; //coordinates
-            Vector3 m_firstCorner; //boundingboxcorner
-            Vector3 m_secondCorner; //boundingboxcorner
+            string Name; //object name
+            Vector3 Coord; //coordinates
+            Vector3 FirstCorner; //boundingboxcorner
+            Vector3 SecondCorner; //boundingboxcorner
 
-            public string getObjectName()
+            public string GetObjectName()
             {
-                return m_name;
+                return Name;
             }
             /*
             public PhysicalObjectVectors getObjectBoundaries()
@@ -45,27 +45,27 @@ namespace MATCH
                 return vectors;
             }
             */
-            public void setObjectParams(string name, Vector3 center, Vector3 firstBoundary, Vector3 secondBoundary)
+            public void SetObjectParams(string name, Vector3 center, Vector3 firstBoundary, Vector3 secondBoundary)
             {
-                m_name = name;
-                m_coord = center;
-                m_firstCorner = firstBoundary;
-                m_secondCorner = secondBoundary;
+                Name = name;
+                Coord = center;
+                FirstCorner = firstBoundary;
+                SecondCorner = secondBoundary;
             }
 
-            public Vector3 getCenter()
+            public Vector3 GetCenter()
             {
-                return m_coord;
+                return Coord;
             }
 
-            public Vector3 getFirstBoundary()
+            public Vector3 GetFirstBoundary()
             {
-                return m_firstCorner;
+                return FirstCorner;
             }
 
-            public Vector3 getSecondBoundary()
+            public Vector3 GetSecondBoundary()
             {
-                return m_secondCorner;
+                return SecondCorner;
             }
 
         }

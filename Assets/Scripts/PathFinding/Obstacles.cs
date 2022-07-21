@@ -49,11 +49,11 @@ namespace MATCH
                 }, AdminMenu.Panels.Obstacles);
                 AdminMenu.Instance.addSwitchButton("Hide " + name, delegate ()
                 {
-                    MATCH.Utilities.Utility.showInteractionSurface(cube.transform, !cube.GetComponent<Renderer>().enabled);
+                    MATCH.Utilities.Utility.ShowInteractionSurface(cube.transform, !cube.GetComponent<Renderer>().enabled);
                 }, AdminMenu.Panels.Obstacles);
 
                 // Set color
-                MATCH.Utilities.Utility.setColor(cube.transform.transform, color);
+                MATCH.Utilities.Utility.SetColor(cube.transform.transform, color);
 
                 // Set scaling and position
                 cube.transform.position = position;
