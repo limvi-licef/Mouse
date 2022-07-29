@@ -23,13 +23,12 @@ namespace MATCH
 {
     namespace Assistances
     {
-        public class QandDAssistances : MonoBehaviour
+        public class QandDAssistances
         {
             List<IAssistance> AssistancesToDisplay;
 
             // Start is called before the first frame update
-            void Start()
-            {
+            public QandDAssistances() { 
                 AssistancesToDisplay = new List<IAssistance>();
             }
 
