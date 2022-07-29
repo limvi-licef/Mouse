@@ -25,29 +25,41 @@ namespace MATCH
     {
         public class QandDAssistances
         {
-            List<IAssistance> AssistancesToDisplay;
+            enum Gradation
+            {
+                Alpha = 0,
+                Beta = 1,
+                Gamma = 2,
+                Delta = 3,
+                Epsilon = 4,
+                Zeta = 5,
+                Eta = 6,
+                Theta = 7
+            }
+
+            Dictionary<Gradation, IAssistance> AssistancesStorage;
 
             // Start is called before the first frame update
-            public QandDAssistances() { 
-                AssistancesToDisplay = new List<IAssistance>();
+            public QandDAssistances() {
+                AssistancesStorage = new Dictionary<Gradation, IAssistance>();
             }
 
-            void AddAssistance(IAssistance assistance)
+            void AddAssistance(Gradation gradation, IAssistance assistance)
             {
-                AssistancesToDisplay.Add(assistance);
+                AssistancesStorage.Add(gradation, assistance);
             }
 
-            void ShowOneHideOthers(int index, EventHandler callback)
+            void ShowOneHideOthers(Gradation gradationToShow, EventHandler callback)
             {
-                for (int i = 0; i < AssistancesToDisplay.Count; i ++)
+                foreach (KeyValuePair<Gradation, IAssistance> assistance in AssistancesStorage)
                 {
-                    if (i == index)
+                    if (assistance.Key == gradationToShow)
                     {
-                        AssistancesToDisplay[i].Show(callback);
+                        assistance.Value.Show(callback);
                     }
                     else
                     {
-                        AssistancesToDisplay[i].Hide(Utilities.Utility.GetEventHandlerEmpty());
+                        assistance.Value.Hide(Utilities.Utility.GetEventHandlerEmpty());
                     }
                 }
             }
