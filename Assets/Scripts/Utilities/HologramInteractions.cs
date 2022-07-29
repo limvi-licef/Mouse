@@ -53,13 +53,13 @@ namespace MATCH
 
             public override void OnFocusEnter(FocusEventData eventData)
             {
-                DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Object focused");
+               // DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Object focused");
                 EventFocusOn?.Invoke(this.gameObject, EventArgs.Empty);
             }
 
             public override void OnFocusExit(FocusEventData eventData)
             {
-                DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Object not focused anymore");
+                //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Object not focused anymore");
                 EventFocusOff?.Invoke(this.gameObject, EventArgs.Empty);
             }
 

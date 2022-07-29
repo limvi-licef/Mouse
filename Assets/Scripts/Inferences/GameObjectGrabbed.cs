@@ -60,6 +60,11 @@ namespace MATCH
 
                 ObjectGrabbed = false;
             }
+
+            public override void Unregistered()
+            {
+
+            }
         }
 
     }

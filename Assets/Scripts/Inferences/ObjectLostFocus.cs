@@ -26,27 +26,22 @@ namespace MATCH
 {
     namespace Inferences
     {
-        public class FocusedOnObject : Inference
+        public class ObjectLostFocused : Inference
         {
             GameObject ObjectToFocus;
             Utilities.HologramInteractions InteractionComponent;
-            int SecondsToFocus = 3;
+            bool FocusOff;
 
-            DateTime StartTime;
-            bool FocusOn;
-
-            public FocusedOnObject(string id, EventHandler callback, GameObject objectToFocus, int secondsToFocus): base(id, callback)
+            public ObjectLostFocused(string id, EventHandler callback, GameObject objectToMonitor) : base(id, callback)
             {
-                FocusOn = false;
+                FocusOff = false;
 
-                ObjectToFocus = objectToFocus;
+                ObjectToFocus = objectToMonitor;
 
                 if (ObjectToFocus.TryGetComponent<Utilities.HologramInteractions>(out InteractionComponent) == false)
                 {
-                     InteractionComponent = ObjectToFocus.AddComponent<Utilities.HologramInteractions>();
+                    InteractionComponent = ObjectToFocus.AddComponent<Utilities.HologramInteractions>();
                 }
-
-                SecondsToFocus = secondsToFocus;
 
                 InteractionComponent.EventFocusOn += CallbackFocusOn;
                 InteractionComponent.EventFocusOff += CallbackFocusOff;
@@ -54,29 +49,22 @@ namespace MATCH
 
             public override bool Evaluate()
             {
-                bool toReturn = false;
-
-                if (FocusOn)
-                {
-                    TimeSpan elapsed = DateTime.Now.Subtract(StartTime);
-                    if (elapsed.Seconds >= SecondsToFocus)
-                    {
-                        toReturn = true;
-                    }
-                }
-
-                return toReturn;
+                return FocusOff;
             }
 
             void CallbackFocusOn(System.Object o, EventArgs e)
             {
-                FocusOn = true;
-                StartTime = DateTime.Now;
+                FocusOff = false;
             }
 
             void CallbackFocusOff(System.Object o, EventArgs e)
             {
-                FocusOn = false;
+                FocusOff = true;
+            }
+
+            public override void Unregistered()
+            {
+
             }
         }
     }

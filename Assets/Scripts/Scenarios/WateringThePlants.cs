@@ -109,7 +109,7 @@ namespace MATCH
                     p.GetHighlight().Hide(Utilities.Utility.GetEventHandlerEmpty());
 
                     // Setting the color back to unwatered
-                    p.GetHighlight().SetMaterialToChild("Mouse_Yellow_Glowing");
+                    p.GetHighlight().SetMaterial("Mouse_Yellow_Glowing");
 
                     e?.Invoke(this, EventArgs.Empty);
                 }, Utilities.Utility.GetEventHandlerEmpty());
@@ -123,10 +123,10 @@ namespace MATCH
                 };
 
                 // Add plant to the GUI
-                m_dialogAssistanceWaterHelp.addButton("Plante " + (plantId + 1), false);
-                m_dialogAssistanceWaterHelp.m_buttonsController.Last().s_buttonClicked += delegate (System.Object o, EventArgs e)
+                m_dialogAssistanceWaterHelp.AddButton("Plante " + (plantId + 1), false);
+                m_dialogAssistanceWaterHelp.ButtonsController.Last().s_buttonClicked += delegate (System.Object o, EventArgs e)
                 {
-                    if (m_dialogAssistanceWaterHelp.m_buttonsController[plantId].isChecked() == false)
+                    if (m_dialogAssistanceWaterHelp.ButtonsController[plantId].isChecked() == false)
                     {
                         DrawLineForPlant(plantId);
                     }
@@ -296,7 +296,7 @@ namespace MATCH
                         LineRenderer line = m_plantsManager.GetLineRenderer(indexPlant);
                         Plant plant = m_plantsManager.GetPlant(indexPlant);
 
-                        Assistances.Buttons.Basic plantButton = m_dialogAssistanceWaterHelp.m_buttonsController[indexPlant];
+                        Assistances.Buttons.Basic plantButton = m_dialogAssistanceWaterHelp.ButtonsController[indexPlant];
 
                         bool plantAlreadyWatered = m_sIntermediateWateringPlants.checkStateCalled(plant.GetState());
 
@@ -543,11 +543,11 @@ namespace MATCH
                 {
                     DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Plant " + Id + " has been watered");
 
-                    Highlight.SetMaterialToChild("Mouse_Green_Glowing");
+                    Highlight.SetMaterial("Mouse_Green_Glowing");
                 }, Utilities.Utility.GetEventHandlerEmpty());
                 sHighlightWatered.setFunctionHide(delegate (EventHandler e)
                 {
-                    Highlight.SetMaterialToChild("Mouse_Yellow_Glowing");
+                    Highlight.SetMaterial("Mouse_Yellow_Glowing");
                     Highlight.Hide(Utilities.Utility.GetEventHandlerEmpty());
 
                     e?.Invoke(this, EventArgs.Empty);

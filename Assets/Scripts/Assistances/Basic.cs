@@ -31,34 +31,38 @@ namespace MATCH
 {
     namespace Assistances
     {
-        public class Basic : MonoBehaviour, IAssistance
+        public class Basic : MonoBehaviour, IAssistanceBasic
         {
-            public Transform m_childView;
+            public Transform ChildView;
 
-            Vector3 m_childScaleOrigin;
+            Vector3 ChildScaleOrigin;
 
             /*MouseUtilitiesMutex m_mutexShow;
             MouseUtilitiesMutex m_mutexHide;*/
 
             public EventHandler s_touched;
 
+            Dialog Help;
+
             public bool AdjustHeightOnShow { private get; set; }
 
             private void Awake()
             {
+                DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Awake called for object " + gameObject.name);
+
                 // Initialize variables
 
                 // Children
-                m_childView = gameObject.transform.Find("Child");
+                ChildView = gameObject.transform.Find("Child");
 
                 // Scale origin
-                m_childScaleOrigin = m_childView.localScale;
+                ChildScaleOrigin = ChildView.localScale;
 
                 // Adding the touch event
-                Utilities.HologramInteractions interactions = m_childView.GetComponent<Utilities.HologramInteractions>();
+                Utilities.HologramInteractions interactions = ChildView.GetComponent<Utilities.HologramInteractions>();
                 if (interactions == null)
                 {
-                    interactions = m_childView.gameObject.AddComponent<Utilities.HologramInteractions>();
+                    interactions = ChildView.gameObject.AddComponent<Utilities.HologramInteractions>();
                 }
                 interactions.EventTouched += delegate (System.Object sender, EventArgs args)
                 {
@@ -67,19 +71,20 @@ namespace MATCH
                 //interactions.s
 
                 AdjustHeightOnShow = true;
+
+                // Help buttons
+                if (transform.Find("ExclamationMarkButtons"))
+                {
+                    List<string> buttonsText = new List<string>();
+                    buttonsText.Add("?");
+                    List<EventHandler> buttonsCallback = new List<EventHandler>();
+                    buttonsCallback.Add(CButtonHelp);
+                    Help = Assistances.Factory.Instance.CreateButtons("", "", buttonsText, buttonsCallback, transform);
+                    Help.gameObject.name = "ExclamationMarkButtons";
+                    Help.GetTransform().localPosition = new Vector3(ChildView.localPosition.x, ChildView.localPosition.y - 0.3f, ChildView.localPosition.z);
+                    Help.Hide(Utilities.Utility.GetEventHandlerEmpty());
+                }
             }
-
-            // Start is called before the first frame update
-            /*void Start()
-            {
-
-            }*/
-
-            // Update is called once per frame
-            /*void Update()
-            {
-
-            }*/
 
             bool m_mutexShow = false;
             public void Show(EventHandler eventHandler)
@@ -93,7 +98,7 @@ namespace MATCH
                         MATCH.Utilities.Utility.AdjustObjectHeightToHeadHeight(transform);
                     }
 
-                    MATCH.Utilities.Utility.AnimateAppearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
+                    MATCH.Utilities.Utility.AnimateAppearInPlace(ChildView.gameObject, ChildScaleOrigin, delegate (System.Object o, EventArgs e)
                     {
                         m_mutexShow = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
@@ -108,9 +113,9 @@ namespace MATCH
                 {
                     m_mutexHide = true;
 
-                    MATCH.Utilities.Utility.AnimateDisappearInPlace(m_childView.gameObject, m_childScaleOrigin, delegate (System.Object o, EventArgs e)
+                    MATCH.Utilities.Utility.AnimateDisappearInPlace(ChildView.gameObject, ChildScaleOrigin, delegate (System.Object o, EventArgs e)
                     {
-                        m_childView.gameObject.transform.localScale = m_childScaleOrigin;
+                        ChildView.gameObject.transform.localScale = ChildScaleOrigin;
                         m_mutexHide = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
                     });
@@ -119,19 +124,28 @@ namespace MATCH
 
             public void ShowHelp(bool show)
             {
-                // Todo
+                //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Displaying the help buttons");
+                if (show)
+                {
+                    Help.Show(Utilities.Utility.GetEventHandlerEmpty());
+                }
+                else
+                {
+                    Help.Hide(Utilities.Utility.GetEventHandlerEmpty());
+                }
             }
 
             public Transform GetTransform()
             {
-                return m_childView;
+                return ChildView;
             }
 
-            public void SetMaterialToChild(string materialName)
+            public void SetMaterial(string materialName)
             {
-                Renderer renderer = m_childView.GetComponent<Renderer>();
+                Renderer renderer = ChildView.GetComponent<Renderer>();
                 if (renderer != null)
                 {
+                    //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Material set to " + materialName);
                     renderer.material = Resources.Load(materialName, typeof(Material)) as Material;
                 }
                 else
@@ -154,13 +168,13 @@ namespace MATCH
 
             public void SetScale(Vector3 scale)
             {
-                m_childView.transform.localScale = scale;
-                m_childScaleOrigin = m_childView.transform.localScale;
+                ChildView.transform.localScale = scale;
+                ChildScaleOrigin = ChildView.transform.localScale;
             }
 
             public Vector3 GetScale()
             {
-                return m_childView.transform.localScale;
+                return ChildView.transform.localScale;
             }
 
             public void SetLocalPosition(float x, float y, float z)
@@ -171,17 +185,17 @@ namespace MATCH
 
             public void SetLocalPosition(Vector3 localPosition)
             {
-                m_childView.transform.localPosition = localPosition;
+                ChildView.transform.localPosition = localPosition;
             }
 
             public Vector3 GetLocalPosition()
             {
-                return m_childView.transform.localPosition;
+                return ChildView.transform.localPosition;
             }
 
             public void SetBillboard(bool enable)
             {
-                m_childView.GetComponent<Billboard>().enabled = enable;
+                ChildView.GetComponent<Billboard>().enabled = enable;
             }
 
             public void TriggerTouch()
@@ -191,7 +205,12 @@ namespace MATCH
 
             public Transform GetChildTransform()
             {
-                return m_childView.transform;
+                return ChildView.transform;
+            }
+
+            private void CButtonHelp(System.Object o, EventArgs e)
+            {
+
             }
         }
 

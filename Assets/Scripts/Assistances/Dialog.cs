@@ -30,71 +30,59 @@ namespace MATCH
     {
         public class Dialog : MonoBehaviour, IAssistance
         {
-            Transform m_buttonsParentView;
-            Transform m_refButtonView;
-            Transform m_titleView;
-            Transform m_descriptionView;
-            Transform m_backgroundView;
-            List<Transform> m_buttonsView;
-            public List<Buttons.Basic> m_buttonsController;
+            Transform ButtonsParentView;
+            Transform RefButtonView;
+            Transform TitleView;
+            Transform DescriptionView;
+            Transform BackgroundView;
+            List<Transform> ButtonsView;
+            public List<Buttons.Basic> ButtonsController;
 
-            Vector3 m_buttonsParentScalingOriginal;
-            Vector3 m_backgoundScalingOriginal;
-            Vector3 m_titleScalingOriginal;
-            Vector3 m_descriptionScalingOriginal;
-            List<Vector3> m_buttonsScalingOriginal;
+            Vector3 ButtonsParentScalingOriginal;
+            Vector3 BackgoundScalingOriginal;
+            Vector3 TitleScalingOriginal;
+            Vector3 DescriptionScalingOriginal;
+            List<Vector3> ButtonsScalingOriginal;
 
-            public bool m_adjustToHeight { get; set; } = true;
+            public bool AdjustToHeight { get; set; } = true;
 
             private void Awake()
             {
                 // Instantiate variables
-                m_buttonsView = new List<Transform>();
-                m_buttonsController = new List<Buttons.Basic>();
-                m_buttonsScalingOriginal = new List<Vector3>();
+                ButtonsView = new List<Transform>();
+                ButtonsController = new List<Buttons.Basic>();
+                ButtonsScalingOriginal = new List<Vector3>();
                 //m_adjustToHeight = true;
 
                 // Children
-                m_buttonsParentView = transform.Find("ButtonParent");
-                m_refButtonView = m_buttonsParentView.Find("Button");
-                m_titleView = transform.Find("TitleText");
-                m_descriptionView = gameObject.transform.Find("DescriptionText");
-                m_backgroundView = gameObject.transform.Find("ContentBackPlate");
+                ButtonsParentView = transform.Find("ButtonParent");
+                RefButtonView = ButtonsParentView.Find("Button");
+                TitleView = transform.Find("TitleText");
+                DescriptionView = gameObject.transform.Find("DescriptionText");
+                BackgroundView = gameObject.transform.Find("ContentBackPlate");
 
                 // Initialize some values of the children
-                m_buttonsParentScalingOriginal = m_buttonsParentView.localScale;
-                m_backgoundScalingOriginal = m_backgroundView.localScale;
-                m_titleScalingOriginal = m_titleView.localScale;
-                m_descriptionScalingOriginal = m_descriptionView.localScale;
+                ButtonsParentScalingOriginal = ButtonsParentView.localScale;
+                BackgoundScalingOriginal = BackgroundView.localScale;
+                TitleScalingOriginal = TitleView.localScale;
+                DescriptionScalingOriginal = DescriptionView.localScale;
             }
 
-            // Start is called before the first frame update
-            void Start()
+            public void SetTitle(string text, float fontSize = -1.0f)
             {
+                TextMeshPro tmp = TitleView.GetComponent<TextMeshPro>();
 
+                SetTextToTextMeshProComponent(tmp, text, fontSize);
             }
 
-            // Update is called once per frame
-            void Update()
+            public void SetDescription(string text, float fontSize = -1.0f)
             {
+                TextMeshPro tmp = DescriptionView.GetComponent<TextMeshPro>();
 
+                SetTextToTextMeshProComponent(tmp, text, fontSize);
             }
 
-            public void setTitle(string text, float fontSize = -1.0f)
-            {
-                TextMeshPro tmp = m_titleView.GetComponent<TextMeshPro>();
-
-                setTextToTextMeshProComponent(tmp, text, fontSize);
-            }
-
-            public void setDescription(string text, float fontSize = -1.0f)
-            {
-                TextMeshPro tmp = m_descriptionView.GetComponent<TextMeshPro>();
-
-                setTextToTextMeshProComponent(tmp, text, fontSize);
-            }
-
-            void setTextToTextMeshProComponent(TextMeshPro component, string text, float fontSize)
+            void SetTextToTextMeshProComponent(TextMeshPro component, string text, float fontSize)
             {
                 if (fontSize > 0.0f)
                 {
@@ -107,10 +95,10 @@ namespace MATCH
             /**
              * If fontSize < 0.0f, means keep the default value of the button's size. Hence the default value.
              * */
-            public Buttons.Basic addButton(string text/*, EventHandler eventHandler*/, bool autoScaling, float fontSize = -1.0f)
+            public Buttons.Basic AddButton(string text/*, EventHandler eventHandler*/, bool autoScaling, float fontSize = -1.0f)
             {
                 // Instantiate the button
-                Transform newButton = Instantiate(m_refButtonView, m_buttonsParentView);
+                Transform newButton = Instantiate(RefButtonView, ButtonsParentView);
                 newButton.name = text;
                 ButtonConfigHelper configHelper = newButton.GetComponent<ButtonConfigHelper>();
                 configHelper.MainLabelText = text;
@@ -123,20 +111,20 @@ namespace MATCH
                 }
 
                 // Store the button
-                m_buttonsView.Add(newButton);
+                ButtonsView.Add(newButton);
                 Buttons.Basic tempButtonController = newButton.GetComponent<Buttons.Basic>();
-                m_buttonsController.Add(tempButtonController); // Only for the ease of use, nothing special here.
+                ButtonsController.Add(tempButtonController); // Only for the ease of use, nothing special here.
 
                 // Locate button
                 float scalingx = 1.0f;
                 if (autoScaling)
                 {
-                    scalingx = 1.0f / (float)(m_buttonsView.Count());
+                    scalingx = 1.0f / (float)(ButtonsView.Count());
                     tmp.margin = new Vector4(tmp.margin.x * scalingx, tmp.margin.y, tmp.margin.z * scalingx, tmp.margin.w);
                 }
 
 
-                foreach (Transform b in m_buttonsView)
+                foreach (Transform b in ButtonsView)
                 {
                     b.localScale = new Vector3(scalingx, b.localScale.y, b.localScale.z);
                     Transform textButton = b.Find("IconAndText");
@@ -144,12 +132,12 @@ namespace MATCH
                 }
 
                 // Store button scaling
-                m_buttonsScalingOriginal.Add(m_buttonsView.Last().localScale);
+                ButtonsScalingOriginal.Add(ButtonsView.Last().localScale);
 
                 // Enable button
-                m_buttonsView.Last().gameObject.SetActive(true);
+                ButtonsView.Last().gameObject.SetActive(true);
 
-                m_buttonsParentView.GetComponent<GridObjectCollection>().UpdateCollection();
+                ButtonsParentView.GetComponent<GridObjectCollection>().UpdateCollection();
 
                 return tempButtonController;
             }
@@ -161,17 +149,17 @@ namespace MATCH
                 {
                     m_mutexHide = true;
 
-                    MATCH.Utilities.Utility.AnimateDisappearInPlace(m_titleView.gameObject, m_titleScalingOriginal, delegate
+                    MATCH.Utilities.Utility.AnimateDisappearInPlace(TitleView.gameObject, TitleScalingOriginal, delegate
                     {
                         m_mutexHide = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
                     });
 
-                    Utilities.Utility.AnimateDisappearInPlace(m_descriptionView.gameObject, m_descriptionScalingOriginal);
+                    Utilities.Utility.AnimateDisappearInPlace(DescriptionView.gameObject, DescriptionScalingOriginal);
 
-                    Utilities.Utility.AnimateDisappearInPlace(m_buttonsParentView.gameObject, m_buttonsParentScalingOriginal);
+                    Utilities.Utility.AnimateDisappearInPlace(ButtonsParentView.gameObject, ButtonsParentScalingOriginal);
 
-                    Utilities.Utility.AnimateDisappearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal);
+                    Utilities.Utility.AnimateDisappearInPlace(BackgroundView.gameObject, BackgoundScalingOriginal);
                 }
             }
 
@@ -184,18 +172,18 @@ namespace MATCH
                 {
                     m_mutexShow = true;
 
-                    if (m_adjustToHeight)
+                    if (AdjustToHeight)
                     {
                         Utilities.Utility.AdjustObjectHeightToHeadHeight(transform);
                     }
 
 
-                    Utilities.Utility.AnimateAppearInPlace(m_backgroundView.gameObject, m_backgoundScalingOriginal, delegate {
+                    Utilities.Utility.AnimateAppearInPlace(BackgroundView.gameObject, BackgoundScalingOriginal, delegate {
                         //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Info, "Background shown");
 
-                        Utilities.Utility.AnimateAppearInPlace(m_titleView.gameObject);
-                        Utilities.Utility.AnimateAppearInPlace(m_buttonsParentView.gameObject);
-                        Utilities.Utility.AnimateAppearInPlace(m_descriptionView.gameObject);
+                        Utilities.Utility.AnimateAppearInPlace(TitleView.gameObject);
+                        Utilities.Utility.AnimateAppearInPlace(ButtonsParentView.gameObject);
+                        Utilities.Utility.AnimateAppearInPlace(DescriptionView.gameObject);
 
                         m_mutexShow = false;
                         eventHandler?.Invoke(this, EventArgs.Empty);
@@ -221,50 +209,16 @@ namespace MATCH
             /**
              * This function changes the color - you still have the responsibility to disable the callback if required
              * */
-            public void checkButton(Buttons.Basic button, bool check)
+            public void CheckButton(Buttons.Basic button, bool check)
             {
                 //m_states[currentState.m_currentState.getId()].transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Cyan_Glowing", typeof(Material)) as Material;
                 button.checkButton(check);
             }
 
-            public void enableBillboard(bool enable)
+            public void EnableBillboard(bool enable)
             {
                 gameObject.GetComponent<Billboard>().enabled = enable;
             }
-            /*
-            public void callbackAddNewButton(System.Object o, EventArgs e)
-            {
-                // Add new button to the interface
-                //MouseDebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, MouseDebugMessagesManager.MessageLevel.Warning, "Call back !");
-                MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e; //cast
-                addButton(arg.m_text, false, 0.1f);
-            }
-            */
-            /*public void callbackCheckButton(System.Object o, EventArgs e)
-            {
-                MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e;
-                foreach (Transform child in transform.GetChild(3))
-                {
-                    if (child.gameObject.name==arg.m_text)
-                    {
-                        //checkButton(child, true); //Try to use this
-                        child.gameObject.transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Green_Glowing", typeof(Material)) as Material;
-                    }
-                }
-            }*/
-
-            /*public void callbackStartButton(System.Object o, EventArgs e)
-            {
-                MouseEventHandlerArgString arg = (MouseEventHandlerArgString)e;
-                foreach (Transform child in transform.GetChild(3))
-                {
-                    if (child.gameObject.name == arg.m_text)
-                    {
-                        child.gameObject.transform.Find("BackPlate").Find("Quad").GetComponent<Renderer>().material = Resources.Load("Mouse_Cyan_Glowing", typeof(Material)) as Material;
-                    }
-                }
-            }*/
-
         }
 
     }

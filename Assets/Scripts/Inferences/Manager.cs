@@ -65,7 +65,7 @@ namespace MATCH
                 if (InferencesStorage.ContainsKey(inference.Id) == false)
                 {
                     InferencesStorage.Add(inference.Id, inference);
-                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Inference " + inference.Id + " added");
+                    //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Inference " + inference.Id + " added");
                 }
                 else
                 {
@@ -82,8 +82,9 @@ namespace MATCH
             {
                 if (InferencesStorage.ContainsKey(id))
                 {
+                    InferencesStorage[id].Unregistered();
                     InferencesStorage.Remove(id);
-                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Inference " + id + " unregistered");
+                    //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Inference " + id + " unregistered");
                 }
                 else
                 {

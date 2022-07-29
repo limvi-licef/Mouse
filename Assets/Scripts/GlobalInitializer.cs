@@ -85,7 +85,7 @@ namespace MATCH
 
         void addScenarioToGUI(MATCH.Scenarios.Scenario scenario)
         {
-            MATCH.Assistances.Buttons.Basic button = TodoList.addButton(scenario.getId(), true); //add button
+            MATCH.Assistances.Buttons.Basic button = TodoList.AddButton(scenario.getId(), true); //add button
             scenario.s_challengeOnStart += button.callbackSetButtonBackgroundCyan; //m_todo.callbackStartButton;
             scenario.s_challengeOnSuccess += button.callbackSetButtonBackgroundGreen; //m_todo.callbackCheckButton;
         }
@@ -100,7 +100,7 @@ namespace MATCH
         {
             string date = System.DateTime.Now.ToString("D", new System.Globalization.CultureInfo("fr-FR"));
             string hour = System.DateTime.Now.ToString("HH:mm");
-            TodoList.setDescription("Date : " + date + "                              Heure : " + hour + "\nSaison : " + getSeason(System.DateTime.Now) + "\n\nTâches à réaliser : ", 0.1f);
+            TodoList.SetDescription("Date : " + date + "                              Heure : " + hour + "\nSaison : " + getSeason(System.DateTime.Now) + "\n\nTâches à réaliser : ", 0.1f);
         }
         string getSeason(DateTime date)
         {

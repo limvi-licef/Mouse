@@ -83,6 +83,11 @@ namespace MATCH
                 m_objectdetected = objectInfo.ObjectDetected;
 
             }
+
+            public override void Unregistered()
+            {
+
+            }
         }
 
     }

@@ -95,18 +95,18 @@ namespace MATCH
 
                 GameObject exclamationMarkView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
                 Assistances.Basic exclamationMarkController = exclamationMarkView.GetComponent<Assistances.Basic>();
-                exclamationMarkController.SetMaterialToChild("Mouse_Exclamation");
+                exclamationMarkController.SetMaterial("Mouse_Exclamation");
 
                 GameObject solutionView = Instantiate(m_refDialog, garbageInteractionSurfaceView.transform);
                 Assistances.Dialog solutionController = solutionView.GetComponent<Assistances.Dialog>();
-                solutionController.setDescription("Il est l'heure de sortir les poubelles!", 0.3f);
-                solutionController.enableBillboard(true);
+                solutionController.SetDescription("Il est l'heure de sortir les poubelles!", 0.3f);
+                solutionController.EnableBillboard(true);
 
                 GameObject highlightGarbageView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
                 Assistances.Basic highlightGarbageController = highlightGarbageView.GetComponent<Assistances.Basic>();
                 //highlightGarbageController.SetAdjustHeightOnShow(false);
                 highlightGarbageController.AdjustHeightOnShow = false;
-                highlightGarbageController.SetMaterialToChild("Mouse_Cyan_Glowing");
+                highlightGarbageController.SetMaterial("Mouse_Cyan_Glowing");
                 highlightGarbageController.SetScale(0.2f, 0.6f, 0.2f);
                 highlightGarbageController.SetLocalPosition(0, -0.35f, 0);
                 highlightGarbageController.SetBillboard(false);
@@ -121,7 +121,7 @@ namespace MATCH
                 Assistances.Basic highlightGarbageVividController = highlightGarbageVividView.GetComponent<Assistances.Basic>();
                 //highlightGarbageVividController.SetAdjustHeightOnShow(false);
                 highlightGarbageVividController.AdjustHeightOnShow = false;
-                highlightGarbageVividController.SetMaterialToChild("Mouse_Orange_Glowing");
+                highlightGarbageVividController.SetMaterial("Mouse_Orange_Glowing");
                 highlightGarbageVividController.SetScale(0.2f, 0.6f, 0.2f);
                 highlightGarbageVividController.SetLocalPosition(0, -0.35f, 0);
                 highlightGarbageVividController.SetBillboard(false);
@@ -134,7 +134,7 @@ namespace MATCH
 
                 GameObject successView = Instantiate(m_refCube, garbageInteractionSurfaceView.transform);
                 Assistances.Basic successController = successView.GetComponent<Assistances.Basic>();
-                successController.SetMaterialToChild("Mouse_Congratulation");
+                successController.SetMaterial("Mouse_Congratulation");
 
                 // Add inferences
                 m_inferenceManager.RegisterInference(m_inference19h00);

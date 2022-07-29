@@ -28,63 +28,100 @@ namespace MATCH
     {
         public class Factory : MonoBehaviour
         {
-            private static Factory m_instance;
-            public static Factory Instance { get { return m_instance; } }
+            private static Factory InstanceInternal;
+            public static Factory Instance { get { return InstanceInternal; } }
 
-            public Dialog m_refDialogAssistance;
-            public Basic m_refCube;
-            public Dialog m_refCheckListAssistance;
-            public Assistances.InteractionSurface m_refInteractionSurface;
-            public ProcessingSurface m_refSurfaceToProcess;
-            public Dialog m_refToDoListAssistance;
+            public Assistances.Dialog DialogAssistance;
+            public Basic RefCube;
+            public Assistances.Dialog RefCheckListAssistance;
+            public Assistances.InteractionSurface RefInteractionSurface;
+            public ProcessingSurface RefSurfaceToProcess;
+            public Assistances.Dialog RefToDoListAssistance;
+            public AssistanceGradationExplicit RefAssistanceGradationExplicit;
+            public Assistances.Dialog RefButtons;
+
+            enum DialogsTypes
+            {
+                Assistance = 0,
+                CheckList = 1,
+                TodoList = 2,
+                Buttons = 3
+            }
+
+            Dictionary<DialogsTypes, Dialog> DialogsStore;
 
             private void Awake()
             {
-                if (m_instance != null && m_instance != this)
+                if (InstanceInternal != null && InstanceInternal != this)
                 {
                     Destroy(this.gameObject);
                 }
                 else
                 {
-                    m_instance = this;
+                    InstanceInternal = this;
+
+                    // Initialize the dialogs types store
+                    DialogsStore = new Dictionary<DialogsTypes, Dialog>();
+                    DialogsStore.Add(DialogsTypes.Assistance, DialogAssistance);
+                    DialogsStore.Add(DialogsTypes.CheckList, RefCheckListAssistance);
+                    DialogsStore.Add(DialogsTypes.TodoList, RefToDoListAssistance);
+                    DialogsStore.Add(DialogsTypes.Buttons, RefButtons);
                 }
             }
 
-            // Start is called before the first frame update
-           /* void Start()
+            private Dialog InitializeDialog(DialogsTypes type, string title, string description, Transform parent)
             {
+                Transform view = Instantiate(DialogsStore[type].transform, parent);
+                Dialog controller = view.GetComponent<Dialog>();
+                controller.SetTitle(title, 0.15f);
+                float sizeDescriptionText = -0.0005f * description.Length + 0.206f;
+                controller.SetDescription(description, sizeDescriptionText);
+                controller.EnableBillboard(true);
 
+                return controller;
             }
 
-            // Update is called once per frame
-            void Update()
+            private void AddButton(ref Dialog dialog, EventHandler callback, string text, bool autoScaling, float fontSize = -1)
             {
+                dialog.AddButton(text, autoScaling, fontSize);
+                dialog.ButtonsController.Last().s_buttonClicked += callback;
+            }
 
-            }*/
+            private void AddButton(ref Dialog dialog, EventHandler callback, string text, bool autoScaling, float fontSizeCoeffA, float fontSizeCoeffB)
+            {
+                AddButton(ref dialog, callback, text, autoScaling, fontSizeCoeffA * text.Length + fontSizeCoeffB);
+            }
 
             public Dialog CreateDialogNoButton(string title, string description, Transform parent)
             {
-                Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
-                Dialog dialogController = dialogView.GetComponent<Dialog>();
-                dialogController.setTitle(title);
-                //float sizeDescriptionText = -0.002f * description.Length + 0.38f;
-                float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
-                dialogController.setDescription(description, sizeDescriptionText);
-                dialogController.enableBillboard(true);
+                ///Transform dialogView = Instantiate(DialogAssistance.transform, parent);
+                Dialog controller = InitializeDialog(DialogsTypes.Assistance, title, description, parent);
 
-                return dialogController;
+                ///Dialog dialogController = dialogView.GetComponent<Dialog>();
+                ///dialogController.SetTitle(title);
+                
+                //float sizeDescriptionText = -0.002f * description.Length + 0.38f;
+                
+                ///float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
+                ///dialogController.SetDescription(description, sizeDescriptionText);
+                ///dialogController.EnableBillboard(true);
+
+                return controller;//dialogController;
             }
 
             public Dialog CreateCheckListNoButton(string title, string description, Transform parent)
             {
-                Transform dialogView = Instantiate(m_refCheckListAssistance.transform, parent);
-                Dialog dialogController = dialogView.GetComponent<Dialog>();
-                dialogController.setTitle(title);
-                float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
-                dialogController.setDescription(description, sizeDescriptionText);
-                dialogController.enableBillboard(true);
+                Dialog controller = InitializeDialog(DialogsTypes.CheckList, title, description, parent);
 
-                return dialogController;
+                //Transform dialogView = Instantiate(RefCheckListAssistance.transform, parent);
+
+                //Dialog dialogController = dialogView.GetComponent<Dialog>();
+                //dialogController.SetTitle(title);
+                //float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
+                //dialogController.SetDescription(description, sizeDescriptionText);
+                //dialogController.EnableBillboard(true);
+
+                return controller; //dialogController;
             }
 
             public Dialog CreateDialogTwoButtons(string title, string description, string textButton1, EventHandler callbackButton1, string textButton2, EventHandler callbackButton2, Transform parent)
@@ -95,42 +132,47 @@ namespace MATCH
                 //float sizeDescriptionText = -0.002f * description.Length + 0.38f;
                 //dialogController.setDescription(description, sizeDescriptionText);
                 //dialogController.enableBillboard(true);
-                Dialog dialogController = CreateDialogNoButton(title, description, parent);
+                Dialog controller = CreateDialogNoButton(title, description, parent);
 
-                float sizeDescriptionText = -0.016666667f * textButton1.Length + 0.366666667f;
-                dialogController.addButton(textButton1, true, sizeDescriptionText);
-                sizeDescriptionText = -0.016666667f * textButton2.Length + 0.366666667f;
-                dialogController.addButton(textButton2, true, sizeDescriptionText);
-                dialogController.m_buttonsController[0].s_buttonClicked += callbackButton1;
-                dialogController.m_buttonsController[1].s_buttonClicked += callbackButton2;
+                float fontSizeCoeffA = -0.017f;
+                float fontSizeCoeffB = 0.37f;
 
-                return dialogController;
+                AddButton(ref controller, callbackButton1, textButton1, true, fontSizeCoeffA, fontSizeCoeffB);
+                AddButton(ref controller, callbackButton2, textButton2, true, fontSizeCoeffA, fontSizeCoeffB);
+
+                //float sizeDescriptionText = -0.017f * textButton1.Length + 0.37f;
+                //controller.AddButton(textButton1, true, sizeDescriptionText);
+                //sizeDescriptionText = -0.017f * textButton2.Length + 0.37f;
+                //controller.AddButton(textButton2, true, sizeDescriptionText);
+                //controller.ButtonsController[0].s_buttonClicked += callbackButton1;
+                //controller.ButtonsController[1].s_buttonClicked += callbackButton2;
+
+                return controller;
             }
 
             public Dialog CreateDialogThreeButtons(string title, string description, string textButton1, EventHandler callbackButton1, string textButton2, EventHandler callbackButton2, string textButton3, EventHandler callbackButton3, Transform parent)
             {
-                //Transform dialogView = Instantiate(m_refDialogAssistance.transform, parent);
-                //MouseAssistanceDialog dialogController = dialogView.GetComponent<MouseAssistanceDialog>();
-                //dialogController.setTitle(title);
-                //float sizeDescriptionText = -0.002f * description.Length + 0.38f;
-                //dialogController.setDescription(description, sizeDescriptionText);
-                //dialogController.enableBillboard(true);
-                Dialog dialogController = CreateDialogNoButton(title, description, parent);
-                dialogController.addButton(textButton1, true);
-                dialogController.addButton(textButton2, true);
-                dialogController.addButton(textButton3, true);
-                dialogController.m_buttonsController[0].s_buttonClicked += callbackButton1;
-                dialogController.m_buttonsController[1].s_buttonClicked += callbackButton2;
-                dialogController.m_buttonsController[2].s_buttonClicked += callbackButton3;
+                Dialog controller = CreateDialogNoButton(title, description, parent);
 
-                return dialogController;
+                AddButton(ref controller, callbackButton1, textButton1, true);
+                AddButton(ref controller, callbackButton2, textButton2, true);
+                AddButton(ref controller, callbackButton3, textButton3, true);
+
+                /*controller.AddButton(textButton1, true);
+                controller.AddButton(textButton2, true);
+                controller.AddButton(textButton3, true);
+                controller.ButtonsController[0].s_buttonClicked += callbackButton1;
+                controller.ButtonsController[1].s_buttonClicked += callbackButton2;
+                controller.ButtonsController[2].s_buttonClicked += callbackButton3;*/
+
+                return controller;
             }
 
             public Basic CreateCube(string texture, Transform parent)
             {
-                Transform cubeView = Instantiate(m_refCube.transform, parent);
+                Transform cubeView = Instantiate(RefCube.transform, parent);
                 Basic cubeController = cubeView.GetComponent<Basic>();
-                cubeController.SetMaterialToChild(texture);
+                cubeController.SetMaterial(texture);
 
                 return cubeController;
             }
@@ -156,7 +198,7 @@ namespace MATCH
 
             public Assistances.InteractionSurface CreateInteractionSurface(string id, AdminMenu.Panels panel, Vector3 scaling, string texture, bool show, bool resizable, EventHandler onMove, Transform parent)
             {
-                Transform interactionSurface = Instantiate(m_refInteractionSurface.transform, parent);
+                Transform interactionSurface = Instantiate(RefInteractionSurface.transform, parent);
                 Assistances.InteractionSurface controller = interactionSurface.GetComponent<Assistances.InteractionSurface>();
                 controller.SetAdminButtons(id, panel);
                 controller.SetScaling(scaling);
@@ -168,10 +210,9 @@ namespace MATCH
                 return controller;
             }
 
-            // CONTINUER LA AUSSI
             public ProcessingSurface CreateSurfaceToProcess(Transform parent)
             {
-                Transform view = Instantiate(m_refSurfaceToProcess.transform, parent);
+                Transform view = Instantiate(RefSurfaceToProcess.transform, parent);
 
                 ProcessingSurface controller = view.GetComponent<ProcessingSurface>();
 
@@ -181,14 +222,35 @@ namespace MATCH
 
             public Dialog CreateToDoList(string title, string description)
             {
-                Transform dialogView = Instantiate(m_refToDoListAssistance.transform);
-                Dialog dialogController = dialogView.GetComponent<Dialog>();
-                dialogController.setTitle(title, 0.15f);
-                float sizeDescriptionText = -0.00047619f * description.Length + 0.205714286f;
-                dialogController.setDescription(description, sizeDescriptionText);
-                dialogController.enableBillboard(false);
+                Dialog controller = InitializeDialog(DialogsTypes.TodoList, title, description, null);
 
-                return dialogController;
+                //Transform dialogView = Instantiate(RefToDoListAssistance.transform);
+                //Dialog dialogController = dialogView.GetComponent<Dialog>();
+                //dialogController.SetTitle(title, 0.15f);
+                //float sizeDescriptionText = -0.0005f * description.Length + 0.206f;
+                //dialogController.SetDescription(description, sizeDescriptionText);
+                controller.EnableBillboard(false);
+                //dialogController.EnableBillboard(false);
+
+                return controller;
+            }
+
+            public Dialog CreateButtons(string title, string description, List<string> buttonsText, List<EventHandler> buttonsCallback, Transform parent)
+            {
+                Dialog controller = InitializeDialog(DialogsTypes.Buttons, title, description, parent);
+                for (int i = 0; i < buttonsText.Count; i ++)
+                {
+                    AddButton(ref controller, buttonsCallback[i], buttonsText[i], true);
+                }
+
+                return controller;
+            }
+
+            public AssistanceGradationExplicit CreateAssistanceGradationExplicit()
+            {
+                Transform view = Instantiate(RefAssistanceGradationExplicit.transform);
+                AssistanceGradationExplicit controller = view.GetComponent<AssistanceGradationExplicit>();
+                return controller;
             }
         }
 

@@ -278,11 +278,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2684979350875033361}
+  - component: {fileID: 354798940811283848}
   - component: {fileID: 354798940811283844}
   - component: {fileID: 354798940811283851}
   - component: {fileID: 354798940811283850}
   - component: {fileID: 354798940811283849}
-  - component: {fileID: 354798940811283848}
   - component: {fileID: 354798940811283855}
   m_Layer: 0
   m_Name: MouseCheckList
@@ -309,6 +309,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &354798940811283848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354798940811283853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2684933d28c57bd4986cfb4f701c8f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonsController: []
 --- !u!114 &354798940811283844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -336,7 +349,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trackedTargetType: 0
-  trackedHandness: 3
+  trackedHandedness: 3
   trackedHandJoint: 2
   transformOverride: {fileID: 0}
   additionalOffset: {x: 0, y: 0, z: 0}
@@ -407,19 +420,6 @@ MonoBehaviour:
   angularClampMode: 0
   tetherAngleSteps: 6
   boundsScaler: 1
---- !u!114 &354798940811283848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 354798940811283853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2684933d28c57bd4986cfb4f701c8f28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_buttonsController: []
 --- !u!114 &354798940811283855
 MonoBehaviour:
   m_ObjectHideFlags: 0

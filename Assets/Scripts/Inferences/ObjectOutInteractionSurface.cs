@@ -73,6 +73,11 @@ namespace MATCH
                 Objectdetected = objectInfo.ObjectDetected;
                 CallbackArgs = new Utilities.EventHandlerArgObject(Objectdetected);
             }
+
+            public override void Unregistered()
+            {
+
+            }
         }
 
     }

@@ -66,13 +66,13 @@ namespace MATCH
                 {
                     m_challengeGarbage.GetInference19h().CallbackOneMinuteTrigger();
                     m_challengeGarbageFirstLevelCalled = true;
-                    m_triggerGarbage.SetMaterialToChild("Mouse_Garbage_Level2");
+                    m_triggerGarbage.SetMaterial("Mouse_Garbage_Level2");
                 }
                 else
                 {
                     m_challengeGarbage.GetInference19h30().CallbackOneMinuteTrigger();
                     m_challengeGarbageFirstLevelCalled = false;
-                    m_triggerGarbage.SetMaterialToChild("Mouse_Garbage_Level2_Pressed");
+                    m_triggerGarbage.SetMaterial("Mouse_Garbage_Level2_Pressed");
                 }
             };
 
@@ -82,7 +82,7 @@ namespace MATCH
             m_triggerWateringPlants.s_touched += delegate (System.Object o, EventArgs e)
             {
                 m_challengeWatering.GetInference().CallbackOneMinuteTrigger();
-                m_triggerWateringPlants.SetMaterialToChild("Mouse_Flower_Pressed");
+                m_triggerWateringPlants.SetMaterial("Mouse_Flower_Pressed");
             };
 
 
@@ -92,14 +92,14 @@ namespace MATCH
             m_triggerCleanTable.s_touched += delegate (System.Object o, EventArgs e)
             {
                 m_challengeTable.GetInference().CallbackOneMinuteTrigger();
-                m_triggerCleanTable.SetMaterialToChild("Mouse_Clean_Table_Pressed");
+                m_triggerCleanTable.SetMaterial("Mouse_Clean_Table_Pressed");
             };
 
             Assistances.Dialog dialogInstructions = Assistances.Factory.Instance.CreateDialogNoButton("", "Touchez un des boutons pour commencer un scénario. Le scénario commence 10 secondes après avoir touché le bouton.", demo.transform);
             //MouseAssistanceDialog dialogInstructions = MouseUtilitiesAssistancesFactory.Instance.createDialogTwoButtons("", "Touchez un des boutons pour commencer un scénario. Le scénario commence 10 secondes après avoir touché le bouton.", "Test bouton 1", MouseUtilities.getEventHandlerEmpty(), "Test button 2", MouseUtilities.getEventHandlerEmpty(), demo.transform);
             //dialogInstructions.setDescription("Touchez un des boutons pour commencer un scénario: sortir les poubelles, arroser les plantes, nettoyer la table.Le scénario commence 10 secondes après avoir touché le bouton.", 0.12f);
             //dialogInstructions.setDescription("Touchez un des boutons pour commencer un scénario. Le scénario commence 10 secondes après avoir touché le bouton.", 0.15f);
-            dialogInstructions.m_adjustToHeight = false;
+            dialogInstructions.AdjustToHeight = false;
             dialogInstructions.transform.localPosition = new Vector3(0f, 0.5f, 0);
             dialogInstructions.Show(Utilities.Utility.GetEventHandlerEmpty());
 
@@ -111,18 +111,18 @@ namespace MATCH
 
         void callbackChallengeGarbageStandBy(System.Object o, EventArgs e)
         {
-            m_triggerGarbage.SetMaterialToChild("Mouse_Garbage_Level1");
+            m_triggerGarbage.SetMaterial("Mouse_Garbage_Level1");
             m_challengeGarbageFirstLevelCalled = false;
         }
 
         void callbackChallengeCleanTable(System.Object o, EventArgs e)
         {
-            m_triggerCleanTable.SetMaterialToChild("Mouse_Clean_Table");
+            m_triggerCleanTable.SetMaterial("Mouse_Clean_Table");
         }
 
         void callbackChallengeWateringPlants(System.Object o, EventArgs e)
         {
-            m_triggerWateringPlants.SetMaterialToChild("Mouse_Flower");
+            m_triggerWateringPlants.SetMaterial("Mouse_Flower");
         }
     }
 

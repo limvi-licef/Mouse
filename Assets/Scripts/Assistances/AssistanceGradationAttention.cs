@@ -33,13 +33,15 @@ namespace MATCH
                 Gradation = new List<IAssistance>();
             }
 
-            public void AddAssistance(IAssistance assistance)
+            public IAssistance AddAssistance(IAssistance assistance)
             {
                 Gradation.Add(assistance);
                 if (GradationCurrent == -1)
                 {
                     GradationCurrent = 0;
                 }
+
+                return assistance;
             }
 
             /**
@@ -51,8 +53,14 @@ namespace MATCH
 
                 if (GradationCurrent > -1 && ++GradationCurrent < Gradation.Count)
                 {
+                    //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Next gradation is going to be shown");
                     Gradation[GradationCurrent].Show(callback);
                     toReturn = true;
+                }
+                else
+                {
+                    GradationCurrent--;
+                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Warning, "Maximum level of attention gradation reached");
                 }
 
                 return toReturn;
@@ -67,6 +75,7 @@ namespace MATCH
                 {
                     GradationCurrent = 0;
                     Gradation[GradationCurrent].Show(callback);
+                    //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Assistance should be shown now");
                 }
                 else
                 {

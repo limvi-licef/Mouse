@@ -170,15 +170,15 @@ namespace MATCH
                 // Cueing for the beginning of the scenario
                 GameObject initialCueingView = Instantiate(m_refAssistanceDialog, interactionTableView.transform);
                 Assistances.Dialog initialCueingController = initialCueingView.GetComponent<Assistances.Dialog>();
-                initialCueingController.setDescription("Que faites-vous typiquement après manger?");
-                initialCueingController.addButton("Je ne sais pas", true, 0.2f);
-                initialCueingController.enableBillboard(true);
+                initialCueingController.SetDescription("Que faites-vous typiquement après manger?");
+                initialCueingController.AddButton("Je ne sais pas", true, 0.2f);
+                initialCueingController.EnableBillboard(true);
 
                 // Cueing for the solution
                 GameObject solutionView = Instantiate(m_refAssistanceDialog, interactionRagView.transform);
                 Assistances.Dialog solutionController = solutionView.GetComponent<Assistances.Dialog>();
-                solutionController.setDescription("Ne serait-ce pas un bon moment pour nettoyer la table? \n Vous avez pour cela besoin du chiffon ci - dessous.", 0.15f);
-                solutionController.enableBillboard(true);
+                solutionController.SetDescription("Ne serait-ce pas un bon moment pour nettoyer la table? \n Vous avez pour cela besoin du chiffon ci - dessous.", 0.15f);
+                solutionController.EnableBillboard(true);
 
                 // Setting the parents, the connections for the objects briding other objects etc. (the idea being to leave that to a software dedicated to configure the scenarios)
                 Utilities.Utility.setParentToObject(m_assistancePicturalView, interactionTableView.transform);
@@ -226,7 +226,7 @@ namespace MATCH
                 // States changing
                 interactionTableController.EventInteractionSurfaceTableTouched += sStandBy.goToState(sCubeRagTable);
                 m_assistancePicturalController.m_eventHologramStimulateLevel1Gradation1Or2Touched += sCubeRagTable.goToState(sMessageCue);
-                initialCueingController.m_buttonsController[0].s_buttonClicked += sMessageCue.goToState(sArchToRag);
+                initialCueingController.ButtonsController[0].s_buttonClicked += sMessageCue.goToState(sArchToRag);
                 m_assistanceConnectWithArchController.m_eventHologramHelpTouched += sArchToRag.goToState(sSolution);
                 interactionRagController.EventInteractionSurfaceTableTouched += sCubeRagTable.goToState(sSurfaceToClean);
                 interactionRagController.EventInteractionSurfaceTableTouched += sMessageCue.goToState(sSurfaceToClean);

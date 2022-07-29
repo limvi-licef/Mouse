@@ -48,6 +48,11 @@ namespace MATCH
                 }
                 return toReturn;
             }
+
+            public override void Unregistered()
+            {
+
+            }
         }
 
     }

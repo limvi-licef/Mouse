@@ -62,7 +62,7 @@ namespace MATCH
                 ObjectManipulator objectManipulator = m_interactionSurfaceView.GetComponent<ObjectManipulator>();
                 objectManipulator.OnManipulationEnded.AddListener(delegate (ManipulationEventData data)
                 {
-                    DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Called");
+                    //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Info, "Called");
                     EventInteractionSurfaceMoved?.Invoke(this, EventArgs.Empty);
                 });
             }
@@ -77,7 +77,7 @@ namespace MATCH
              * **/
             public void SetColor(string colorName)
             {
-                DebugMessagesManager.Instance.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", DebugMessagesManager.MessageLevel.Info, "Loading color");
+                //DebugMessagesManager.Instance.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", DebugMessagesManager.MessageLevel.Info, "Loading color");
 
                 m_color = colorName;
 
@@ -106,7 +106,7 @@ namespace MATCH
 
             void CallbackHologramInteractionSurfaceMovedFinished()
             {
-                DebugMessagesManager.Instance.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", DebugMessagesManager.MessageLevel.Info, "Called");
+                //DebugMessagesManager.Instance.displayMessage("MousePopulateSurfaceTableWithCubes", "callbackOnTapToPlaceFinished", DebugMessagesManager.MessageLevel.Info, "Called");
 
                 // Bring specific components to the center of the interaction surface
                 gameObject.transform.position = m_interactionSurfaceView.transform.position;
@@ -115,7 +115,7 @@ namespace MATCH
 
             void CallbackShow()
             {
-                DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Warning, "Callback showing / hiding interaction surface called");
+                //DebugMessagesManager.Instance.displayMessage(MethodBase.GetCurrentMethod().ReflectedType.Name, MethodBase.GetCurrentMethod().Name, DebugMessagesManager.MessageLevel.Warning, "Callback showing / hiding interaction surface called");
 
                 ShowInteractionSurfaceTable(!(m_interactionSurfaceView.GetComponent<BoundsControl>().enabled));
             }
@@ -149,7 +149,7 @@ namespace MATCH
             {
                 gameObject.transform.position = new Vector3(Camera.main.transform.position.x + 1.5f, Camera.main.transform.position.y - 0.5f, Camera.main.transform.position.z);
 
-                DebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", DebugMessagesManager.MessageLevel.Info, "Called - Camera position: " + Camera.main.transform.position + " New position of the object: " + gameObject.transform.position);
+                //DebugMessagesManager.Instance.displayMessage("MouseUtilitiesAdminMenu", "callbackBringInteractionSurface", DebugMessagesManager.MessageLevel.Info, "Called - Camera position: " + Camera.main.transform.position + " New position of the object: " + gameObject.transform.position);
             }
 
             public void SetAdminButtons(string interfaceSurfaceId, AdminMenu.Panels panel = AdminMenu.Panels.Default)

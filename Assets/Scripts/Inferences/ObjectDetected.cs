@@ -90,6 +90,11 @@ namespace MATCH
                 FakeObject = fakeObject;
                 FakeObjectStatus = true;
             }
+
+            public override void Unregistered()
+            {
+
+            }
         }
     }
 }

@@ -52,6 +52,11 @@ namespace MATCH
 
             public abstract bool Evaluate();
 
+            /**
+             * This function should unregister the callbacks and so on, i.e. ending properly the unregistration
+             * */
+            public abstract void Unregistered();
+
             //public string getId() => m_id;
             public void TriggerCallback() => Callbacks?.Invoke(this, CallbackArgs);
 

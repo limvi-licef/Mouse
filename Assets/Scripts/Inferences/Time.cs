@@ -84,6 +84,11 @@ namespace MATCH
                 m_timeOneMinuteTrigger = DateTime.Now;
                 m_useOneMinuteTrigger = true;
             }
+
+            public override void Unregistered()
+            {
+
+            }
         }
     }
 }
